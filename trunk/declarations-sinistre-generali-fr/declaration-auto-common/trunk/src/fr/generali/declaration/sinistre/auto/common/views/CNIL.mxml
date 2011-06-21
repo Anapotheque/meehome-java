@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" horizontalAlign="justify">
+	<mx:Text textAlign="{TextFormatAlign.JUSTIFY}" id="cnil" text="Conformément à la loi Informatique et Libertés du 6 janvier 1978, vous disposez d'un droit d'accès et de rectification des données qui vous concernent.&#xa;Vous pouvez exercer ce droit en vous adressant à GENERALI IARD - 7 boulevard HAUSSMANN 75456 PARIS CEDEX 09.&#xa;Ces informations sont destinées à Generali IARD et sont nécessaires au traitement de votre dossier.&#xa;Ces informations sont susceptibles d'être transmises à des tiers pour les besoins de la gestion de votre dossier, notamment à votre conseiller. Vous acceptez expressément que les données vous concernant leur soient ainsi transmises." width="100%"/>
+</mx:HBox>

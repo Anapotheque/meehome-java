@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalGap="0" width="100%"  verticalScrollPolicy="off" height="20" borderStyle="solid" 
+	borderColor="red" visible="true">
+	<mx:Script>
+		<![CDATA[
+			import fr.generali.declaration.sinistre.auto.common.views.heure.Heure;
+			import fr.generali.declaration.sinistre.auto.common.views.heure.Heure;
+			import mx.controls.NumericStepper;
+			import mx.validators.NumberValidator;
+			import mx.formatters.NumberFormatter;
+			import mx.controls.DateField;
+			import mx.validators.EmailValidator;
+			import mx.controls.Alert;
+			import mx.controls.TextInput;
+			import mx.controls.Text;
+			import fr.generali.declaration.sinistre.auto.common.utils.DateHelper;
+			import mx.validators.DateValidator;
+			import mx.events.ValidationResultEvent;
+
+			public static const COLOR_ERROR:String = "#DF6161";
+			public static const COLOR_VALIDATED:String = "white";
+			public const HEIGHT_TEXT_ERROR:int = 16;
+			
+			private var vResult:ValidationResultEvent;
+			
+			[Bindable]
+			public var errors:Array = new Array();
+			
+			[Bindable]
+			private var heightAll:int = 0;
+
+			public function addError(error:String):void {
+				this.visible = true;
+				var text:Text = new Text();
+				text.text = error;
+				text.height = HEIGHT_TEXT_ERROR;
+				text.setStyle("color","red");
+				errors.push(text);
+				displayError.addChild(text);
+			}
+
+			public function reset():void {
+				displayError.removeAllChildren();
+				errors =new Array();
+			}
+			
+			public function validateEmptyText(obj:TextInput, strError:String):Boolean {
+		     	if(obj.text == "") {
+	     			this.addError(strError);
+	     			obj.setStyle("backgroundColor",COLOR_ERROR);
+	     			return false;
+		     	} else {
+	     			obj.setStyle("backgroundColor",COLOR_VALIDATED);
+	     			return true;
+		     	}
+			}
+			
+			public function validateEmptyDate(obj:DateField, strError:String):Boolean {
+		     	if(obj.text == "") {
+	     			this.addError(strError);
+	     			obj.setStyle("backgroundColor",COLOR_ERROR);
+	     			return false;
+		     	} else {
+	     			obj.setStyle("backgroundColor",COLOR_VALIDATED);
+	     			return true;
+		     	}
+			}
+
+			// Fonction de vérification de format des dates
+			// le code message d'erreur, l'objet Datefield et le format de date sont passés en paramètre
+			//On retourne un booléen qui indique si la date est valide ou non 
+			public function formatDate(strError:String, datef:DateField, format:String="dd/mm/yyyy"):Boolean{
+
+				// Définition format date 
+				var dateVal:DateValidator = new DateValidator();
+				var dateField:DateField = new DateField;
+				dateField.text = datef.text;				
+				dateVal.source = dateField;
+				dateVal.property = "text";
+				dateVal.inputFormat= format; 
+	
+	 
+				vResult = dateVal.validate();
+				if (vResult.type==ValidationResultEvent.VALID) {
+					//trace("Format de date valide !!!");
+	     			datef.setStyle("backgroundColor",COLOR_VALIDATED);					
+					return true;
+				} else{
+					//trace("Format de date non valide ???");
+	     			this.addError(strError);
+	     			datef.setStyle("backgroundColor",COLOR_ERROR);					
+					return false;
+				}
+			}
+	
+	
+			//Fonction de comparaison entre 2 dates (ne vérifie pas la cohérence du format => utiliser la fonction formatDate)
+			//Si date2 est vide, on prend la date du jour 
+			// retourne -1 si la date 1 est inferieure à la date 2
+			// retourne 0 si la date 1 est égale à la date 2
+			// retourne 1 si la date 1 est superieure à la date 2
+			public function compareDate(strError:String, date1:DateField, date2:String="", format:String="dd/mm/yyyy"):int{
+
+				//On ne va pas plus loin si date1 n'est pas renseigné
+				if(date1.text == "") {
+					return -1;	
+				}
+				
+				//On utilise la classe DateHelper pour convertir une string en date
+				var dateHelper:DateHelper = new DateHelper(format);
+				var dateSaisie:Date = dateHelper.stringToDate(date1.text);
+				var dateJour:Date;
+				
+				//si la seconde date n'est pas saisie on l initialise à la date du jour
+				if (date2 == "") {
+					dateJour = new Date();
+				} else{
+					dateJour = dateHelper.stringToDate(date2);
+				}
+				
+			    //On transforme les dates en nombres pour les comparer			    
+			    var date1Timestamp : Number = dateSaisie.getTime ();
+			    var date2Timestamp : Number = dateJour.getTime ();
+			
+			    var result : Number = -1;
+			
+			    if (date1Timestamp < date2Timestamp)
+			    {
+			    	//trace("date1 inferieur à date 2");
+	     			date1.setStyle("backgroundColor",COLOR_VALIDATED);		    	
+			    	return -1;
+			    }
+			    else if (date1Timestamp == date2Timestamp)
+			    {
+			    	//trace("date1 égal date2");
+			    	date1.setStyle("backgroundColor",COLOR_VALIDATED);
+			    	return 0;
+			    } else {
+			    	//trace("date2 superieure à date1");
+			    	this.addError(strError);
+	     			date1.setStyle("backgroundColor",COLOR_ERROR);		
+			    	return 1;		    	
+			    }
+			}					
+			
+
+			// Fonction de vérification de début et de fin des heures et minutes
+			// le composant heure début, Heure fin et le code message d'erreur sont passés en paramètre
+			//On retourne un booléen qui indique si l'heure de début est bien égale ou inferieure à l'heure de fin 
+			public function compareHeure(heureDeb:Heure, heureFin:Heure, strError:String):Boolean{
+				/*
+				var debHoraire:Number;
+				var finHoraire:Number;
+				debHoraire = Number(heureDeb.hourText.text + heureDeb.minuteText.text);
+				finHoraire = Number(heureFin.hourText.text + heureFin.minuteText.text);
+				if ( debHoraire <= finHoraire ){
+					heureDeb.setStyle("backgroundColor",COLOR_VALIDATED);					
+					heureFin.setStyle("backgroundColor",COLOR_VALIDATED);
+					return true;									
+				} else{
+	     			this.addError(strError);
+					heureDeb.setStyle("backgroundColor",COLOR_ERROR);					
+					heureFin.setStyle("backgroundColor",COLOR_ERROR);
+					return false;															
+				}
+				*/
+				return true;
+			}			
+			
+			
+			public function validateIntText(obj:TextInput,strError:String, nbNumber:int):Boolean {				
+		     	if(isNaN(Number(obj.text)) || (obj.text.length != nbNumber)) {
+		     		this.addError(strError);
+		     		obj.setStyle("backgroundColor",COLOR_ERROR);
+		     		return false;
+		     	} else {
+		     		obj.setStyle("backgroundColor",COLOR_VALIDATED);
+		     		return true;
+		     	}
+			}
+
+			public function validateEmailText(obj:TextInput,strError:String):Boolean {
+				var pattern:RegExp = /(\w|[_.\-])+@((\w|-)+\.)+\w{2,4}+/;
+
+		     	if(obj.text.search(pattern) < 0) {
+		     		this.addError(strError);
+		     		obj.setStyle("backgroundColor",COLOR_ERROR);
+		     		return false;
+		     	} else {
+		     		obj.setStyle("backgroundColor",COLOR_VALIDATED);
+		     		return true;
+		     	}
+		    }
+
+			public function play():Boolean {
+				if(errors.length > 0) {
+					displayError.visible = true;
+					heightAll = errors.length * HEIGHT_TEXT_ERROR + 5;
+					showError.play();
+
+					return true;
+				}
+				//Tout est OK : on fait disparaitre le bloc erreur
+				this.height = 0;
+				this.visible = false;
+
+				return false;
+			}
+		]]>
+	</mx:Script>
+	<mx:Sequence id="showError" targets="{errors}">
+	  	<mx:Resize target="{this}" id="resize" heightTo="{heightAll}" duration="700"/>
+	  	<mx:SetPropertyAction name="visible" value="true" />
+	</mx:Sequence>
+	<mx:Image source="@Embed('fr/generali/declaration/sinistre/auto/common/assets/ico_erreur_saisie.swf')" />
+	<mx:VBox verticalGap="0" id="displayError" verticalScrollPolicy="off"/>
+</mx:HBox>

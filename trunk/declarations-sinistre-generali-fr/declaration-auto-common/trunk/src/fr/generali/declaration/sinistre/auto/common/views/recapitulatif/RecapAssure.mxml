@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" styleName="recapPanel">
+	<mx:Script>
+		<![CDATA[
+			import fr.generali.declaration.sinistre.auto.common.models.vo.AssureVO;
+
+        	private var _assureModel:AssureVO;
+        	
+        	[Bindable]
+        	public function set assureModel(model:AssureVO):void {
+        		this._assureModel = model;
+        	}
+        	public function get assureModel():AssureVO {
+        		return this._assureModel;
+        	}
+		]]>
+	</mx:Script>
+	<mx:VBox>
+		<mx:VBox>
+			<mx:HBox>
+				<mx:HBox>
+					<mx:Label width="135"  text="Nom :" styleName="textSimpleBold" />
+					<mx:Label width="235"  text="{assureModel.nom}" styleName="textSimple" />
+				</mx:HBox>				
+				<mx:HBox>
+					<mx:Label width="135"  text="Prénom :" styleName="textSimpleBold" />
+					<mx:Label width="200"  text="{assureModel.prenom}" styleName="textSimple" />
+				</mx:HBox>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:HBox>
+			<mx:Label width="135"  text="Adresse :" styleName="textSimpleBold" />
+			<mx:Label width="100%"  text="{assureModel.adresse.adresse}" styleName="textSimple"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:HBox>
+				<mx:Label width="135"  text="Code postal :" styleName="textSimpleBold" />
+				<mx:Label width="235"  text="{assureModel.adresse.codePostal}" styleName="textSimple" />
+			</mx:HBox>			
+			<mx:HBox>
+				<mx:Label width="135"  text="Ville :" styleName="textSimpleBold" />
+				<mx:Label width="200"  text="{assureModel.adresse.ville}" styleName="textSimple" />
+			</mx:HBox>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:HBox>
+				<mx:Label width="135"  text="Mail :" styleName="textSimpleBold" />
+				<mx:Label width="235"  text="{assureModel.mail}" styleName="textSimple" />
+			</mx:HBox>			
+			<mx:HBox>
+				<mx:Label width="135"  text="Tél.mobile :" styleName="textSimpleBold" />
+				<mx:Label width="200"  text="{assureModel.telMobile}" styleName="textSimple" />
+			</mx:HBox>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:HBox>
+				<mx:Label width="135"  text="Tél.domicile :" styleName="textSimpleBold" />
+				<mx:Label width="235"  text="{assureModel.telDomicile}" styleName="textSimple" />
+			</mx:HBox>			
+			<mx:HBox>
+				<mx:Label width="135"  text="Tél.bureau :" styleName="textSimpleBold" />
+				<mx:Label width="135"  text="{assureModel.telBureau}" styleName="textSimple" />
+			</mx:HBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Panel>

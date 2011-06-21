@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:local="views.*"
+	xmlns:common="fr.generali.declaration.sinistre.auto.common.views.*"
+	styleName="generaliPanel" creationComplete="init()">
+
+	<mx:Script>
+		<![CDATA[
+			import fr.generali.declaration.sinistre.auto.common.utils.Url;
+			import fr.generali.declaration.sinistre.auto.common.utils.PopUp;
+			import flash.net.navigateToURL;
+			import models.AppModel;
+			import mx.controls.Alert;
+			import fr.generali.declaration.sinistre.auto.common.views.events.DeclarationSinistreAutoEvent;
+			import flash.external.ExternalInterface;
+            import mx.events.CloseEvent;
+            import mx.managers.PopUpManager;
+            import mx.utils.StringUtil;
+            import fr.generali.declaration.sinistre.auto.common.utils.ImageResource;
+			import flash.utils.setTimeout;
+
+			[Bindable]
+        	private var appModel:AppModel = AppModel.getInstance();
+
+			[Bindable] private var _firstEntryDescription:Boolean = true;
+	  		[Bindable] private var _firstEntryLieuVehicule:Boolean = true;
+	  		[Bindable] private var _firstEntryAutreDommagesMat:Boolean = true;
+	  		[Bindable] private var _firstEntryAutresPersonnes:Boolean = true;	  		
+	  		
+	  		[Bindable]private var urlCoordGarage:String = Url.getGarageUrl();
+	  		
+	  		private var _localConnection:LocalConnection;
+	  		
+	  		// Buffers pour empecher de refaire l'effet sur la même action
+	  		private var rbgDepotGarageBuffer:String;	
+	  		private var rbgAutreDommageMateriel:String;	
+
+			private function init():void {
+				rbgDepotGarage.selectedValue = "Non";
+				rbgDepotGarageBuffer = "Non";
+				rbgAutreDommageMateriel = "Non";
+				appModel.dommages.depotGarage = rbgDepotGarage.selectedValue.toString();
+			}
+
+			private function next():void {
+				
+				if(!_firstEntryDescription) appModel.dommages.description = txtDescription.text;
+				appModel.dommages.depotGarage = (rbgDepotGarage.selectedValue == null)?"":rbgDepotGarage.selectedValue.toString();
+				appModel.dommages.coordGarage = txtCoordGarage.text;
+				if(!_firstEntryLieuVehicule) appModel.dommages.lieuVehicule = txtLieuVehicule.text;
+				appModel.dommages.autresDommagesMat = (rbgAutreDommagesMat.selectedValue == null)?"":rbgAutreDommagesMat.selectedValue.toString();
+				if(!_firstEntryAutreDommagesMat) appModel.dommages.descriptionDommagesMat= txtAutresDommagesMat.text;
+				if(!_firstEntryAutresPersonnes) appModel.dommages.autresPersonnes= txtAutresPersonnes.text;
+				appModel.dommages.dommagesCorporel = (rbgDommagesCorp.selectedValue == null)?"":rbgDommagesCorp.selectedValue.toString();
+				
+				
+				this.dispatchEvent(new DeclarationSinistreAutoEvent(DeclarationSinistreAutoEvent.TO_RECAPITULATIF_EVENT));
+			}
+
+			private function previous():void {
+				this.dispatchEvent(new DeclarationSinistreAutoEvent(DeclarationSinistreAutoEvent.TO_SINISTRE_EVENT));
+			}
+			
+			public function clearTxtDescription():void {
+				if(_firstEntryDescription) {
+					this.txtDescription.text = "";
+					this.txtDescription.setStyle("color","black");
+					_firstEntryDescription=false;
+				} 
+			}
+			
+			public function clearTxtLieuVehicule():void {
+				if(_firstEntryLieuVehicule) {
+					this.txtLieuVehicule.text = "";
+					this.txtLieuVehicule.setStyle("color","black");
+					_firstEntryLieuVehicule=false;
+				} 
+			}
+			
+			public function clearTxtAutresDommagesMat():void {
+				if(_firstEntryAutreDommagesMat) {
+					this.txtAutresDommagesMat.text = "";
+					this.txtAutresDommagesMat.setStyle("color","black");
+					_firstEntryAutreDommagesMat=false;
+				} 
+			}			
+
+			public function clearTxtAutresPersonnes():void {
+				if(_firstEntryAutresPersonnes) {
+					this.txtAutresPersonnes.text = "";
+					this.txtAutresPersonnes.setStyle("color","black");
+					_firstEntryAutresPersonnes=false;
+				} 
+			}
+						
+			public function showCoordGarage():void {
+				if(rbgDepotGarageBuffer != "Non") {
+					coordGarage.visible = true;
+					effectShowCoordGarage.play([coordGarage]);
+					effectHideAdrVehicule.play([adrVehicule]);
+				}
+				
+				rbgDepotGarageBuffer = "Non";
+			}
+			
+			public function showAdrVehicule():void {
+				if(rbgDepotGarageBuffer != "Oui") {
+					adrVehicule.visible = true;
+					effectShowAdrVehicule.play([adrVehicule]);
+					effectHideCoordGarage.play([coordGarage]);
+				}
+			
+				rbgDepotGarageBuffer = "Oui";
+			}
+
+			public function showZoneAutreDommagesMat(zoneVisible:Boolean):void {
+				zoneAutreDommagesMat.visible = zoneVisible;
+				if (zoneVisible == true && rbgDepotGarageBuffer == "Non")
+				{					
+					effectShowAutreDommagesMat.play([zoneAutreDommagesMat]);
+					rbgDepotGarageBuffer = "Oui";
+				}
+				if (zoneVisible == false && rbgDepotGarageBuffer == "Oui") 
+				{
+					effectHideAutreDommagesMat.play([zoneAutreDommagesMat]);
+					rbgDepotGarageBuffer = "Non";
+				}
+			}
+			
+            private function onChangeDepotGarage():void
+            {            	            	
+            	if((rbgDepotGarage.selectedValue == "Non") ) {
+            		if (StringUtil.trim(txtCoordGarage.text).length > 0) {
+	            		nextEtapeDommage.enabled = true;
+		            } else {
+	            		nextEtapeDommage.enabled = false;
+	            	}
+            	}
+            }
+
+            private function onChangeLieuVehicule():void
+            {            	            	
+            	if((rbgDepotGarage.selectedValue == "Oui") ) {
+            		if (StringUtil.trim(txtLieuVehicule.text).length > 0) {
+	            		nextEtapeDommage.enabled = true;
+		            } else {
+	            		nextEtapeDommage.enabled = false;
+	            	}
+            	}
+            }
+
+            private function onChangeRbgDepotGarage():void{
+            	nextEtapeDommage.enabled = false;
+            	txtCoordGarage.text = "";
+            	txtLieuVehicule.text = "";
+            }
+            
+			/********************************
+			 * 		LOCAL CONNECTION		*
+			 ********************************/
+
+			private function doPrepareChannel():void {	
+				doCloseChannel();			
+				_localConnection = new LocalConnection();
+				//_localConnection.allowDomain("www.bottincarto.fr");
+				//_localConnection.allowDomain("fc1.1bis.com");
+				try {
+					_localConnection.allowDomain('*');
+					_localConnection.allowInsecureDomain('*');
+					_localConnection.connect("_dataChannel");
+					_localConnection.client = this;
+				}
+				catch( e:Error ) {
+					trace(" Error " + e.message );
+				}
+			}
+			private function doCloseChannel():void {
+				if (_localConnection != null) 
+				{
+					_localConnection.close();
+				}
+				_localConnection = null;
+			}
+
+			public function displayMessage(message:String):void{
+				if ( message != null ) {
+					var myPattern:RegExp = /#/g;
+					message = message.split("|").join(" ");
+					message = message.replace(myPattern,"'");
+				}
+				txtCoordGarage.text = message + "\n";								
+				nextEtapeDommage.enabled = true;
+			}
+
+			private function doOpenPopUp(event:Event): void {				
+				doPrepareChannel();
+				//navigateToURL(new URLRequest(urlCoordGarage),"_blank");
+				PopUp.openWindow(urlCoordGarage,"690","570");				
+				//PopUp.openWindow("http://localhost/LocalConnectionSender.html","695","480");
+				//PopUp.openWindow("http://localhost/TestPopup.html","695","480");
+				
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Resize id="effectShowCoordGarage" heightFrom="0" heightTo="400"/>
+	<mx:Resize id="effectHideCoordGarage" heightFrom="400" heightTo="0"/>
+	<mx:Resize id="effectShowAdrVehicule" heightFrom="0" heightTo="380"/>
+	<mx:Resize id="effectHideAdrVehicule" heightFrom="380" heightTo="0"/>
+	<mx:Resize id="effectShowAutreDommagesMat" heightFrom="0" heightTo="200"/>
+	<mx:Resize id="effectHideAutreDommagesMat" heightFrom="200" heightTo="0"/>
+	
+
+	<mx:VBox width="88%" verticalGap="0">  
+		<mx:TextArea editable="false" backgroundAlpha="0" borderStyle="none" width="100%" text="Les champs suivis d'un * sont obligatoires. Sans ces informations votre demande ne peut pas être traitée." fontWeight="bold" />
+	</mx:VBox>
+	
+
+	<mx:VBox height="88%" > 
+		<mx:Spacer width="10" />
+		
+		<mx:VBox horizontalAlign="left">
+			<mx:HBox horizontalGap="0">
+				<mx:Image source="{ImageResource.icoAssure}"  />
+				<mx:Canvas >
+					<mx:Image verticalCenter="1.5" source="{ImageResource.barreBleueTitre}"/>
+					<mx:Text text=" LES DOMMAGES MATERIELS :"  verticalCenter="2.5" horizontalCenter="-202" styleName="imageText"/>
+				</mx:Canvas>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:HBox horizontalGap="0">
+			<mx:Label width="82%"  styleName="textSimpleBold" text ="Décrivez les dommages subis par votre véhicule "/>
+			<mx:Label text="(1000 caractères maximum) " styleName="textSimple" />
+			<mx:Label text=":" styleName="simpleBold" />
+		</mx:HBox>
+		<mx:HBox width="100%" height="100%">
+			<mx:TextArea height="50" width="610" maxChars="1000" focusIn="clearTxtDescription()"
+				id="txtDescription"
+				text="{((!_firstEntryDescription)?appModel.dommages.description:'Saisie libre')}" 
+				color="#c0c1c2"  editable="true"  backgroundAlpha="1" borderStyle="solid" />
+		</mx:HBox>
+		
+		<mx:VBox width="100%">
+			<mx:HBox horizontalGap="0" verticalAlign="middle">
+				<mx:Label styleName="textSimpleBold" text="Avez-vous déposé votre véhicule endommagé dans un garage ?" />
+				<mx:Spacer width="4" />
+				<mx:RadioButtonGroup id="rbgDepotGarage" change="onChangeRbgDepotGarage()"/>
+				<mx:RadioButton label="Oui" value="Oui" groupName="rbgDepotGarage" selected="{(appModel.dommages.depotGarage == 'Oui')}" click="showAdrVehicule()"/>
+				<mx:RadioButton label="Non" value="Non" groupName="rbgDepotGarage" selected="{(appModel.dommages.depotGarage == 'Non')}" click="showCoordGarage()"/>
+			</mx:HBox> 
+		</mx:VBox>
+
+		<!-- Si NON -->
+		<mx:Box id="coordGarage" verticalScrollPolicy="off">
+			<mx:Text width="100%">
+	            <mx:htmlText>
+<![CDATA[<u>Choisissez le garage agréé le plus proche et ne faites pas l’avance des frais</u>
+Generali est partenaire de près de 2100 garages agréés en France, un réseau de réparateurs compétents, respectueux des normes et habitués à intervenir sur toutes les marques, y compris les grandes marques.<br />Vos avantages « garage agréé » :
+<ul>
+<li><b>La prise en charge financière de la réparation :</b> Vous n’avancez pas les fonds : le règlement a lieu entre Generali et le réparateur, dès lors que vous êtes assuré (hors franchise éventuelle)</li>
+<li><b>Les réparations garanties 2 ans :</b> Vous bénéficiez de 2 années de Garantie sur pièces et main d’oeuvre valables sur toute la France.</li>
+<li><b>La mise à disposition d’un véhicule de prêt :</b> Le réparateur peut mettre à votre disposition un véhicule de remplacement. Penser au moment de la prise de rendez-vous à vous assurer de la disponibilité d’un véhicule.</li>
+<li><b>Des délais rapides d’expertise :</b> Des services supplémentaires pour un véhicule propre et sûr.</li>
+<li><b>Des services supplémentaires pour un véhicule propre et sûr :</b> Nettoyage intérieur et extérieur du véhicule offert, contrôle des niveaux, des pneumatiques et de l’éclairage</li>
+</ul>
+]]>
+	            </mx:htmlText>
+	        </mx:Text>
+	
+			<mx:HBox horizontalGap="0" width="100%">
+				<mx:Label width="82%" styleName="textSimpleBold"   paddingTop="4" text ="Coordonnées du garage agréé choisi :* "/>
+				<mx:Spacer width="10" />
+				<mx:HBox horizontalAlign="right" width="100%">
+					<mx:Button styleName="Button" label="Recherche de garage agréé" click="doOpenPopUp(event)" />				
+				</mx:HBox>
+	            <!--<mx:Button label="Carte" click="popUp()" />-->
+			</mx:HBox>
+			<mx:HBox width="100%" height="100%">
+				<mx:TextArea height="50" width="610" maxChars="1000" editable="true"  backgroundAlpha="1" borderStyle="solid" color="#000000"
+					id="txtCoordGarage"
+					text="{appModel.dommages.coordGarage}" 
+					change="onChangeDepotGarage()"/>
+			</mx:HBox>
+		</mx:Box>
+		
+		
+		<!-- Si OUI -->
+		<mx:Box id="adrVehicule" height="0" verticalScrollPolicy="off">
+			<mx:HBox horizontalGap="0">
+				<mx:Label width="82%" styleName="textSimpleBold" text ="Renseignez le lieu et l’adresse où votre véhicule  peut être vu  "/>
+				<mx:Label text="(1000 caractères maximum) " styleName="textSimple" />
+				<mx:Label text=":*" styleName="simpleBold" />
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:TextArea height="50" width="610" maxChars="1000" focusIn="clearTxtLieuVehicule()"
+					id="txtLieuVehicule"
+					text="{((!_firstEntryLieuVehicule)?appModel.dommages.lieuVehicule:'Saisie libre')}" 
+					color="#c0c1c2"  editable="true"  backgroundAlpha="1" borderStyle="solid" 
+					change="onChangeLieuVehicule()"/>
+			</mx:HBox>
+			
+			<mx:Text width="100%" id="infoAdrVehicule">
+	            <mx:htmlText>
+<![CDATA[<b>A savoir en cas de nouveau sinistre Auto : vous pouvez bénéficier du service garage agréé de Generali .</b>
+Generali est partenaire de près de 2100 garages agréés en France, un réseau de réparateurs compétents, respectueux des normes et habitués à intervenir sur toutes les marques, y compris les grandes marques.<br />Vos avantages « garage agréé » :
+<ul>
+<li><b>La prise en charge financière de la réparation :</b> Vous n’avancez pas les fonds : le règlement a lieu entre Generali et le réparateur, dès lors que vous êtes assuré (hors franchise éventuelle)</li>
+<li><b>Les réparations garanties 2 ans :</b> Vous bénéficiez de 2 années de Garantie sur pièces et main d’oeuvre valables sur toute la France.</li>
+<li><b>La mise à disposition d’un véhicule de prêt :</b> Le réparateur peut mettre à votre disposition un véhicule de remplacement. Penser au moment de la prise de rendez-vous à vous assurer de la disponibilité d’un véhicule.</li>
+<li><b>Des délais rapides d’expertise :</b> Des services supplémentaires pour un véhicule propre et sûr.</li>
+<li><b>Des services supplémentaires pour un véhicule propre et sûr :</b> Nettoyage intérieur et extérieur du véhicule offert, contrôle des niveaux, des pneumatiques et de l’éclairage</li>
+</ul>
+]]>
+	            </mx:htmlText>
+	        </mx:Text>
+		</mx:Box>
+		
+		<!--LES AUTRES DOMMAGES MATERIELS-->
+		<mx:VBox horizontalAlign="left">
+			<mx:HBox horizontalGap="0">
+				<mx:Image source="{ImageResource.icoAssure}"  />
+				<mx:Canvas >
+					<mx:Image verticalCenter="1.5" source="{ImageResource.barreBleueTitre}"/>
+					<mx:Text  text=" LES AUTRES DOMMAGES MATERIELS :"  verticalCenter="2.5" horizontalCenter="-180" styleName="imageText"/>
+				</mx:Canvas>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:HBox horizontalGap="0" verticalAlign="top">
+			<mx:Label width="350"  styleName="textSimpleBold" text="L'accident a-t'il provoqué d'autres dommages matériels ?" />			
+			<mx:RadioButtonGroup id="rbgAutreDommagesMat" />
+				<mx:RadioButton id="rbDommagesMat" value="Oui" groupName="rbgAutreDommagesMat" label="Oui" selected="{(appModel.dommages.autresDommagesMat == 'Oui')}" click="showZoneAutreDommagesMat(true)"/>
+				<mx:RadioButton id="rbPasDommagesMat" value="Non" groupName="rbgAutreDommagesMat" label="non" selected="{(appModel.dommages.autresDommagesMat == 'Non')}" click="showZoneAutreDommagesMat(false)"/>
+		</mx:HBox>  
+		
+		<mx:Box id="zoneAutreDommagesMat" height="0" verticalScrollPolicy="off">
+			<mx:HBox horizontalGap="0">
+				<mx:Label width="82%"  styleName="textSimple" text ="Décrivez les autres dommages matériels "/>
+				<mx:Label text="(1000 caractères maximum) " styleName="textSimple" />
+				<mx:Label text=":" styleName="simpleBold" />
+			</mx:HBox>
+			<mx:HBox width="100%" height="100%">
+				<mx:TextArea height="50" width="610" maxChars="1000" focusIn="clearTxtAutresDommagesMat()" 
+		       	  	id="txtAutresDommagesMat" 
+		       	  	text="{((!_firstEntryAutreDommagesMat)?appModel.dommages.descriptionDommagesMat:'Saisie libre')}"
+		       	  	color="#c0c1c2"  editable="true"  backgroundAlpha="1" borderStyle="solid" />
+			</mx:HBox>			
+			<mx:HBox horizontalGap="0">
+					<mx:Label width="82%"  styleName="textSimple" text ="Si d'autres personnes sont concernées, renseignez leurs noms, prénoms et "/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="adresses (1000 caractères maximum) " verticalCenter="-1" styleName="textSimple" />
+				<mx:Label text=":" verticalCenter="-1" styleName="simpleBold" />									
+			</mx:HBox>			
+			<mx:HBox width="100%" height="100%">
+				<mx:TextArea height="50" width="610" maxChars="1000" focusIn="clearTxtAutresPersonnes()" 
+		       	  	id="txtAutresPersonnes" 
+		       	  	text="{((!_firstEntryAutresPersonnes)?appModel.dommages.autresPersonnes:'Saisie libre')}"
+		       	  	color="#c0c1c2"  editable="true"  backgroundAlpha="1" borderStyle="solid" />
+			</mx:HBox>		
+		</mx:Box>
+
+		<!--LES DOMMAGES CORPORELS-->
+		<mx:VBox horizontalAlign="left">
+			<mx:HBox horizontalGap="0">
+				<mx:Image source="{ImageResource.icoAssure}"  />
+				<mx:Canvas >
+					<mx:Image verticalCenter="1.5" source="{ImageResource.barreBleueTitre}"/>
+					<mx:Text  text=" LES DOMMAGES CORPORELS :"  verticalCenter="2.5" horizontalCenter="-202" styleName="imageText"/>
+				</mx:Canvas>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:HBox horizontalGap="0" verticalAlign="top">
+			<mx:Label width="350"  styleName="textSimpleBold" text="L'accident a-t'il provoqué des dommages corporels ?" />			
+			<mx:RadioButtonGroup id="rbgDommagesCorp" />
+				<mx:RadioButton id="rbDommagesCorp" value="Oui" groupName="rbgDommagesCorp" label="Oui" selected="{(appModel.dommages.dommagesCorporel == 'Oui')}"/>
+				<mx:RadioButton id="rbPasDommagesCorp" value="Non" groupName="rbgDommagesCorp" label="Non" selected="{(appModel.dommages.dommagesCorporel == 'Non')}"/>
+		</mx:HBox>  
+				
+		
+	</mx:VBox>
+	<mx:Spacer height="100%" />
+	<mx:HBox width="100%">
+		<mx:Button label="Etape précédente" width="120" styleName="NavButton" click="previous()" />
+		<mx:Spacer width="100%"/>
+		<mx:Button id="nextEtapeDommage" label="Etape suivante" width="120"  styleName="NavButton" click="next()" enabled="false"/>
+	</mx:HBox>
+	<common:CNIL />
+</mx:Panel>

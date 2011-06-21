@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:comp="com.generali.brisDeGlace.views.*" 
+	 xmlns:common="com.generali.views.*" 
+	 xmlns:mx="http://www.adobe.com/2006/mxml"
+	 preloader="com.generali.utils.CustomPreloader"
+	 backgroundColor="white"
+	 width="768" height="620"  layout="vertical" 
+	 creationComplete="init()"  preinitialize="startingUp()"
+	 verticalScrollPolicy="auto" horizontalScrollPolicy="off" addedToStage="initTracker()"  >
+	 <mx:Style source="flex_skins.css"/>
+	 
+	 <mx:Script>
+	 	<![CDATA[
+	 		import com.google.analytics.core.DocumentInfo;
+	 		import com.generali.utils.RecapGenerali;
+	 		import com.flexriver.common.logging.LogFactory;
+	 		import com.generali.events.ui.InitApplicationEvent;
+	 	
+	 		import mx.controls.Alert;
+	 		import com.generali.brisDeGlace.model.AppModel;
+	 		import mx.controls.Button;
+	 		import com.generali.events.ui.NextSectionEvent;
+    		import com.google.analytics.AnalyticsTracker;
+	
+			import com.generali.tracking.ITracker;
+			import com.generali.tracking.Tracker;
+			
+			import mx.controls.Alert;
+			
+			// Flex DeepLinking – permet de ecouter les changements au niveau de l'url
+			import com.generali.utils.Util;
+			import mx.utils.URLUtil;
+			import mx.managers.BrowserManager;
+			import mx.events.BrowserChangeEvent;
+			import mx.managers.IBrowserManager;
+	  		public var browserManager:IBrowserManager;
+	  		
+	 		[Embed(source="/assets/fred/sbg_step_01.swf")]
+        	private var _step1:Class;
+        	
+        	[Embed(source="/assets/fred/sbg_step_02.swf")]
+        	private var _step2:Class;
+        	
+        	[Embed(source="/assets/fred/sbg_step_03.swf")]
+        	private var _step3:Class;
+        	
+        	[Embed(source="/assets/info_icon.png")]
+        	private var _iconWarning:Class;
+
+        	
+        	public const APPLICATION_TYPE:String = "BG";
+        	private var _recapGenerali:RecapGenerali = new RecapGenerali();
+        	
+        	
+        	[Bindable]
+        	private var appModel:AppModel = AppModel.getInstance();
+        	      	
+        	private function startingUp():void
+        	{
+        		LogFactory.init();
+        	}
+        	
+        	// Flex DeepLinking – permet de ecouter les changements au niveau de l'url    	
+			private function parseURL(event:Event):void {
+	            // Si le parametre "mode" est à "test" alors changement de l'adresse du client
+	            if (URLUtil.stringToObject(browserManager.fragment).mode == Util.MODE_TEST )
+					appModel.insured.mail = Util.SUIVI_PROD_MAIL_ESPACE_CLIENT;
+				else
+	            	appModel.insured.mail = Application.application.parameters.mail;
+        	}
+        	        	
+	 		private function init():void {	 	
+	 				
+       			// Flex DeepLinking – permet de ecouter les changements au niveau de l'url
+				browserManager = BrowserManager.getInstance();
+           		BrowserManager.getInstance().addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, parseURL); 
+           		browserManager.init("", "");
+           		
+				//On vérifie la bonne initialisation des 2 appels "FlashsVar" : CancelUrl et ServerUrl 
+				//CancelUrl
+				var urlCancel:String = Application.application.parameters.cancelUrl;
+				if (urlCancel == "") {
+					Alert.show(RecapGenerali.MSG_SERVER_INITIALISATION + "cancelUrl", "Initialisation Url", 0x4 ,null,null,_iconWarning);
+				}
+				//ServerUrl
+				var urlServer:String = Application.application.parameters.serverUrl;
+				if (urlServer == "") {
+					Alert.show(RecapGenerali.MSG_SERVER_INITIALISATION + "serverUrl", "Initialisation Url", 0x4 ,null,null,_iconWarning);
+				}
+				
+	 			this.addEventListener(NextSectionEvent.TO_SINISTRE,showSinistre);
+	 			this.addEventListener(NextSectionEvent.TO_INSURED,showInsured);
+	 			this.addEventListener(NextSectionEvent.TO_RECAP,showRecap);
+	 			this.addEventListener(NextSectionEvent.TO_FINAL,showFinal);
+	 			this.addEventListener(InitApplicationEvent.ID,clearAll);	 			
+	 			var appModel:AppModel = AppModel.getInstance();	
+	 			appModel.clear();
+				//Pré-Initialisation des champs Assuré
+				appModel.insured.last_name = Application.application.parameters.nom;
+				appModel.insured.first_name = Application.application.parameters.prenom;
+				appModel.insured.address.addressVal = Application.application.parameters.adresse;
+				appModel.insured.address.postal_code = Application.application.parameters.codePostal;
+				appModel.insured.address.city = Application.application.parameters.ville;
+				appModel.insured.mail = Application.application.parameters.mail;
+				appModel.insured.mobile_number = Application.application.parameters.telMobile;
+				appModel.insured.house_number = Application.application.parameters.telDomicile;
+				appModel.insured.work_number = Application.application.parameters.telBureau;
+				appModel.insured.contract_number= Application.application.parameters.numeroContrat;
+				appModel.insured.client_number= Application.application.parameters.numeroClient;
+				appModel.insured.isCourtier = Application.application.parameters.isCourtier;
+				//appModel.insured.adresse_bien = Application.application.parameters.adresseBien; 
+
+	 			showInsured(null);
+	 			initChampsAssure();
+	 		}	
+
+			private function initChampsAssure():void {
+				viewInsured.adresse_bien.visible = false;
+				viewInsured.lbl_Adresse_bien.visible = false;
+							
+				// SBO: Demande de la MOA d'activer en modification les tel. + email	
+				viewInsured.Q7.enabled = true;
+				viewInsured.Q8.enabled = true;
+				viewInsured.Q9.enabled = true;
+				viewInsured.Q10.enabled = true;
+				
+				/*
+				if (appModel.insured.mail == "") {
+					viewInsured.Q7.enabled = true;
+				}
+													
+				if (appModel.insured.mobile_number == "") {
+					viewInsured.Q8.enabled = true;
+				}
+
+				if (appModel.insured.house_number == "") {
+					viewInsured.Q9.enabled = true;
+				}				
+
+				if (appModel.insured.work_number == "") {
+					viewInsured.Q10.enabled = true;
+				}*/							
+
+			}
+	 		
+	 		/**
+	 		 *  Init the tracker 
+	 		 */ 
+	 		private function initTracker():void {
+	 			Tracker.getInstance().trackView('mrhetape1lassure');
+	 		}
+	 		
+	 		private function showInsured(e:NextSectionEvent):void{
+	 		    imgSteps.source = _step1;
+	 		    this.currentState ="insured";
+	 		}
+	 		
+	 		private function showSinistre(e:NextSectionEvent):void{
+	 		  imgSteps.source = _step2;
+	 		  this.currentState ="sinistre";
+	 		  
+	 		  Tracker.getInstance().trackView("mrhetape2lesinistre");
+	 		}
+	 		private function showRecap(e:NextSectionEvent):void{
+	 			
+	 		 	imgSteps.source = _step3;
+	 		 	this.currentState ="recap";
+	 		 	
+	 		 	Tracker.getInstance().trackView("mrhetape3recapitulatif");
+	 		}
+			private function showFinal(e:NextSectionEvent):void{
+	 			 
+	 		 	this.currentState ="final";
+	 		 	Tracker.getInstance().trackView("mrhetape4confirmation");
+	 		}
+			private function clearAll(e:InitApplicationEvent):void
+	 		{
+	 			appModel.clear();
+	 		}
+	 	]]>
+	 </mx:Script>
+	 
+	 <mx:states>
+	 	<mx:State name="insured">		   
+				 <mx:AddChild  relativeTo="{hbContainer}" position="after">
+					 <common:Insured id="viewInsured"  insuredModel="{appModel.insured}" width="98%" height="100%"/>
+		       	</mx:AddChild>
+		</mx:State>
+		<mx:State name="sinistre">		   
+				 <mx:AddChild relativeTo="{hbContainer}" position="after">
+					 <comp:Accident  width="98%" height="100%"/>
+		       	</mx:AddChild>
+		</mx:State>
+		<mx:State name="recap">		   
+				 <mx:AddChild relativeTo="{hbContainer}" position="after">
+					 <comp:Recap  width="98%" height="100%"/>
+		       	</mx:AddChild>
+		</mx:State>
+		<mx:State name="final">		
+				 <mx:RemoveChild target="{imgSteps}" />
+				 <mx:AddChild relativeTo="{hbContainer}" position="after">
+					 <common:FinalStep insuredModel="{appModel.insured}" width="98%" height="100%"/>
+		       	</mx:AddChild>
+		</mx:State>
+		
+	 </mx:states>
+
+	  <mx:HBox width="84%" horizontalAlign="left" >
+	 				<mx:Text text="Habitation : bris de glace" fontSize="17" fontFamily="Verdana" fontWeight="bold" color="#1F777D" />
+	  </mx:HBox> 
+ 	  <mx:Spacer height="2"/>
+ 	  <mx:HBox id="hbContainer" width="100%" >
+ 		<mx:Spacer width="35" />
+		<mx:HBox width="743" horizontalAlign="left" >
+ 	    	<mx:Image id="imgSteps" />
+ 	    </mx:HBox> 
+ 	    <mx:Spacer width="40" /> 
+	  </mx:HBox> 	
+	 	
+
+	 
+</mx:Application>

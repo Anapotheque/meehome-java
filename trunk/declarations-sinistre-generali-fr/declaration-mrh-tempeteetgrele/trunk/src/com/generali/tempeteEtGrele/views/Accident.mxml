@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:validation="com.generali.views.validation.*" 
+	creationComplete="init();" styleName="generaliPanel">
+	<mx:Script>
+		<![CDATA[
+		
+			import mx.utils.ObjectUtil;
+			import mx.formatters.DateFormatter;
+			
+			import com.generali.utils.Util;
+			import com.generali.utils.Message;
+			import com.generali.utils.Color;
+			
+			import com.generali.model.InsuredVO;
+			import com.generali.events.ui.NextSectionEvent;
+			import com.generali.tempeteEtGrele.model.AppModel;
+	  		
+	  		import com.flexriver.common.validators.FlexriverValidators;
+			import com.flexriver.common.utils.FlexriverUtils;
+			
+	  		[Bindable]
+	 		private var disabledRanges:Array;
+	 		[Bindable]
+	  		private var _appModel:AppModel = AppModel.getInstance();
+	  		[Bindable]
+	  		private var _firstEntryConstructionDate:Boolean = true;
+	  		[Bindable]
+	  		private var _firstEntryAccidentSituation:Boolean = true;
+	  		[Bindable]
+	  		private var _firstEntryDescription:Boolean = true;
+	  		private var _currentDate:Date;
+	  		
+	  		private function init():void {
+	  			_currentDate = new Date();
+	  			initCalendar();
+	  			showAddress();
+			} 
+			
+	  		private function initCalendar():void {	  		  			
+	  			txtAccidentDate.disabledRanges = Util.getDisabledRangeDays();
+	  		}
+	  		
+	  		private function fillModel():void {
+	  			_appModel.accident.accidentDate = txtAccidentDate.text;
+	  			
+	  			if (!_firstEntryAccidentSituation)
+	  				_appModel.accident.accidentSituation = txtAccidentSituation.text;
+	  			
+	  			if (main_residence != null) 
+	  				_appModel.residence.main_residence = main_residence.selected;
+	  			
+	  			_appModel.residence.address.addressVal = address.text;
+	  			_appModel.residence.address.postal_code = postal_code.text;
+	  			_appModel.residence.address.city = city.text;
+	  			_appModel.accident.item1 = rdItem1.selected;
+	  			_appModel.accident.item2 = rdItem2.selected;
+	  			_appModel.accident.item3 = rdItem3.selected;
+	  			_appModel.accident.item4 = rdItem4.selected;
+	  			_appModel.accident.item5 = rdItem5.selected;
+	  			_appModel.accident.item7 = rdItem7.selected;
+	  			_appModel.accident.other7 = txtOther7.text;
+	  			
+	  			if (!_firstEntryDescription)
+	  				_appModel.accident.description = txtDescription.text;
+	  			
+	  			if(!_firstEntryConstructionDate)
+	  				_appModel.accident.constructionDate = txtConstructionDate.text;
+	  			
+	  			_appModel.accident.isSafe = isSafe1.selected;
+	  		}
+	  		
+	  		private function prev():void {	
+	  			fillModel();  			 
+	  			parentApplication.dispatchEvent( new NextSectionEvent(NextSectionEvent.TO_INSURED));
+	  		}
+	  		
+	  		// Validation de l'adresse saisie
+	  		private function validation_adresse():void {
+	  			
+  				// Verification de la saisie d'une adresse
+  				if (address.text == "" ) {
+  					txtError.addError(Message.MSG_EMPTY_ADDRESS);
+  					address.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+  				}else{
+  					address.setStyle("backgroundColor",Color.VALIDATION_OK_COLOR);
+  				}
+  				
+  				// Verification que le code postal est composé de 5 chiffres si saisi
+  				if (postal_code.text != "" && (!FlexriverValidators.is5Digits(postal_code.text) || postal_code.text.length != 5)) {
+  					txtError.addError(Message.MSG_BAD_ZIPCODE);
+  					postal_code.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+				}
+  				// Verification de la saisie d'un code postal
+  				else if (postal_code.text == "") {
+  					txtError.addError(Message.MSG_EMPTY_ZIPCODE);
+  					postal_code.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+  				}else{
+  					postal_code.setStyle("backgroundColor",Color.VALIDATION_OK_COLOR);
+  				}
+  				
+  				// Verification de la saisie d'une ville
+  				if (city.text == "" ) {
+  					txtError.addError(Message.MSG_EMPTY_CITY);
+  					city.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+  				}else{
+  					city.setStyle("backgroundColor",Color.VALIDATION_OK_COLOR);
+  				}
+	  		}
+	  		
+	  		// Verification de la saisie d'une date de sinistre
+	  		private function validation_dateSinistre():void{
+	  			if (txtAccidentDate.text != "" ) {
+  					if (!FlexriverValidators.isValidDate(txtAccidentDate.text)) {
+  						txtError.addError(Message.MSG_FORMAT_DATE);
+  						txtAccidentDate.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+  					} else {
+  						var i:int = mx.utils.ObjectUtil.dateCompare(FlexriverUtils.toDate(txtAccidentDate.text) , _currentDate);
+			  			if(i==1) {
+			  				txtError.addError(Message.MSG_BAD_DATE);
+			  				txtAccidentDate.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);	
+			  			} else {
+			  				txtAccidentDate.setStyle("backgroundColor",Color.VALIDATION_OK_COLOR);
+			  			}
+  					}
+	  			} else {
+	  				txtError.addError(Message.MSG_EMPTY_DATE);
+	  				txtAccidentDate.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);	
+	  			}
+	  		}
+	  		
+	  		private function next():void {
+	  			
+	  			var i:int;
+	  			txtError.prepare_validation();
+	  			
+				// Verification si on n'a selectionné résidence principale
+	  			if(!_appModel.residence.main_residence) 
+	  				validation_adresse();
+	  			
+	  			// Verification de la saisie d'une date de sinistre
+	  			validation_dateSinistre();
+	  					
+	  			if (txtConstructionDate.text != "" && !_firstEntryConstructionDate) {
+  					if (!FlexriverValidators.isValidDate(txtConstructionDate.text)) {
+  						txtError.addError("La date de construction doit être conforme au format (jj/mm/aaaa), merci de la saisir à nouveau.");
+  						txtConstructionDate.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+  					} else {		
+  						var i2:int = mx.utils.ObjectUtil.dateCompare(FlexriverUtils.toDate(txtConstructionDate.text) , _currentDate);
+			  			if(i2==1) {
+			  				txtError.addError("La date de construction doit être antérieure ou égale à la date du jour.");
+			  				txtConstructionDate.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+			  			} else {
+			  				txtConstructionDate.setStyle("backgroundColor",Color.VALIDATION_OK_COLOR);
+			  			}
+  					}
+	  			} else {
+  					txtConstructionDate.setStyle("backgroundColor","white");
+  				}
+	  			if((txtConstructionDate.text != "" ) && (txtAccidentDate.text != ""  && !_firstEntryConstructionDate)) {
+			  		i = mx.utils.ObjectUtil.dateCompare( FlexriverUtils.toDate(txtConstructionDate.text),FlexriverUtils.toDate(txtAccidentDate.text));
+		  			if(i==1) {
+		  				txtError.addError("La date de construction doit être antérieure à la date du sinistre.");
+		  				txtConstructionDate.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+		  				txtAccidentDate.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);	
+		  			}		  			
+			  	}
+	  			if (!txtError.play()) {
+	  				fillModel();
+	  				parentApplication.dispatchEvent( new NextSectionEvent(NextSectionEvent.TO_RECAP));
+	  			}
+	  		}	  		
+	  		
+	  		public function clearDefaultValue():void {
+				if(_firstEntryAccidentSituation) {
+					this.txtAccidentSituation.text = "";
+					txtAccidentSituation.setStyle("color","black");
+					_firstEntryAccidentSituation=false;
+				} 
+			}
+			
+			public function clearDefaultValueDesc():void {
+				if(_firstEntryDescription) {
+					this.txtDescription.text = "";
+					txtDescription.setStyle("color","black");
+					_firstEntryDescription=false;
+				} 
+			}
+			
+			private function showAddress():void {
+	  			if (_appModel.residence.address.city != "") {
+	  				this.currentState = 'showResidenceAvecDetailContrat';
+	  				
+	  				if (_appModel.residence.main_residence == true )
+	  					this.lblResidence.text = "Il s'agit de ma résidence principale"
+	  				else 
+	  					this.lblResidence.text = "Il s'agit de ma résidence secondaire"	
+	  				
+	  				this.address.enabled = false
+	  				this.postal_code.enabled = false
+	  				this.city.enabled = false
+	  				this.address.text = _appModel.residence.address.addressVal;
+	  				this.postal_code.text = _appModel.residence.address.postal_code;
+	  				this.city.text = _appModel.residence.address.city;
+	  				showAddressTransition.play();
+	  			} else {
+	  				this.currentState = 'showResidenceSansDetailContrat';
+	  				this.main_residence.enabled = true;
+	  				if (_appModel.residence.main_residence == true ){
+	  					hideAddressTransition.play();
+	  				}else{
+	  					showAddressTransition.play();	
+	  				}
+	  			}
+		    }
+	  		
+		  private function showAutre7():void {
+			  if (!rdItem7.selected)
+			  	hbxOther7.visible = false;
+			  else
+			  	hbxOther7.visible = true;
+		  }
+	  		
+		 private function cleanAchatDate():void {
+			if(_firstEntryConstructionDate) {
+					this.txtConstructionDate.text = "";
+					txtConstructionDate.setStyle("color","black");
+					_firstEntryConstructionDate=false;
+			}
+		 }
+
+		private function showBlockAddress():void {
+			if(this.main_residence.selected){
+				_appModel.residence.main_residence = true;
+				hideAddressTransition.play();
+			} else {
+				_appModel.residence.main_residence = false;
+				showAddressTransition.play();
+			}
+		}
+		]]>
+	</mx:Script>
+
+	<!-- Differents etats en fonctions du type de contrat ( detail ou reduit ) -->
+	<mx:states>
+		<mx:State name="showResidenceSansDetailContrat">	   
+			 <mx:AddChild relativeTo="{blocAdresse}" position="before">
+				<mx:HBox width="100%" horizontalGap="0">
+					<mx:CheckBox selected="{_appModel.residence.main_residence}" enabled="false" id="main_residence" styleName="simpleBold" label="Il s'agit de ma résidence principale" click="showBlockAddress()" />
+				</mx:HBox>		
+	       	</mx:AddChild>
+		</mx:State>
+		<mx:State name="showResidenceAvecDetailContrat">		   
+			 <mx:AddChild relativeTo="{blocAdresse}" position="before">
+				<mx:HBox width="100%" horizontalGap="0">
+					<mx:Label id="lblResidence" text="Il s'agit de ma résidence principale"/>						
+				</mx:HBox>		
+	       	</mx:AddChild>
+		</mx:State>
+	</mx:states>	
+	
+	<!-- Gestion des sequences et transistions -->
+	<mx:Sequence id="showAddressTransition" target="{S3}">
+		<mx:SetPropertyAction name="visible" value="true" />
+		<mx:Resize heightTo="123" duration="500" />
+	</mx:Sequence>	
+	<mx:Parallel id="hideAddressTransition" target="{S3}">
+		<mx:SetPropertyAction name="visible" value="false" />
+		<mx:Resize   heightTo="-2" duration="500" />			
+	</mx:Parallel>
+	
+	<!-- Affichage des messages d'erreurs -->
+	<validation:GeneraliValidator id="txtError" styleName="ErrorVal"  width="88%" color="red"/>
+	
+	<!-- Bloque d'affichae du bien concerné par le sinistre -->
+	<mx:Spacer height="10" />
+	<mx:HBox horizontalGap="0" width="82%">
+		<mx:Image source="@Embed('assets/fred/icone_bien.swf')"  />
+		<mx:Canvas >
+			<mx:Image verticalCenter="1.5" source="@Embed('assets/fred/barre_bleue_titre2.swf')"/>
+			<mx:Text text="LE BIEN CONCERNE :" verticalCenter="2.5" horizontalCenter="-225" styleName="imageText"/>
+		</mx:Canvas>
+	</mx:HBox>	
+	
+	<!-- Bloque d'affichae de l'adresse à renseigner si residence secondaire -->
+	<mx:HBox width="82%" >
+		<mx:Spacer width="10" />
+		<mx:VBox width="100%">
+			<mx:HBox id="blocAdresse">
+				<mx:Spacer width="70" />
+				<mx:VBox id="S3" borderStyle="solid" height="-2" visible="false" width="70%" cornerRadius="10">	
+					<mx:Spacer height="3"/>
+					<mx:HBox horizontalGap="0">
+						<mx:Spacer width="3"/>
+						<mx:Label text="Renseignez l’adresse" />
+						<mx:Spacer width="100%"/>
+					</mx:HBox>		
+					<mx:HBox width="100%" horizontalGap="0">
+						<mx:Spacer width="3"/>
+						<mx:Label width="100"  styleName="simple" text="Adresse :" />
+						<mx:TextInput id="address" width="390" maxChars="50"  text="{_appModel.residence.address.addressVal}" />
+						<mx:Spacer width="3"/>
+					</mx:HBox>			
+					<mx:HBox width="100%" horizontalGap="0">
+						<mx:Spacer width="3"/>	
+						<mx:Label  text="Code postal :" styleName="simple" width="100"/>
+						<mx:TextInput id="postal_code" width="45"  text="{_appModel.residence.address.postal_code}" maxChars="5" restrict="0-9"/>
+						<mx:Spacer width="175" />
+						<mx:Label width="50" styleName="simple"  text="Ville :"/>
+						<mx:TextInput id="city" width="120" text="{_appModel.residence.address.city}" maxChars="50"/>	
+						<mx:Spacer width="3"/>	
+					</mx:HBox>
+				 </mx:VBox>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+	
+	<mx:HBox horizontalGap="0" width="82%" horizontalAlign="left">
+		<mx:Image source="@Embed('assets/fred/icone_sinistre_temp_grele.swf')"  />
+		<mx:Canvas>
+			<mx:Image verticalCenter="1.5" source="@Embed('assets/fred/barre_bleue_titre2.swf')"/>
+			<mx:Text text="LE SINISTRE  «  tempête, grêle et neige »" verticalCenter="2.5" horizontalCenter="-157" styleName="imageText"/>
+		</mx:Canvas>
+	</mx:HBox>
+	
+	<mx:HBox width="82%">
+		<mx:Spacer width="3" />
+		<mx:VBox>			  
+			  <mx:VBox width="100%">
+					<mx:HBox horizontalGap="0" verticalAlign="bottom">
+						<mx:Label width="250"  styleName="simple" text="A quelle date cela s'est-il produit ?*" fontWeight="bold" />
+						<mx:Spacer width="4" />
+						<mx:DateField editable="true" dayNames="{['D','L','M','M','J','V','S']}" 
+								monthNames="{['JANVIER','FEVRIER','MARS','AVRIL','MAI','JUIN','JUILLET','AOUT','SEPTEMBRE','OCTOBRE','NOVEMBRE','DECEMBRE']}"
+								formatString="{'DD/MM/YYYY'}" 
+								text="{_appModel.accident.accidentDate}"
+								id="txtAccidentDate"/>
+						<mx:Label id="dateValidation" text="(jj/mm/aaaa)"  visible="true"/>
+					</mx:HBox>
+			  </mx:VBox>
+			  <mx:HBox horizontalGap="0">
+			 	 <mx:Spacer width="3"/>
+			 	 <mx:Label text="(Ou à défaut la date à laquelle vous en avez eu connaissance)" fontStyle="italic" width="82%" />
+			  </mx:HBox>   
+
+	<mx:HBox horizontalGap="0" verticalAlign="bottom">
+		<mx:Label   width="82%"  styleName="simpleBold" text ="Date de construction du bâtiment :  "/>
+	<mx:TextInput backgroundAlpha="0.8" width="75" color="#c0c1c2" text="{((_firstEntryConstructionDate)?'jj/mm/aaaa':_appModel.accident.constructionDate)}" click="cleanAchatDate()" id="txtConstructionDate" />
+	
+	</mx:HBox>	
+	
+	<mx:Spacer height="2" />	  
+	<mx:HBox horizontalGap="0">
+		<mx:Label   width="82%"  styleName="simpleBold" text ="Décrivez les circonstances du sinistre"/>
+        <mx:Label text="(1000 caractères maximum)" styleName="simple" />
+		<mx:Label text=":" styleName="simpleBold" />
+     </mx:HBox>
+   <mx:HBox width="100%" height="100%">
+   	  <mx:TextArea height="50" width="610" maxChars="1000" click="clearDefaultValue()" id="txtAccidentSituation"
+   	  	  text="{((!_firstEntryAccidentSituation)?_appModel.accident.accidentSituation:'Saisie libre')}" 
+   	  	  color="#c0c1c2" editable="true"  backgroundAlpha="1" borderStyle="solid" />
+   </mx:HBox>
+   <mx:Spacer height="2" />	  
+	
+   <mx:HBox horizontalGap="0">
+		<mx:Label   width="82%"  styleName="simpleBold" 
+			text ="Cochez les éléments endommagés :"/>
+        
+     </mx:HBox>
+     <mx:VBox>
+     	 <mx:HBox  verticalAlign="middle" width="100%">										
+			 <mx:CheckBox  width="200" styleName="simple" id="rdItem1" selected="{((_appModel.accident.item1)?true:false)}"  label="Toiture"  />
+			 <mx:CheckBox width="100"  styleName="simple" id="rdItem2" selected="{((_appModel.accident.item2)?true:false)}"  label="Murs"  />
+			 <mx:CheckBox  width="100" styleName="simple" id="rdItem3" selected="{((_appModel.accident.item3)?true:false)}"  label="Cheminée"  />
+			</mx:HBox>
+		    <mx:HBox  verticalAlign="middle" width="100%">
+		     <mx:CheckBox  width="200" styleName="simple" id="rdItem4" selected="{((_appModel.accident.item4)?true:false)}"  label="Portail/clôture/mur d'enceinte"  />
+			 <mx:CheckBox  width="100"  styleName="simple" id="rdItem5" selected="{((_appModel.accident.item5)?true:false)}"  label="Plantations"  />
+			
+		     <mx:CheckBox   styleName="simple" id="rdItem7" label="Autre" click="showAutre7()" selected="{((_appModel.accident.item7)?true:false)}"   />
+		    <mx:HBox id="hbxOther7" visible="false" verticalAlign="middle" horizontalAlign="right" >
+   				<mx:Label width="70"   text="Précisez :" />
+   				<mx:TextInput width="100"   id="txtOther7" maxChars="50"	text="{_appModel.accident.other7}"  />
+   				</mx:HBox>
+		   </mx:HBox>
+     </mx:VBox>				
+    <mx:Spacer height="2" />	  
+	
+	<mx:HBox horizontalGap="0">
+					<mx:Label   width="82%"  styleName="simpleBold" text ="Décrivez les dommages"/>
+		            <mx:Label text="(1000 caractères maximum)" styleName="simple" />
+		    		<mx:Label text=":" styleName="simpleBold" />
+	     </mx:HBox>
+	  <mx:HBox width="100%" height="100%">
+	   	  <mx:TextArea height="50" width="610" maxChars="1000" click="clearDefaultValueDesc()" id="txtDescription"
+	   	  	  text="{((!_firstEntryDescription)?_appModel.accident.description:'Saisie libre')}" 
+	   	  	  color="#c0c1c2" editable="true"  backgroundAlpha="1" borderStyle="solid" />
+	   <mx:Spacer height="3" />
+	  </mx:HBox>	
+	  <mx:Spacer height="2" />	  
+									
+	  <mx:HBox width="82%" horizontalGap="10">
+		<mx:Label  styleName="simpleBold"  text="Votre logement est-il encore habitable ?"  />
+		<mx:RadioButtonGroup  id="isSafe"   />
+				<mx:RadioButton  styleName="simple"  id="isSafe1" groupName="Q12"  label="Oui" selected="{((_appModel.accident.isSafe)?true:false)}" />
+				<mx:RadioButton  styleName="simple"  id="isSafe2" groupName="Q12" label="Non"  selected="{((!_appModel.accident.isSafe)?true:false)}" />
+	 </mx:HBox>    	   
+	</mx:VBox>
+	</mx:HBox>		
+	<mx:Spacer height="100%" />
+	<mx:HBox width="100%">
+		<mx:Button label="Etape précédente" width="120" styleName="NavButton" click="prev()" />
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Etape suivante" width="120"  styleName="NavButton" click="next()" />
+	</mx:HBox>
+</mx:Panel>

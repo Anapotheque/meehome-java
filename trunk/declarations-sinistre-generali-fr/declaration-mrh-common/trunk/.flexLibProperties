@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flexLibProperties version="1">
+<includeClasses>
+<classEntry path="com.generali.views.RecapInsuredContract"/>
+<classEntry path="com.generali.events.ui.NextSectionEvent"/>
+<classEntry path="com.generali.views.validation.GeneraliValidator"/>
+<classEntry path="com.generali.utils.RecapGenerali"/>
+<classEntry path="com.generali.model.InsuredVO"/>
+<classEntry path="com.generali.utils.DateHelper"/>
+<classEntry path="com.generali.command.DeclarationSinistreMrhCommand"/>
+<classEntry path="com.generali.utils.Color"/>
+<classEntry path="com.generali.model.proxy.DeclarationSinistreMrhProxy"/>
+<classEntry path="com.generali.views.recap.RecapContract"/>
+<classEntry path="com.generali.views.FinalStep"/>
+<classEntry path="com.generali.events.DeclarationSinistreMrhEventResult"/>
+<classEntry path="com.generali.views.Insured"/>
+<classEntry path="com.generali.utils.Util"/>
+<classEntry path="com.generali.events.ui.InitApplicationEvent"/>
+<classEntry path="com.generali.utils.Message"/>
+<classEntry path="com.generali.views.DummyTitleWindow"/>
+<classEntry path="com.generali.model.AddressVO"/>
+<classEntry path="com.generali.utils.CustomPreloader"/>
+<classEntry path="com.generali.views.recap.RecapInsured"/>
+</includeClasses>
+<includeResources/>
+<namespaceManifests/>
+</flexLibProperties>

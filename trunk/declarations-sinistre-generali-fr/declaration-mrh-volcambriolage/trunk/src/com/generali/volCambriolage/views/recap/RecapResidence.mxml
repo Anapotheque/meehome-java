@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"  styleName="PanelRecap" >
+	<mx:Script>
+		<![CDATA[
+			import com.generali.model.InsuredVO;
+			import com.generali.views.Insured;
+			import com.generali.model.AddressVO;
+			import com.generali.volCambriolage.model.AppModel;
+			
+			[Bindable]
+			private var _appModel:AppModel = AppModel.getInstance();
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox>
+		<mx:HBox>
+			<mx:Label  text="Il s’agit de ma résidence principale :" styleName="simple" />
+			<mx:Label width="135"  text="{((_appModel.residence.main_residence)?'oui':'non')}" styleName="simpleBold" />
+		</mx:HBox>
+		<mx:VBox height="{((_appModel.residence.main_residence)?0:75)}">
+			<mx:HBox>
+				<mx:Label width="135"  text="Adresse :" styleName="simple" />
+				<mx:Label width="100%"  text="{_appModel.residence.address.addressVal}" styleName="simpleBold"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:HBox>
+					<mx:Label width="135"  text="Code postal :" styleName="simple" />
+					<mx:Label width="135"  text="{_appModel.residence.address.postal_code}" styleName="simpleBold" />
+				</mx:HBox>
+				<mx:Spacer width="5"/>
+				<mx:HBox>			
+					<mx:Label width="135"  text="Ville :" styleName="simple" />
+					<mx:Label width="135"  text="{_appModel.residence.address.city}" styleName="simpleBold" />
+				</mx:HBox>
+			</mx:HBox>	
+		</mx:VBox>
+	</mx:VBox>
+</mx:Panel>

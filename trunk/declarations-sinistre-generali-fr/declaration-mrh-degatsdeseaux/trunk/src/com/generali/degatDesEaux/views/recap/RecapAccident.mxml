@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"   styleName="PanelRecap"   creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import com.generali.events.ui.NextSectionEvent;
+			import com.generali.views.Insured;
+			import com.generali.model.AddressVO;
+			import com.generali.degatDesEaux.model.AppModel;
+			[Bindable]
+			private var _appModel:AppModel = AppModel.getInstance();
+			private function init():void
+			{
+				parentApplication.addEventListener(NextSectionEvent.TO_RECAP,handle)
+				bindWithModel();
+			}
+			private function handle(e:NextSectionEvent):void
+			{
+				bindWithModel();
+			}
+			private function bindWithModel():void
+			{
+					fillCause();
+					fillInfiltration();
+					fillAutre();
+					fillOrigine();				
+			}	 
+			private function fillCause():void
+			{
+				cause.text="";
+				cause.height = 5;
+				if(_appModel.accident.cause1)
+				{
+					cause.text = cause.text + "-"+ "Fuite d’une canalisation, d’un tuyau \n";
+					cause.height = cause.height+20;
+				}
+				if(_appModel.accident.cause2)
+				{
+					cause.text = cause.text + "-"+ "Fuite ou débordement de gouttières \n";
+					cause.height = cause.height+20;
+				}
+				if(_appModel.accident.cause3)
+				{
+					cause.text = cause.text + "-"+ "Débordement d’appareils (évier, lavabo, machine à laver…) \n";
+					cause.height = cause.height+20;
+				}
+				if(_appModel.accident.cause4)
+				{
+					cause.text = cause.text + "-"+ "Débordement ou renversement de récipients (bassine, seau, aquarium…) \n";
+					cause.height = cause.height+40;
+				}
+				if(_appModel.accident.cause7)
+				{
+					cause.text = cause.text + "-"+ "Cause inconnue \n";
+					cause.height = cause.height+20;
+				}			
+			}	
+			
+			private function fillAutre():void {
+				if (!_appModel.accident.cause6) {
+					labelAutre.visible = false;
+					txtAutre.visible = false;
+				} else {
+					labelAutre.visible = true;
+					txtAutre.visible = true;
+				}
+			}
+			
+			private function fillInfiltration():void
+			{			
+				if (!_appModel.accident.cause5) {
+					labelInfiltration.visible = false;
+					txtInfiltration.visible = false;
+				} else {
+					labelInfiltration.visible = true;
+					txtInfiltration.visible = true;
+					txtInfiltration.text="";
+					txtInfiltration.height = 25;
+					if(_appModel.accident.cause51){
+						txtInfiltration.text = txtInfiltration.text + "-"+ "Toiture ";
+					}
+					if(_appModel.accident.cause52){
+						txtInfiltration.text = txtInfiltration.text + "-"+ "Terrasse ";
+					}
+					if(_appModel.accident.cause53){
+						txtInfiltration.text = txtInfiltration.text + "-"+ "Façade ";
+					}
+					if(_appModel.accident.cause54){
+						txtInfiltration.text = txtInfiltration.text + "-"+ "Balcon ";
+					}
+					if(_appModel.accident.other55 != "")
+					{ 
+					    txtInfiltration.text = txtInfiltration.text + "\n -Autre infiltration :"+ _appModel.accident.other55;
+					    txtInfiltration.height = txtInfiltration.height+20;
+					}
+				}
+			}		
+			
+			private function fillOrigine():void
+			{		
+				if (_appModel.accident.origin==0) {
+					labelOrigin.visible = false;
+					txtOrigin.visible = false;
+				} else {
+					labelOrigin.visible = true;
+					txtOrigin.visible = true;
+					txtOrigin.text="";
+					txtOrigin.height = 25;
+					if(_appModel.accident.origin==1) {
+						txtOrigin.text =  "-"+ "Dans les locaux occupés par l'assuré ";
+					}
+					if(_appModel.accident.origin==2) {
+						txtOrigin.text =  "-"+ "Dans les parties communes de l'immeuble";
+					}
+					if(_appModel.accident.origin==3) {
+						txtOrigin.text =  "-"+ "Dans un appartement voisin";
+					}
+					if(_appModel.accident.origin==4) {
+						txtOrigin.text =  "-"+ "Dans un immeuble voisin";
+					}
+					if(_appModel.accident.origin==5) { 
+						 txtOrigin.text =  "-"+ _appModel.accident.otherOrigin;
+					}	
+				}		
+			}		
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" >
+				<mx:HBox>
+					<mx:Label text="A quelle date cela s’est-il produit :" styleName="simple" />
+					<mx:Label width="135"  text="{_appModel.accident.accidentDate}" styleName="simpleBold" />
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="Quelle est sa cause ?" styleName="simple"  width="150"/>
+					<mx:TextArea width="100%" id="cause" styleName="simpleBold" borderStyle="none" backgroundAlpha="0" editable="false"/>
+				</mx:HBox>
+				<mx:HBox width="100%" >
+					<mx:Label  id="labelInfiltration" text="Infiltrations" styleName="simple" width="150" />
+					<mx:TextArea width="100%" id="txtInfiltration" styleName="simpleBold" borderStyle="none" backgroundAlpha="0" editable="false"/>
+				</mx:HBox>
+				<mx:HBox width="100%" >
+					<mx:Label id="labelAutre" text="Autre cause :" styleName="simple" width="150" />
+					<mx:TextArea id="txtAutre" width="100%" text="{_appModel.accident.other6}" styleName="simpleBold" borderStyle="none" backgroundAlpha="0" editable="false"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label id="labelOrigin" text="Son origine se situe :" styleName="simple" width="150" />
+					<mx:Label width="100%" id="txtOrigin" styleName="simpleBold"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label  text="La cause du sinistre est-elle réparée ?" styleName="simple" />
+					<mx:Label width="135"  text="{((_appModel.accident.fixable)?'oui':'non')}" styleName="simpleBold" />
+				</mx:HBox>
+		</mx:VBox>
+</mx:Panel>

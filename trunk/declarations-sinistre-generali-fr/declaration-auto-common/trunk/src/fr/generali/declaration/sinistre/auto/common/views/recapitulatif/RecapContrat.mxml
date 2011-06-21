@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" styleName="recapPanel">
+	<mx:Script>
+		<![CDATA[
+			import fr.generali.declaration.sinistre.auto.common.models.vo.ContratVO;
+
+        	private var _contratModel:ContratVO;
+        	
+        	[Bindable]
+        	public function set contratModel(model:ContratVO):void {
+        		this._contratModel = model;
+        	}
+        	public function get contratModel():ContratVO {
+        		return this._contratModel;
+        	}
+		]]>
+	</mx:Script>
+	<mx:VBox>
+		<mx:HBox>
+			<mx:HBox>
+				<mx:Label width="200"  text="Numéro du contrat :" styleName="textSimpleBold" />
+				<mx:Label width="170"  text="{contratModel.numeroContrat}" styleName="textSimple" />
+			</mx:HBox>			
+			<mx:HBox>
+				<mx:Label width="135"  text="Numéro de client :" styleName="textSimpleBold" />
+				<mx:Label width="200"  text="{contratModel.numeroClient}" styleName="textSimple" />
+			</mx:HBox>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="200"  text="Immatriculation du véhicule :" styleName="textSimpleBold" />
+			<mx:Label width="135"  text="{contratModel.immatriculationVehicule}" styleName="textSimple" />
+		</mx:HBox>
+	</mx:VBox>
+</mx:Panel>

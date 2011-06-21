@@ -1,0 +1,322 @@
+/*
+//------------------------------
+//  global
+//------------------------------
+*/
+
+Application {
+   backgroundGradientColors: #ffffff, #ffffff;
+   /* themeColor: #008fa6; */
+   color: #333333;
+   padding-bottom : 3;
+   padding-left:0;
+   padding-right : 0 ;
+   padding-top : 0;
+	
+	horizontal-gap : 0;
+	horizontal-align : center;
+	vertical-gap : 0;
+	background-gradient-alphas : 0.3,0 ;
+}
+
+	 
+.generaliPanel{
+	border-style : none;
+	header-height : 10;
+	background-alpha : 0;
+	border-alpha : 0;
+	horizontal-align : center;
+}
+Alert
+{
+	 color: #595D5D ;
+	 background-color : white;
+    font-thickness:11;
+    title-style-name : "alertTitle";
+    header-height:19;
+    border-thickness: 1;
+    drop-shadow-enabled: true;
+    drop-shadow-color :#d1ddf7;
+    shadowDistance: 5;
+    shadowDirection: right;
+    corner-radius :10;
+    border-style :solid;
+    header-colors : #5dbecd, #5dbecd;
+    border-color : white;
+    creationCompleteEffect: myEffect;
+    statusStyleName: "myStatus";
+    roundedBottomCorners: false;
+    background-alpha:0.5;
+    
+   /*  color : #ffffff ;
+    font-thickness:11;
+    title-style-name : "alertTitle";
+    header-height:19;
+    border-thickness: 1;
+    drop-shadow-enabled: false;
+    drop-shadow-color :#d1ddf7;
+
+    shadowDirection: right;
+    corner-radius :10;
+    border-style :solid;
+    header-colors : #5dbecd, #5dbecd;
+    footer-colors : #9db6d9, #9db6d9;
+    border-color : white;
+    creationCompleteEffect: myEffect;
+    statusStyleName: "myStatus";
+    roundedBottomCorners: false;
+    background-alpha:1;
+     */
+    /*
+    modalTransparencyBlur: 5;
+    modalTransparency: 0.6;
+    modalTransparencyColor: #FF0000;
+    modalTransparencyDuration: 1000;
+   */
+   /*  messageStyleName: "alertMessage";
+    buttonStyleName: "alertButton"; */
+}
+Label.undertitle
+{
+	fontFamily: Verdana;
+	color: #FFFFFF;
+	fontSize: 15;
+	fontWeight: bold;
+}
+global
+{
+	color: #333333;
+	fontFamily: Verdana;
+	fontSize: 11;
+	fontWeight: normal;
+}
+
+
+
+
+/*
+//------------------------------
+//  Buttons
+//------------------------------
+*/
+Button {   cornerRadius: 8;   paddingLeft: 5;   paddingRight: 6;   paddingTop: 2;   paddingBottom: 2;   highlightAlphas: 0.5, 1;   fillAlphas: 1, 1, 1, 1;   fillColors: #ffffff, #cccccc, #ffffff, #dadada;   color: #333333;   textRollOverColor: #008fa6;   textSelectedColor: #016e7f;   borderColor: #cccccc;   themeColor: #008fa6;   fontFamily: Verdana;   fontSize: 11;   fontWeight: bold;}
+.NavButton
+ {
+ 	button-width : 200;   cornerRadius: 8;   paddingLeft: 5;   paddingRight: 6;   paddingTop: 3;   paddingBottom: 3;   highlightAlphas: 0.38, 0.22;   fillAlphas: 1, 1, 1, 1;   fillColors: #c64b3b, #b22c1b, #bd4d3f, #8b2214;   color: #ffffff;   textRollOverColor: #ffffff;   textSelectedColor: #ffffff;
+  selection-color:white;   borderColor: #cccccc;   themeColor: #008fa6;   fontFamily: Verdana;   fontSize: 10;   fontWeight: bold;
+}
+
+.Menu
+ {
+ 
+   cornerRadius: 8;
+   paddingLeft: 5;
+   paddingRight: 6;
+   paddingTop: 2;
+   paddingBottom: 2;
+   highlightAlphas: 0.5, 1;
+   fillAlphas: 1, 1, 1, 1;
+   fillColors: #ffffff, #cccccc, #ffffff, #dadada;
+   color: #333333;
+   textRollOverColor: #008fa6;
+   textSelectedColor: #016e7f;
+   borderColor: #cccccc;
+   themeColor: #008fa6;
+   fontFamily: Verdana;
+   fontSize: 11;
+   fontWeight: bold;
+}
+.Menu2
+ {
+   cornerRadius: 8;
+   paddingLeft: 5;
+   paddingRight: 6;
+   paddingTop: 2;
+   paddingBottom: 2;
+   highlightAlphas: 0.1, 0.3;
+   fillAlphas: 1, 1, 1, 1;
+   fillColors: #ffffff, #008fa6, #008fa6, #008fa6;
+   color: #ffffff;
+   textRollOverColor: #016e7f;
+   textSelectedColor: #016e7f;
+   borderColor: #cccccc;
+   themeColor: #008fa6;
+   fontFamily: Verdana;
+   fontSize: 11;
+   fontWeight: bold;
+}
+
+
+
+/*
+//------------------------------
+//  CheckBox
+//------------------------------
+*/
+CheckBox
+{
+	check-icon : black;	
+	/* disabledIcon: Embed(source="flex_skins.swf", symbol="CheckBox_disabledIcon");
+	downIcon: Embed(source="flex_skins.swf", symbol="CheckBox_downIcon");
+	overIcon: Embed(source="flex_skins.swf", symbol="CheckBox_overIcon");
+	selectedDisabledIcon: Embed(source="flex_skins.swf", symbol="CheckBox_selectedDisabledIcon");
+	selectedDownIcon: Embed(source="flex_skins.swf", symbol="CheckBox_selectedDownIcon");
+	selectedOverIcon: Embed(source="flex_skins.swf", symbol="CheckBox_selectedOverIcon");
+	selectedUpIcon: Embed(source="flex_skins.swf", symbol="CheckBox_selectedUpIcon");
+	upIcon: Embed(source="flex_skins.swf", symbol="CheckBox_upIcon");
+ */}		
+
+/*
+//------------------------------
+//  ComboBox
+//------------------------------
+*/
+ComboBox {   color: #333333;   highlightAlphas: 0.3, 1;   selectionColor: #77d1e0;   rollOverColor: #b9f5ff;   textRollOverColor: #006c7d;   themeColor: #008fa6;   fontFamily: Verdana;   fontSize: 11;   fontWeight: normal;}	
+
+
+/*
+//------------------------------
+//  CursorManager
+//------------------------------
+*/
+CursorManager
+{
+	busyCursor: Embed(source="flex_skins.swf", symbol="BusyCursor");
+	busyCursorBackground: Embed(source="flex_skins.swf",symbol="BusyCursor");
+}
+
+
+/*
+//------------------------------
+//  DateField
+//------------------------------
+*/
+DateChooser {   cornerRadius: 6;   headerColors: #ffffff, #a3d6de;   highlightAlphas: 0.38, 1;   fillAlphas: 0.6, 1, 0.69, 1;   fillColors: #ffffff, #cccccc, #ffffff, #cccccc;   todayColor: #008fa6;   rollOverColor: #a7f3ff;   selectionColor: #f19f94;   color: #333333;   themeColor: #008fa6;   fontFamily: Verdana;   fontSize: 11;   headerStyleName: "mydateChooserHeaderStyle";   weekDayStyleName: "mydateChooserWeekDayStyle";}.mydateChooserHeaderStyle {   color: #333333;   fontFamily: Verdana;   fontWeight: bold;   fontSize: 11;   fontStyle: normal;   textDecoration: none;}.mydateChooserWeekDayStyle {   color: #333333;}
+/*
+//------------------------------
+//  texts
+//------------------------------
+*/
+TextArea {   fontFamily: Verdana;   color: #333333;   paddingLeft: 4;   paddingRight: 4;   borderStyle: inset;   cornerRadius: 0;   dropShadowEnabled: false;   shadowDirection: center;}
+
+/*
+//------------------------------
+//  Loader
+//------------------------------
+*/
+.simple{
+	color: black ;
+
+}
+.simpleItalic{
+color: black ;
+font-style : italic;
+
+}
+.simpleBold{
+	
+color: black ;
+font-weight : bold;
+
+}
+.imageText{
+	
+color: #ffffff ;
+font-weight : bold;
+
+}
+Loader
+{
+	brokenImageSkin: Embed(source="flex_skins.swf",symbol="Loader_brokenImageSkin");
+
+}
+
+
+
+/*
+//------------------------------
+//  Panel
+//------------------------------
+*/
+.PanelRecap {
+   borderThicknessLeft: 3;
+   borderThicknessTop: 3;
+   borderThicknessBottom: 3;
+   borderThicknessRight: 3;
+   cornerRadius: 9;
+   headerHeight: 0;
+   highlightAlphas: 0.3, 0.68;
+   headerColors: #ffffff, #d9d9d9;
+   footerColors: #e7e7e7, #d9d9d9;
+   shadowDistance: 1;
+   border-style : solid;
+   titleStyleName: "mypanelTitle";
+}
+.Panel {   borderThicknessLeft: 3;   borderThicknessTop: 3;   borderThicknessBottom: 3;   borderThicknessRight: 3;   cornerRadius: 9;   headerHeight: 0;   highlightAlphas: 0.3, 0.68;   headerColors: #ffffff, #d9d9d9;   footerColors: #e7e7e7, #d9d9d9;   shadowDistance: 1;
+   border-style : none;   titleStyleName: "mypanelTitle";}.mypanelTitle {   color: #333333;   fontFamily: Verdana;   fontSize: 11;   fontWeight: bold;}
+
+ApplicationControlBar {   fillAlphas: 0.74, 0.77;   fillColors: #ffffff, #c1e0d8;   backgroundAlpha: 0.78;   cornerRadius: 10;   shadowDistance: 1;   shadowDirection: center;}
+
+/*
+//------------------------------
+//  ProgressBar
+//------------------------------
+*/
+ProgressBar {   barColor: #008fa6;   fontSize: 10;   fontWeight: normal;}
+
+
+
+
+/*
+//------------------------------
+//  Tab
+//------------------------------
+*/
+/* TabNavigator {   tabHeight: 29;   tabWidth: 80;   cornerRadius: 0;   horizontalGap: 0;   horizontalAlign: left;   textIndent: 0;   borderStyle: solid;   color: #333333;   dropShadowEnabled: false;   tabStyleName: "myTabs";   firstTabStyleName: "myTabs";   lastTabStyleName: "myTabs";   selectedTabTextStyleName: "mySelectedTabs";} */
+.tabNavigator {
+   tabWidth: 115;
+   horizontalAlign: left;
+   backgroundAlpha: 0.5;
+   borderStyle: solid;
+   borderColor: #008fa6;
+   borderThickness: 0.2;
+   dropShadowEnabled: false;
+   margin-left: 30;
+   corner-radius : 0;
+}
+/* .myTabs {   cornerRadius: 7;   highlightAlphas: 0.3, 0.78;   color: #333333;   textRollOverColor: #005a69;   themeColor: #008fa6;   fontFamily: Verdana;   fontSize: 11;} */
+.myTabs {
+	cornerRadius: 10;
+	font-size : 9.5;
+   backgroundAlpha: 0.7;
+   
+
+}.mySelectedTabs {   /* color: #005a69;   textRollOverColor: #008fa6; */}
+
+/*
+//------------------------------
+//  Scrollbar
+//------------------------------
+*/
+ VScrollBar {   cornerRadius: 6;   highlightAlphas: 0.3, 0.37;   trackColors: #efefef, #e7e7e7;   themeColor: #008fa6;
+   arrow-button-width : 0;
+   button-width :0;}
+HScrollBar {   cornerRadius: 12;   highlightAlphas: 0.3, 0.37;   trackColors: #efefef, #e7e7e7;   themeColor: #008fa6;}
+/*
+//------------------------------
+//  Tool tip
+//------------------------------
+*/
+
+ToolTip {   backgroundColor: #f5f495;   color: #333333;   fontFamily: Verdana;   fontSize: 11;}
+@font-face
+{
+	fontFamily: Verdana;
+	fontWeight: normal;
+	fontStyle: normal;
+	src: local("Verdana");
+}
+
+
+
+

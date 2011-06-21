@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	 xmlns:damageDesc="com.generali.degatDesEaux.views.damage.damageDesc.*" 
+	 xmlns:comp="flexlib.containers.*"
+	horizontalAlign="left" 
+	label="Déclaration Questionnaire"  creationComplete="init()" height="100%">
+	  <mx:Script>
+	  	<![CDATA[
+	  		import com.generali.events.ui.InitApplicationEvent;
+	  		
+	  		import com.generali.degatDesEaux.events.ui.SteperUpdateEvent;
+	  		import com.generali.degatDesEaux.model.PieceVO;
+	  		import com.generali.degatDesEaux.model.AppModel;
+	  		import com.generali.degatDesEaux.views.damage.damageDesc.PieceInteractive;
+	  		import mx.events.CloseEvent;
+	  		import flexlib.containers.SuperTabNavigator;
+	  		import flexlib.controls.tabBarClasses.SuperTab;
+	  		import mx.containers.TabNavigator;
+	  		import mx.controls.Button;
+	  		import mx.controls.Alert;
+	  		import com.generali.events.ui.NextSectionEvent;
+	  		
+	  		[Embed(source="/assets/info_icon.png")]
+        	private var IconWarning:Class;
+        	
+        	private var appModel:AppModel = AppModel.getInstance();
+	  		
+	  		[Bindable]
+	  		private var nbrePiece:int = 0;
+	  		private var countPiece:int = 0;
+	  		private var first :Boolean = false;
+	  		private var deleted:int;
+	  		private function init():void
+	  		{	  			
+  				this.addEventListener(SteperUpdateEvent.TO_DECREMENT,decrement);
+  				parentApplication.addEventListener(InitApplicationEvent.ID, clearAll);
+  				change();	 		 
+  			}
+	 		private function remove():void
+	 		{
+		 		deleted = tn.selectedIndex;
+	 			var piece:PieceInteractive = tn.getChildAt(deleted) as PieceInteractive;
+	 			if (nbrePiece > 1)
+	 			{
+	 				 Alert.okLabel="Oui";
+ 					 Alert.cancelLabel = "Non"; 					 
+ 					 Alert.show('Etes vous sûr de vouloir supprimer " '+piece.label+ '" ?',"CONFIRMATION",
+	 			     Alert.OK | Alert.CANCEL, this, confirmDelete,IconWarning, Alert.OK);
+			 	}	
+		 	}
+		 	
+	  		private function decrement(e:SteperUpdateEvent):void
+	  		{
+	 			deleted = e.deleted;
+	 			var piece:PieceInteractive = tn.getChildAt(deleted) as PieceInteractive;
+	 			if (nbrePiece > 1)
+	 			{
+	 			 Alert.okLabel="Oui";
+				 Alert.cancelLabel = "Non";
+	 			 Alert.show('Etes vous sûr de vouloir supprimer " '+piece.label+ '" ?',"CONFIRMATION",
+	 			 Alert.OK | Alert.CANCEL, this, confirmDelete,IconWarning, Alert.OK);
+			 	}
+	  		}
+	  		private function confirmDelete(event:CloseEvent):void
+	  		{
+	  			if (event.detail == Alert.OK)
+	  				{	
+		  				if (nbrePiece > 0)
+		  				{
+			 				var id:String = ( tn.getChildAt(deleted) as PieceInteractive).id;
+			 				var pice:PieceVO = appModel.damage.getPieceById(id);
+			 				appModel.damage.removePiece(id);
+							tn.removeChildAt(deleted);
+							nbrePiece--;	
+		 			   }
+		 			}
+	  		}
+	  		
+	  		private function clearAll(e:InitApplicationEvent):void
+	  		{
+		 		this.tn.removeAllChildren();
+		 		nbrePiece = 0;
+		 		countPiece =0;
+		 		change();
+			}
+			 	
+	  		public function change():void
+	  		{	  		
+	  					nbrePiece ++; 
+	  					countPiece++;
+	  					var piece:PieceInteractive = new PieceInteractive();
+	  		 			piece.label = appModel.DEFAULT_PIECE + countPiece;
+	  		 			piece.id="piece" + countPiece;	
+	  		 			piece.type=appModel.DEFAULT_PIECE;
+	  		 			piece.index = getPieceIndex(piece.type);	 		
+	  		 			tn.addChild(piece);	
+	  		 			var p:PieceVO =new PieceVO(piece.id);
+	  		 			p.type_piece = appModel.DEFAULT_PIECE;
+	  		 			p.name = piece.label;
+	  		 			appModel.damage.addPiece(p);
+	  		 			tn.selectedIndex = nbrePiece-1;
+	 	  	}
+ 	  		public function getPieceIndex(type:String):int
+ 	  		{
+ 	  			var arr:Array = tn.getChildren();
+ 	  			for(var i:int=arr.length-1;i>=0;i--)
+ 	  			{
+ 	  				if((arr[i] as PieceInteractive).type==type)
+ 	  				{
+ 	  					return (arr[i] as PieceInteractive).index + 1;
+ 	  				}
+ 	  			}
+ 	  			return 1;
+ 	  		}
+
+	  	]]>
+	  </mx:Script>
+	  <mx:VBox width="100%" height="100%" verticalGap="10"  >	
+		  <mx:HBox horizontalAlign="center" horizontalGap="0" width="90%">
+			  		<mx:Label   text="Nombre de pièces endommagées : " styleName="simple"/>
+		  			<mx:TextInput width="24" height="24" id="txtNamePiece" editable="false" text="{nbrePiece}"/>
+		  			<mx:VBox verticalGap="0">
+		  				<mx:Button label="+" paddingTop="0" paddingRight="0" paddingLeft="0" paddingBottom="0" cornerRadius="2" height="12" click="change()" fontSize="8" enabled="{((txtNamePiece.text=='')?false:true)}"  toolTip="Ajouter une pièce"/>
+		  				<mx:Button label="-" paddingTop="0" paddingRight="0" paddingLeft="0"  paddingBottom="0" cornerRadius="2" height="12" click="remove()" fontSize="8" enabled="{((txtNamePiece.text=='')?false:true)}"  toolTip="Supprimer une pièce"/>
+		  			</mx:VBox>
+		  			 </mx:HBox>
+		<comp:SuperTabNavigator shadowDirection="right" shadowDistance="3" borderStyle="solid" styleName="tabNavigator" id="tn" width="100%" height="100%" visible="{((nbrePiece==0)?false:true)}" backgroundAlpha="0.5" />
+	  </mx:VBox>		 
+</mx:VBox>
+

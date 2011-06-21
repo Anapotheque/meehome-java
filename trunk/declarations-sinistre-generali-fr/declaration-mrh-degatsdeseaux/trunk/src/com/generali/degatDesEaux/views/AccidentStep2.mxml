@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+		xmlns:validation="com.generali.views.validation.*"  styleName="generaliPanel" creationComplete="init()">
+	  
+  <mx:Script>
+  <![CDATA[
+  	import briffle.dq.interpreter.Interpreter;
+  	import briffle.dq.interpreter.InterpreterResultEvent;
+  	import com.flexriver.common.validators.FlexriverValidators;
+  	import briffle.dq.model.elements.Chapter;
+  	import briffle.dq.model.PathContext;
+  	import briffle.dq.model.elements.Answer;
+  	import briffle.dq.model.elements.SingleAnswerQuestion;
+  	import briffle.dq.model.Form;
+  	import com.generali.degatDesEaux.utils.VisualInterpreter;
+  	import briffle.dq.interpreter.InterpreterResultEvent;
+  	import com.generali.degatDesEaux.events.rules.RuleEngineExecutedEvent;
+  	import com.generali.degatDesEaux.utils.RuleEngineStub;
+  	import briffle.dq.interpreter.Interpreter;
+  	import com.generali.degatDesEaux.model.AppModel;
+
+  	import com.generali.events.ui.NextSectionEvent;
+  	
+  	private const NATURAL_PARENT:String="sinistre2";
+  	public var _interpreter:Interpreter  = new Interpreter(NATURAL_PARENT);
+  	public var _ruleEngine : RuleEngineStub = RuleEngineStub.getInstance();
+  	private var COLOR_ERR_VALIDATION:String = "#f7b1c8";
+  	[Bindable]
+  	private var _appModel:AppModel = AppModel.getInstance();
+  	
+  	private function init():void {
+  		_ruleEngine.addEventListener( RuleEngineExecutedEvent.ID,handleRuleEngine);
+  		_interpreter.getInterpreterDispatcher().addEventListener(InterpreterResultEvent.ID,handleInterpreterResults);
+  	}
+  	
+  	public function handleInterpreterResults( e:InterpreterResultEvent): void {
+		if (e.getNatural_parent() == NATURAL_PARENT) {
+			var vi:VisualInterpreter = new VisualInterpreter(this);
+			vi.apply(e);
+		}
+	} 
+	
+  	public function handleRuleEngine( e:RuleEngineExecutedEvent): void {
+		_interpreter.interpret();
+  	}
+  	
+  	private function setQuestions():void {
+ 		var form :Form = Form.getInstance();
+		var _q12: SingleAnswerQuestion = form.getElementById("Q12") as SingleAnswerQuestion;				
+		_q12.addAnswer(new Answer("a12"));
+		_q12.getAnswer().setValue(Q121.selected);
+		var context:PathContext = new PathContext(form,form.getElementById("C2") as Chapter,null,_q12);
+		_ruleEngine.execute(context,"Generali.DDE.Flows.NavigationFlow");
+ 	}
+ 	
+  	private function fillModel():void {
+  		if(rdOrigine1.selected) {
+  			_appModel.accident.origin = 1;
+  		}	  			
+  		if(rdOrigine2.selected) {
+  			_appModel.accident.origin = 2;
+  		}
+  		if(rdOrigine3.selected) {
+  			_appModel.accident.origin = 3;
+  		}
+  		if(rdOrigine4.selected) {
+  			_appModel.accident.origin = 4;
+  		}	  			
+  		if(rdOrigine5.selected) {
+  			_appModel.accident.origin = 5;
+  		} 
+  		_appModel.accident.otherOrigin = txtOtherOrigin.text;  			
+  		
+  		_appModel.accident.fixable = (rdFixable1.selected)?true:false; 
+  		if (Q121.selected) {
+  			_appModel.result.has_damage = true;
+  		} else if(Q122.selected) {
+  				_appModel.result.has_damage = false;
+  		}
+  		if(rdAnybodyElse1.selected) {
+  			_appModel.result.other_person = 1;
+  		}
+  		if(rdAnybodyElse2.selected) {
+  			_appModel.result.other_person = 2;
+  		}	
+  		if(rdAnybodyElse3.selected) {
+  			_appModel.result.other_person = 3;
+  		}	
+  		_appModel.result.last_name = txtLastName.text;
+  		_appModel.result.first_name = txtFirstName.text;
+  		_appModel.result.address.addressVal=txtAddress.text;
+  		_appModel.result.address.postal_code = txtPostalCode.text;
+  		_appModel.result.address.city = txtCity.text;
+  		_appModel.result.insurer = txtInsured.text;
+  	}
+  	
+  	private function showHidAnybodyElse():void {
+  		if (rdAnybodyElse1.selected) {
+  			showAddressTransition.play();
+  		} else {
+  			hideAddressTransition.play();
+  		}
+  	}
+  	private function prev():void {	  			 
+  		this.dispatchEvent( new NextSectionEvent(NextSectionEvent.TO_SINISTRE));
+  	}
+  	private function next():void {	
+  		txtError.prepare_validation();
+  		setQuestions();
+  		
+  		// Control de la personne tier touché si siaisie à oui
+  		if(rdAnybodyElse1.selected) {
+  			
+	  		var i:int;
+	  		
+	  		var lastNameArray:Array =  txtLastName.text.split(" ");
+	  		for (i = 0; i <= lastNameArray.length; i++) {
+	  			if (!FlexriverValidators.isAlpha(lastNameArray[0])) {
+	  				txtError.addError("Le nom ne peut pas contenir de chiffres, ni de caractères spéciaux, merci de le saisir à nouveau.");
+	  				txtLastName.setStyle("backgroundColor",COLOR_ERR_VALIDATION);
+	  				break;
+	  			} else {	  					
+	  				txtLastName.setStyle("backgroundColor","white");
+	  			} 
+	  		}
+	  		
+	  		var firstNameArray:Array =  txtFirstName.text.split(" ");
+	  		for (i = 0; i <= firstNameArray.length; i++) {
+	  			if (!FlexriverValidators.isAlpha(firstNameArray[0])) {
+	  				txtError.addError("Le prénom ne peut pas contenir de chiffres, ni de caractères spéciaux, merci de le saisir à nouveau.");
+	  				txtFirstName.setStyle("backgroundColor",COLOR_ERR_VALIDATION);
+	  				break;
+	  			} else {	  					
+	  				txtFirstName.setStyle("backgroundColor","white");
+	  			} 
+	  		}
+  			 
+  		    if (txtPostalCode.text != "" ) {
+  				if (!FlexriverValidators.is5Digits(txtPostalCode.text) || txtPostalCode.text.length != 5 ) {
+  					txtError.addError("Le code postal doit être composé de 5 chiffres, merci de le saisir à nouveau.");
+  					txtPostalCode.setStyle("backgroundColor",COLOR_ERR_VALIDATION);
+  				} else {
+  					txtPostalCode.setStyle("backgroundColor","white");	
+  				}
+  			 } else {
+  				txtPostalCode.setStyle("backgroundColor","white");	
+  			 } 	
+  		} 
+  		
+  		// Alimentation du model si tout est ok
+  		if (!txtError.play()) {
+  			fillModel();
+  			parentApplication.dispatchEvent( new NextSectionEvent(NextSectionEvent.TO_DAMAGE));
+  		}
+  	}
+  	
+  	private function showHideOrigineAutre():void {
+  		if (rdOrigine5.selected) {
+  			txtOtherOrigin.visible = true;
+  			lblOtherOrigin.visible=true;
+  		} else {
+  			txtOtherOrigin.visible = false;
+  			lblOtherOrigin.visible = false;
+  		}
+  	}	  		
+  ]]>
+  </mx:Script>
+  
+  	<mx:Sequence id="showAddressTransition" target="{vSecondHouse}">
+		<mx:SetPropertyAction name="visible" value="true" />
+		<mx:Resize   heightTo="156" duration="500" />
+	</mx:Sequence>	
+	<mx:Sequence id="hideAddressTransition" target="{vSecondHouse}">
+		<mx:Resize   heightTo="-2" duration="500" />
+		<mx:SetPropertyAction name="visible" value="false" />			
+	</mx:Sequence>
+	
+	<validation:GeneraliValidator id="txtError" styleName="ErrorVal"  width="80%" color="red"/>  	
+	
+	<mx:HBox horizontalGap="0" width="82%">
+		<mx:Image source="@Embed('assets/fred/icone_sinistre.swf')"  />
+		<mx:Canvas>
+			<mx:Image verticalCenter="1.5" source="@Embed('assets/fred/barre_bleue_titre2.swf')"/>
+			<mx:Text text="LE SINISTRE (suite) :" verticalCenter="2.5" horizontalCenter="-219" styleName="imageText"/>
+		</mx:Canvas>
+	</mx:HBox>
+		
+	<mx:Label styleName="simpleBold"   width="82%" text ="Son origine se situe :"/>
+ 	<mx:HBox width="100%" horizontalAlign="left">
+ 	<mx:Spacer width="150" />
+	<mx:VBox  horizontalGap="0" verticalGap="2">	
+		<mx:RadioButtonGroup id="rdOrigineGrp"  change="showHideOrigineAutre()"/>
+			<mx:RadioButton styleName="simple" id="rdOrigine1" groupName="rdOrigineGrp" label="Dans les locaux occupés par l'assuré"   selected="{((_appModel.accident.origin==1)?true:false)}"  />
+			<mx:RadioButton styleName="simple"   id="rdOrigine2" groupName="rdOrigineGrp" label="Dans les parties communes de l'immeuble"    selected="{((_appModel.accident.origin==2)?true:false)}"   />
+			<mx:RadioButton styleName="simple"   id="rdOrigine3" groupName="rdOrigineGrp" label="Dans un appartement voisin"     selected="{((_appModel.accident.origin==3)?true:false)}"  />
+			<mx:RadioButton styleName="simple"   id="rdOrigine4" groupName="rdOrigineGrp" label="Dans un immeuble voisin"    selected="{((_appModel.accident.origin==4)?true:false)}"  />
+			<mx:HBox verticalAlign="middle">
+				<mx:RadioButton styleName="simple"  id="rdOrigine5" groupName="rdOrigineGrp" label="Autre"   selected="{((_appModel.accident.origin==5)?true:false)}"   />
+				<mx:Label visible="false" id="lblOtherOrigin" text="Précisez :"	 />
+				<mx:TextInput visible="false" id="txtOtherOrigin"	   maxChars="50"   text="{_appModel.accident.otherOrigin}"  />			
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+    	
+    	<mx:HBox width="82%" horizontalGap="10">
+	<mx:Label width="280" styleName="simpleBold" text="La cause du sinistre est-elle réparée ?"  />
+	<mx:RadioButtonGroup  id="rdFixable" />
+	<mx:RadioButton styleName="simple" id="rdFixable1" groupName="rdFixable" label="Oui" />
+	<mx:RadioButton styleName="simple" id="rdFixable2" groupName="rdFixable" label="Non" selected="true" />
+	</mx:HBox>
+	
+	<mx:HBox horizontalGap="0" width="82%">
+		<mx:Image source="@Embed('assets/fred/icone_consequences.swf')"  />
+		<mx:Canvas>
+			<mx:Image verticalCenter="1.5" source="@Embed('assets/fred/barre_bleue_titre2.swf')"/>
+			<mx:Text text="LES CONSEQUENCES :" verticalCenter="2.5" horizontalCenter="-220" styleName="imageText"/>
+		</mx:Canvas>
+	</mx:HBox>
+	
+	<mx:HBox width="82%" horizontalGap="10">
+		<mx:Label width="250"  styleName="simpleBold"  text="Avez-vous subi des dommages ? "  />
+		<mx:RadioButtonGroup  id="Q12"   />
+		<mx:RadioButton  styleName="simple"  id="Q121" groupName="Q12" selected="{_appModel.result.has_damage}"    label="Oui" />
+		<mx:RadioButton  styleName="simple"  id="Q122" groupName="Q12"  selected="{!_appModel.result.has_damage}" label="Non"  />
+ 	</mx:HBox>
+ 	
+ 	<mx:HBox width="82%" horizontalGap="4">
+		<mx:Label width="380"  styleName="simpleBold"  text="Une autre personne a-t-elle été touchée par le sinistre ?"  />
+		<mx:RadioButtonGroup  id="rdAnybodyElse" change="showHidAnybodyElse()"/>
+		<mx:RadioButton  styleName="simple"  id="rdAnybodyElse1" groupName="rdAnybodyElse" label="Oui"  />
+		<mx:RadioButton  styleName="simple"  id="rdAnybodyElse2" groupName="rdAnybodyElse" label="Non" selected="true"  />
+		<mx:RadioButton  styleName="simple"  id="rdAnybodyElse3" groupName="rdAnybodyElse" label="Ne sais pas" />
+	</mx:HBox>
+	 
+ 	<mx:HBox height="100%">
+		<mx:Spacer width="10"/>
+    		<mx:VBox  id="vSecondHouse"  height="-2" visible="false"  borderStyle="solid" horizontalAlign="left" cornerRadius="10" width="100%">	
+			<mx:HBox width="95%" horizontalGap="0" >
+				<mx:Spacer width="3"/>			
+				<mx:Label styleName="simple"  text="Renseignez les coordonnées de cette personne si vous les connaissez" />
+			</mx:HBox>
+			<mx:HBox width="95%" horizontalGap="0" >
+				<mx:Spacer width="1"/>			
+				<mx:Label styleName="simple"  width="100"  text="Nom :" />
+				<mx:TextInput id="txtLastName" width="120" maxChars="50"/>	
+				<mx:Spacer width="45" />
+				<mx:Label width="75"  text="Prénom :" />
+				<mx:TextInput id="txtFirstName" width="120" maxChars="50"/><mx:Spacer width="3"/>
+			</mx:HBox>
+			<mx:HBox width="95%" horizontalGap="0">
+				<mx:Spacer width="3"/><mx:Label width="100"  styleName="simple"  text="Adresse :" />
+				<mx:TextInput id="txtAddress"  styleName="simple" maxChars="50" width="360"/><mx:Spacer width="3"/>
+			</mx:HBox>			
+			<mx:HBox width="95%" horizontalGap="0">	
+				<mx:Spacer width="3"/><mx:Label  styleName="simple"  text="Code postal :" width="100"/>
+				<mx:TextInput id="txtPostalCode" width="45" restrict="0-9" maxChars="5"/>
+				<mx:Spacer width="140" />
+				<mx:Label styleName="simple"  width="55"  text="Ville :"/>
+				<mx:TextInput id="txtCity" maxChars="50" width="120"/><mx:Spacer width="3"/>
+			</mx:HBox>	
+			<mx:HBox width="95%" horizontalGap="0" horizontalAlign="left"> 
+				<mx:Spacer width="3"/><mx:Label  styleName="simple"  width="100"  text="Assureur :"/>
+				<mx:TextInput id="txtInsured" maxChars="50" width="120"/>
+				<mx:Spacer width="240"/><mx:Spacer width="3"/>
+			</mx:HBox>
+			<mx:Spacer height="2"/>
+		</mx:VBox>
+	</mx:HBox>
+ 
+	<mx:HBox width="100%">
+		<mx:Button width="120" styleName="NavButton" label="Etape précédente" click="prev()" />
+		<mx:Spacer width="100%"/>
+		<mx:Button width="120" styleName="NavButton" label="Etape suivante" click="next()" />
+	</mx:HBox>
+</mx:Panel>

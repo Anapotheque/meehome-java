@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"   styleName="PanelRecap" >
+	<mx:Script>
+		<![CDATA[
+			import com.generali.events.ui.NextSectionEvent;
+			import com.generali.views.Insured;
+			import com.generali.model.AddressVO;
+			import com.generali.dommageElectrique.model.AppModel;
+			[Bindable]
+			private var _appModel:AppModel = AppModel.getInstance();
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" >
+				<mx:HBox>
+					<mx:Label text="A quelle date cela s’est-il produit :" width="200"  styleName="simple" />
+					<mx:Label width="135"  text="{_appModel.accident.accidentDate}" styleName="simpleBold"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="Appareil endommagé :" width="200"  styleName="simple" />
+					<mx:Label width="135"  text="{_appModel.accident.deviceType}" styleName="simpleBold"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label width="200"   text="Marque :" styleName="simple" />
+					<mx:Label    text="{_appModel.accident.brand}" styleName="simpleBold"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="Nom du modèle :" styleName="simple" width="200"  />
+					<mx:Label   text="{_appModel.accident.model}" styleName="simpleBold"/>
+				</mx:HBox>
+				
+				<mx:HBox>
+					<mx:Label text="Date d'achat :" styleName="simple" width="200"  />
+					<mx:Label   text="{_appModel.accident.purchaseDate}" styleName="simpleBold"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="Valeur d'achat :" styleName="simple" width="200" />
+					<mx:Label    text="{_appModel.accident.purchaseCost}" styleName="simpleBold" />
+					<mx:Label   text="{((_appModel.accident.purchaseCost=='')?'':'€')}" width="80" styleName="simpleBold" />
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="Description de dommage :" styleName="simple"  width="200"/>
+					<mx:TextArea width="100%" id="description" text="{_appModel.accident.decription}" 
+						styleName="simpleBold" borderStyle="none" backgroundAlpha="0" editable="false"/>
+				</mx:HBox>
+				
+		</mx:VBox>
+</mx:Panel>

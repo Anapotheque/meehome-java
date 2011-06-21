@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"  styleName="generaliPanel"
+	xmlns:validation="com.generali.views.validation.*" creationComplete="init()">
+	  
+	  <mx:Script>
+	  	<![CDATA[
+	  		
+	  		import mx.formatters.DateFormatter;
+	  		import mx.utils.ObjectUtil;
+	  		
+	  		
+	  		import com.flexriver.common.utils.FlexriverUtils;
+	  		import com.flexriver.common.validators.FlexriverValidators;
+	  		
+	  		import briffle.dq.interpreter.Interpreter;
+	  		import briffle.dq.interpreter.Interpreter;
+	  		import briffle.dq.interpreter.InterpreterResultEvent;
+	  		import briffle.dq.model.elements.SingleAnswerQuestion;
+	  		import briffle.dq.model.elements.Chapter;
+	  		import briffle.dq.model.PathContext;
+	  		import briffle.dq.model.elements.Answer;
+	  		import briffle.dq.model.Form;
+	  		import briffle.dq.interpreter.InterpreterResultEvent;
+	  		
+	  		import com.generali.degatDesEaux.utils.VisualInterpreter;
+	  		import com.generali.degatDesEaux.events.rules.RuleEngineExecutedEvent;
+	  		import com.generali.degatDesEaux.utils.RuleEngineStub;
+	  		import com.generali.degatDesEaux.model.AppModel;
+	  		
+	  		import com.generali.model.InsuredVO;
+	  		import com.generali.events.ui.NextSectionEvent;
+	  		import com.generali.utils.Util;
+	  		import com.generali.utils.Message;
+			import com.generali.utils.Color;
+			
+			[Bindable]
+	 		private var _disabledRanges:Array;
+	 		
+	 		[Bindable]
+	  		private var _appModel:AppModel = AppModel.getInstance();
+	  		
+			private const NATURAL_PARENT:String="sinistre";
+			
+			public var _interpreter:Interpreter  = new Interpreter(NATURAL_PARENT);
+	  		public var _ruleEngine : RuleEngineStub = RuleEngineStub.getInstance(); 
+	  		
+	  		private var _currentDate:Date;
+	  		private function init():void
+	  		{
+	  			_currentDate = new Date();
+		  		initCalendar();
+		  		showAddress();
+		  		_ruleEngine.addEventListener( RuleEngineExecutedEvent.ID,handleRuleEngine);
+		  		_interpreter.getInterpreterDispatcher().addEventListener(InterpreterResultEvent.ID,handleInterpreterResults);
+	  		}
+	  		public function handleInterpreterResults( e:InterpreterResultEvent): void
+			{
+				if (e.getNatural_parent() == NATURAL_PARENT)
+				{
+					var vi:VisualInterpreter = new VisualInterpreter(this);
+					vi.apply(e);
+				}				
+			} 
+	  		public function handleRuleEngine( e:RuleEngineExecutedEvent): void
+			{
+				_interpreter.interpret();
+			} 
+			private function setQuestions():void
+			{
+	 			var form :Form = Form.getInstance();
+				var _q11: SingleAnswerQuestion = form.getElementById("Q11") as SingleAnswerQuestion;				
+				_q11.addAnswer(new Answer("a11"));
+				_q11.getAnswer().setValue(Q11.selected);
+				_appModel.residence.main_residence = Q11.selected;
+				var context:PathContext = new PathContext(form,form.getElementById("C2") as Chapter,null,_q11);
+				_ruleEngine.execute(context,"Generali.DDE.Flows.Residence");
+	 		}
+	 		
+	 		private function initCalendar():void	  		
+	 		{	  		  			
+	  			txtAccidentDate.disabledRanges = Util.getDisabledRangeDays();
+	  		}
+	  		
+	  		private function fillModel():void
+	  		{
+	  			if(Q11 != null) 
+	  			{
+	  			_appModel.residence.main_residence = Q11.selected;
+	  			}
+	  			
+	  			_appModel.residence.address.addressVal = address.text;
+	  			_appModel.residence.address.city = city.text;
+	  			_appModel.residence.address.postal_code = postal_code.text;
+	  			_appModel.accident.accidentDate = txtAccidentDate.text;
+	  			_appModel.accident.cause1 = chCause1.selected;
+	  			_appModel.accident.cause2 = chCause2.selected;
+	  			_appModel.accident.cause3 = chCause3.selected;
+	  			_appModel.accident.cause4 = chCause4.selected;
+	  			_appModel.accident.cause5 = chCause5.selected;
+	  			_appModel.accident.cause6 = chCause6.selected;
+	  			_appModel.accident.cause7 = chCause7.selected;	  			
+	  			_appModel.accident.cause51 = chCause51.selected;
+	  			_appModel.accident.cause52 = chCause52.selected;
+	  			_appModel.accident.cause53 = chCause53.selected;
+	  			_appModel.accident.cause54 = chCause54.selected;
+	  			_appModel.accident.cause55 = chCause55.selected;
+	  			_appModel.accident.other55 = txtOther55.text;	  		  			
+	  			_appModel.accident.other6 = txtOtherCause.text;
+	  		}
+	  		
+	  		private function showHideInfiltration():void
+	  		{
+	  			if (chCause5.selected)
+	  			{
+	  				showInfilTransition.play();
+	  			}
+	  			else
+	  			{
+	  				hideInfilTransition.play();
+	  			}
+	  		}
+	  		private function showHideDetailCause():void{
+	  			if (chCause6.selected)
+	  			{
+	  				txtOtherCause.visible	= true;
+	  				lblotherCause.visible = true;
+	  			}
+	  			else
+	  			{
+	  				txtOtherCause.visible = false;
+	  				lblotherCause.visible = false;
+	  			}
+	  			
+	  		}
+	  		private function prev():void {	  			 
+	  			parentApplication.dispatchEvent( new NextSectionEvent(NextSectionEvent.TO_INSURED));
+	  		}
+	  		
+	  		// Validation de l'adresse saisie
+	  		private function validation_adresse():void{
+	  			
+  				// Verification de la saisie d'une adresse
+  				if (address.text == "" ) {
+  					txtError.addError(Message.MSG_EMPTY_ADDRESS);
+  					address.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+  				}else{
+  					address.setStyle("backgroundColor",Color.VALIDATION_OK_COLOR);
+  				}
+  				
+  				// Verification que le code postal est composé de 5 chiffres si saisi
+  				if (postal_code.text != "" && (!FlexriverValidators.is5Digits(postal_code.text) || postal_code.text.length != 5)) {
+  					txtError.addError(Message.MSG_BAD_ZIPCODE);
+  					postal_code.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+				}
+  				// Verification de la saisie d'un code postal
+  				else if (postal_code.text == "") {
+  					txtError.addError(Message.MSG_EMPTY_ZIPCODE);
+  					postal_code.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+  				}else{
+  					postal_code.setStyle("backgroundColor",Color.VALIDATION_OK_COLOR);
+  				}
+  				
+  				// Verification de la saisie d'une ville
+  				if (city.text == "" ) {
+  					txtError.addError(Message.MSG_EMPTY_CITY);
+  					city.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+  				}else{
+  					city.setStyle("backgroundColor",Color.VALIDATION_OK_COLOR);
+  				}
+	  		}
+	  		
+			// Verification de la saisie d'une date de sinistre
+	  		private function validation_dateSinistre():void{
+	  			if (txtAccidentDate.text != "" ) {
+  					if (!FlexriverValidators.isValidDate(txtAccidentDate.text)) {
+  						txtError.addError(Message.MSG_FORMAT_DATE);
+  						txtAccidentDate.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);
+  					} else {
+  						var i:int = mx.utils.ObjectUtil.dateCompare(FlexriverUtils.toDate(txtAccidentDate.text) , _currentDate);
+			  			if(i==1) {
+			  				txtError.addError(Message.MSG_BAD_DATE);
+			  				txtAccidentDate.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);	
+			  			} else {
+			  				txtAccidentDate.setStyle("backgroundColor",Color.VALIDATION_OK_COLOR);
+			  			}
+  					}
+	  			} else {
+	  				txtError.addError(Message.MSG_EMPTY_DATE);
+	  				txtAccidentDate.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);	
+	  			}
+	  		}
+	  		
+	  		private function next():void {
+	  			txtError.prepare_validation();	 
+	  			
+	  			 // Verification si on n'a selectionné résidence principale
+	  			if(!_appModel.residence.main_residence) 
+	  				validation_adresse();
+	  				
+	  			// Verification de la saisie d'une date de sinistre
+	  			validation_dateSinistre();
+	  			
+	  			if (!txtError.play()) {
+	  				fillModel();
+	  				parentApplication.dispatchEvent( new NextSectionEvent(NextSectionEvent.TO_SINISTRE_SECOND));
+	  			}
+	  		}
+	  		
+	  		private function formatDate():void {		     	
+		          if(FlexriverValidators.isValidDate(txtAccidentDate.text))
+		          {
+		          	dateValidation.visible = true;
+		          	dateValidation.setStyle("backgroundColor",Color.VALIDATION_ERR_COLOR);}
+		          else
+		          {
+		          	dateValidation.setStyle("backgroundColor","white");
+		          	dateValidation.visible =false;
+		          }		           
+		    }
+	  		
+	  		private function hideShowCause55():void {
+	  			if (chCause55.selected) {
+	  				hbxOther55.visible =true;
+	  			} else {
+	  				hbxOther55.visible = false;
+	  			}
+	  		}
+
+		private function showAddress():void {
+  			if (_appModel.residence.address.city != "") {
+  				this.currentState = 'showResidenceAvecDetailContrat';
+  				
+  				if (_appModel.residence.main_residence == true ) {
+  					this.lblResidence.text = "Il s'agit de ma résidence principale"
+  				} else {
+  					this.lblResidence.text = "Il s'agit de ma résidence secondaire"	
+  				}  				
+  				
+  				this.address.enabled = false
+  				this.postal_code.enabled = false
+  				this.city.enabled = false
+  				this.address.text = _appModel.residence.address.addressVal;
+  				this.postal_code.text = _appModel.residence.address.postal_code;
+  				this.city.text = _appModel.residence.address.city;
+  				showAddressTransition.play();
+  			} else {
+  				showAddressTransition.play();
+  				//hideAddressTransition.play();
+  				this.currentState = 'showResidenceSansDetailContrat';
+  				this.Q11.enabled = true;
+  			}
+	    }
+	  		
+	  	]]>
+	  </mx:Script>
+	  
+		<mx:states>
+			<mx:State name="showResidenceSansDetailContrat">		   
+				 <mx:AddChild relativeTo="{blocAdresse}" position="before">
+					<mx:HBox width="100%" horizontalGap="0">
+						<mx:CheckBox selected="{_appModel.residence.main_residence}" enabled="false" id="Q11" styleName="simple" label="Il s'agit de ma résidence principale" click="setQuestions()" />
+					</mx:HBox>		
+		       	</mx:AddChild>
+			</mx:State>
+			<mx:State name="showResidenceAvecDetailContrat">		   
+				 <mx:AddChild relativeTo="{blocAdresse}" position="before">
+					<mx:HBox width="100%" horizontalGap="0">
+						<mx:Label id="lblResidence" text="Il s'agit de ma résidence principale"/>
+					</mx:HBox>		
+		       	</mx:AddChild>
+			</mx:State>
+		</mx:states>
+	  
+	  	<mx:Sequence id="showAddressTransition" target="{S3}">
+			<mx:SetPropertyAction name="visible" value="true" />
+			<mx:Resize heightTo="123" duration="500" />
+		</mx:Sequence>
+		 <mx:Parallel id="hideAddressTransition" target="{S3}">
+			<mx:SetPropertyAction name="visible" value="false" />
+			<mx:Resize  heightTo="-2" duration="500" />			
+		</mx:Parallel>
+		<mx:Sequence id="showInfilTransition" target="{vInfiltration}">
+			<mx:Resize   heightTo="80" duration="250" />
+			<mx:SetPropertyAction name="visible" value="true" />
+		</mx:Sequence>	
+		 <mx:Parallel id="hideInfilTransition" target="{vInfiltration}">
+			<mx:SetPropertyAction name="visible" value="false" />
+			<mx:Resize   heightTo="-2" duration="250" />			
+		</mx:Parallel>
+		
+		
+		
+	<validation:GeneraliValidator id="txtError" styleName="ErrorVal"  width="80%" color="red"/>  
+	<mx:Spacer height="10" />
+	<mx:HBox horizontalGap="0" width="82%">
+				<mx:Image source="@Embed('assets/fred/icone_bien.swf')"  />
+				 <mx:Canvas >
+				   <mx:Image verticalCenter="1.5" source="@Embed('assets/fred/barre_bleue_titre2.swf')"/>
+		           <mx:Text text="LE BIEN CONCERNE :" verticalCenter="2.5" horizontalCenter="-225" styleName="imageText"/>
+				  </mx:Canvas>
+	</mx:HBox>	
+	  <mx:HBox width="82%" >
+	  	<mx:Spacer width="10" />
+	  	<mx:VBox width="100%">
+
+				<mx:HBox id="blocAdresse">
+				<mx:Spacer width="70" />
+				<mx:VBox id="S3" borderStyle="solid" height="-2" visible="true" width="70%" horizontalAlign="center" cornerRadius="10">	
+					<mx:Spacer height="3"/>
+					<mx:HBox width="100%" horizontalGap="0">
+						<mx:Spacer width="3"/>
+						<mx:Label text="Renseignez l’adresse" />
+					</mx:HBox>		
+					
+					<mx:HBox width="100%" horizontalGap="0">
+						<mx:Spacer width="3"/>
+						<mx:Label width="100"  styleName="simple" text="Adresse :" />
+						<mx:TextInput id="address" width="390" maxChars="50" text="{_appModel.residence.address.addressVal}" />
+						<mx:Spacer width="3"/>
+					</mx:HBox>			
+					<mx:HBox width="100%" horizontalGap="0">
+						<mx:Spacer width="3"/>	
+						<mx:Label  text="Code postal :" styleName="simple" width="100"/>
+						<mx:TextInput id="postal_code" width="45" maxChars="5"  text="{_appModel.residence.address.postal_code}" restrict="0-9" />
+						<mx:Spacer width="175" />
+						<mx:Label width="50" styleName="simple"  text="Ville :" />
+						<mx:TextInput id="city" width="120" maxChars="50"  text="{_appModel.residence.address.city}"  />	
+						<mx:Spacer width="3"/>	
+					</mx:HBox>
+					<!--	
+					<mx:HBox width="100%" horizontalGap="0"> 
+						<mx:Spacer width="3"/>
+						<mx:Label width="100" styleName="simple"  text="Qualité :"/>
+						<mx:ComboBox id="cmbQuality" dataProvider="{InsuredVO.qualityArrColl.source}" width="200"  selectedIndex="{_appModel.residence.quality}" />
+						<mx:Spacer width="3"/>
+					</mx:HBox>
+					-->
+			</mx:VBox>
+	</mx:HBox>
+	</mx:VBox>
+	</mx:HBox>
+	<mx:HBox horizontalGap="0" width="82%">
+				<mx:Image source="@Embed('assets/fred/icone_sinistre.swf')"  />
+				 <mx:Canvas >
+				   <mx:Image verticalCenter="1.5" source="@Embed('assets/fred/barre_bleue_titre2.swf')"/>
+		           <mx:Text text="LE SINISTRE :" verticalCenter="2.5" horizontalCenter="-247" styleName="imageText"/>
+				  </mx:Canvas>
+	</mx:HBox>
+	<mx:HBox width="82%" horizontalGap="0" verticalAlign="bottom">
+					<mx:Label width="250"  styleName="simple" text="A quelle date cela s'est-il produit ?*" fontWeight="bold" />
+					<mx:DateField editable="true" dayNames="{['D','L','M','M','J','V','S']}" styleName="simple"
+						monthNames="{['JANVIER','FEVRIER','MARS','AVRIL','MAI','JUIN','JUILLET','AOUT','SEPTEMBRE','OCTOBRE','NOVEMBRE','DECEMBRE']}"
+						formatString="{'DD/MM/YYYY'}"  	text="{_appModel.accident.accidentDate}"
+						id="txtAccidentDate" />
+					<mx:Label id="dateValidation" text="(jj/mm/aaaa)"  visible="true"/>
+	</mx:HBox>
+	<mx:Label text="(Ou à défaut la date à laquelle vous en avez eu connaissance)" fontStyle="italic" width="82%" />
+	<mx:Label   width="82%"  styleName="simpleBold" text ="Quelle en est sa cause ?"/>
+    <mx:HBox height="82%">
+			<mx:Spacer width="5"/>
+			<mx:VBox width="100%" horizontalGap="0" verticalGap="2">	
+				<mx:CheckBox  styleName="simple" id="chCause1" label="Fuite d’une canalisation, d’un tuyau" selected="{_appModel.accident.cause1}" />
+				<mx:CheckBox  styleName="simple" id="chCause2" label="Fuite ou débordement de gouttières"  selected="{_appModel.accident.cause2}" />
+				<mx:CheckBox  styleName="simple" id="chCause3" label="Débordement d’appareils (évier, lavabo, machine à laver…)" selected="{_appModel.accident.cause3}" />
+				<mx:CheckBox  styleName="simple" id="chCause4" label="Débordement ou renversement de récipients (bassine, seau, aquarium…)" selected="{_appModel.accident.cause4}" />
+				<mx:CheckBox  styleName="simple" id="chCause5" label="Infiltrations" change="showHideInfiltration()" selected="{_appModel.accident.cause5}" />
+				<mx:VBox  height="-2" visible="false" id="vInfiltration" width="100%" horizontalAlign="center" verticalGap="2">
+							<mx:HBox width="100%">
+							<mx:Spacer width="25"/>
+							<mx:Text  styleName="simple"  width="400" text ="Précisez l’endroit de l’infiltration, si vous en avez connaissance :"/>
+							</mx:HBox>
+							<mx:VBox>
+								<mx:HBox  verticalAlign="middle" width="100%" >										
+								<mx:CheckBox styleName="simple" id="chCause51" label="Toiture"  selected="{_appModel.accident.cause51}" />
+								<mx:CheckBox styleName="simple" id="chCause52" label="Terrasse"  selected="{_appModel.accident.cause52}" />
+								<mx:CheckBox styleName="simple" id="chCause53" label="Façade"  selected="{_appModel.accident.cause53}" />
+								<mx:CheckBox styleName="simple" id="chCause54" label="Balcon"  selected="{_appModel.accident.cause54}" />
+								<mx:Spacer width="70"/>
+								</mx:HBox>
+								<mx:HBox width="100%">				
+								<mx:CheckBox styleName="simple" id="chCause55" label="Autre" click="hideShowCause55()" selected="{_appModel.accident.cause55}"  />
+									<mx:HBox id="hbxOther55" visible="false" verticalAlign="middle">
+										<mx:Label  text="Précisez :" />
+										<mx:TextInput id="txtOther55" width="110"  maxChars="50" text="{_appModel.accident.other55}"/>
+									</mx:HBox>
+								</mx:HBox>
+							</mx:VBox> 
+							
+				</mx:VBox>
+				<mx:HBox verticalAlign="middle">
+							<mx:CheckBox styleName="simple"  id="chCause6" label="Autre cause" click="showHideDetailCause()" selected="{_appModel.accident.cause6}"  />
+							<mx:Label height="20" id="lblotherCause" text="Précisez :" visible="false"/>
+							<mx:TextInput id="txtOtherCause"   maxChars="50"  visible="false"/>
+				</mx:HBox> 
+				<mx:CheckBox  styleName="simple" id="chCause7" label="Cause inconnue"  selected="{_appModel.accident.cause7}"  />
+			</mx:VBox>
+	</mx:HBox>
+	<mx:Spacer height="100%" />
+	<mx:HBox width="100%">
+		<mx:Button label="Etape précédente" width="120" styleName="NavButton" click="prev()" />
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Etape suivante" width="120"  styleName="NavButton" click="next()" />
+	</mx:HBox>
+</mx:Panel>

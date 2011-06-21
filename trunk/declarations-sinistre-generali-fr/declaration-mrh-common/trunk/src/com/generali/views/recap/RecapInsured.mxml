@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"   styleName="PanelRecap"  borderColor="white">
+	<mx:Script>
+		<![CDATA[
+			import com.generali.model.InsuredVO;
+			[Bindable]
+			private var _insuredModel:InsuredVO;
+			
+			public function get insuredModel():InsuredVO{
+				return _insuredModel;
+			}
+			public function set insuredModel(insuredModel:InsuredVO):void{
+				_insuredModel = insuredModel;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox>
+	<mx:VBox>
+		<mx:HBox>
+			<mx:HBox>
+				<mx:Label width="135"  text="Nom :" styleName="simple" />
+				<mx:Label width="135"  text="{_insuredModel.last_name}" styleName="simpleBold" />
+			</mx:HBox>
+			<mx:Spacer width="45"/>
+			<mx:HBox>
+				<mx:Label width="135"  text="Prénom :" styleName="simple" />
+				<mx:Label width="135"  text="{_insuredModel.first_name}" styleName="simpleBold" />
+			</mx:HBox>
+		</mx:HBox>
+	</mx:VBox>
+		<mx:HBox>
+			<mx:Label width="135"  text="Adresse :" styleName="simple" />
+			<mx:Label width="100%"  text="{_insuredModel.address.addressVal}" styleName="simpleBold"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:HBox>
+				<mx:Label width="135"  text="Code postal :" styleName="simple" />
+				<mx:Label width="135"  text="{_insuredModel.address.postal_code}" styleName="simpleBold" />
+			</mx:HBox>
+			<mx:Spacer width="45"/>
+			<mx:HBox>			
+				<mx:Label width="135"  text="Ville :" styleName="simple" />
+				<mx:Label width="135"  text="{_insuredModel.address.city}" styleName="simpleBold" />
+			</mx:HBox>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="135"  text="Qualité :" styleName="simple" />
+			<mx:Label width="100%"  text="{InsuredVO.qualityArrColl.getItemAt(_insuredModel.quality)}" styleName="simpleBold" />
+		</mx:HBox>
+		<mx:HBox>
+		<mx:HBox>
+				<mx:Label width="135"  text="Mail :" styleName="simple" />
+				<mx:Label width="135"  text="{_insuredModel.mail}" styleName="simpleBold" />
+			</mx:HBox>
+			<mx:Spacer width="45"/>
+			<mx:HBox>	
+				<mx:Label width="135"  text="Tél.mobile :" styleName="simple" />
+				<mx:Label width="135"  text="{_insuredModel.mobile_number}" styleName="simpleBold" />
+			</mx:HBox>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:HBox>
+				<mx:Label width="135"  text="Tél.domicile :" styleName="simple" />
+				<mx:Label width="135"  text="{_insuredModel.house_number}" styleName="simpleBold" />
+			</mx:HBox>
+			<mx:Spacer width="45"/>
+			<mx:HBox>
+				<mx:Label width="135"  text="Tél.bureau :" styleName="simple" />
+				<mx:Label width="135"  text="{_insuredModel.work_number}" styleName="simpleBold" />
+		</mx:HBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Panel>
