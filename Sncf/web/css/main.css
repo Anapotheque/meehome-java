@@ -1,0 +1,205 @@
+body {    
+          background: #AAAAAA url("../images/wall2ssrien.jpg") fixed no-repeat center;
+	  overflow: auto;
+	  border: 0;
+          font-family : Arial, , Courier, "MS Sans Serif";                             
+          font-size : 100%;   
+	  text-align: center;                  
+}
+
+#corps_table hr{
+    color: #24618E; 
+}
+
+table{
+        border-collapse: collapse;
+	font-size : 80%;  
+}
+
+.milieu  { vertical-align: middle;}
+
+
+ul{
+	list-style: none;
+}
+
+/*DEFNITION DE LA TAILLE ET DE LA COULEUR DE LA POLICE*/
+h1{
+    letter-spacing : 2pt;
+    font-size : 100%;
+    color: blue;
+}
+
+h2{
+    letter-spacing : 2pt;
+    font-size : 12pt;
+    color: navy;
+}
+h3{
+    font-size : 100%;
+    letter-spacing : 3pt;
+    color: red;
+}
+h4{
+    font-size : 100%;
+    color: black;
+    letter-spacing : 10pt;
+}
+h5{
+    font-size : 80%;
+    color: green;
+    letter-spacing : 10pt;
+}
+h6{
+    font: bold;
+    font-size : 80%;
+    color: blue;
+}
+
+h7{
+    color: Navy;
+    text-align: left;
+}
+h7 a{
+    text-align: left;
+    color: navy:
+    text-decoration: none;
+}
+
+h7 a:hover{
+    color: blue;
+    text-decoration: underline;
+}
+
+#TexteInformation1{
+
+    font-size : 120%;
+    color: green;
+    font: bold;
+
+}
+
+#TexteInformation2{
+
+    text-align : left;
+    font-size : 120%;
+    color: black;
+    font: bold;
+
+}
+
+#TexteInformation3{
+
+    text-align : left;
+    font-size : 120%;
+    color: red;
+    font: bold;
+
+}
+
+#TexteInformation4{
+
+    text-align : left;
+    font-size : 120%;
+    color: navy;
+    font: bold;
+
+}
+
+#TexteInformation5{
+
+    text-align : left;
+    font-size : 120%;
+    color: white;
+    font: bold;
+
+}
+
+button{
+    width: 10%;
+    border: 0;
+    background: Orange;
+    color: white;	
+    letter-spacing: 3pt;
+}
+
+
+#DivLoadFont{
+    position: absolute;
+    left: 0px;
+    top : 0px;
+    Height: 900px;
+    Width : 120%;
+    visibility : hidden;
+    background: gray;
+    border : 3px solid gray;
+    z-index: 200;
+}
+#DivLoad{
+    position: absolute;
+    left: 50px;
+    top : 100px;
+    Height: 200px;
+    Width : 75%;
+    visibility : hidden;
+    background: white;
+    border : 1px solid gray;
+    padding-top: 200px;
+    text-align: center;
+    z-index: 300;
+}
+
+#DivFont{
+    text-align: left;
+    background: #EEEEEE;
+    width: auto;
+    border : 1px solid gray;
+    padding: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#DivSaisie{
+    text-align: left;
+    background: White;
+    Width: auto;
+    border : 1px solid gray;
+    padding: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#Divcontenu{
+    text-align: center;
+    background: #EEEEEE;
+    width: auto;
+    border : 1px solid gray;
+    padding: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#ajout{
+    text-align: center;
+    background: transparent;
+    width: auto;
+    padding: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/*DEFINITION DES STYLES POUR LES INPUTS, PAS DE CADRE, TAILLE FIXE ET COULEUR DE FOND */
+input{
+    color: blue;
+        z-index: 0;
+}
+
+TextArea{
+    color: blue;
+    z-index: 0;
+}
+
+select{
+    color: blue;
+    z-index: 0;
+}

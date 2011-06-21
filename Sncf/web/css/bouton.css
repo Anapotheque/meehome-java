@@ -1,0 +1,108 @@
+#bouton1 {
+        text-align: center;
+        font-size : 100%;
+        letter-spacing : 1pt;
+        width: 200px;
+        margin: 10px;
+        }
+
+#bouton1 li a {
+        height: 32px;
+        height: 24px;
+        text-decoration: none;
+        }
+
+#bouton1 li a:link, #bouton1 li a:visited {
+        color: white;
+        display: block;
+        background:  url(../images/bouton4.gif);
+        padding: 8px 0 0 10px;
+        }
+
+#bouton1 li a:hover, #bouton1 li #current { {
+        color: white;
+        background:  url(../images/bouton4.gif) 0 -32px;
+        padding: 8px 0 0 10px;
+        }
+
+#bouton2 {
+        text-align: center;
+        font-size : 100%;
+        letter-spacing : 3pt;
+        width: 200px;
+        margin: 10px;
+        }
+
+#bouton2 li a {
+        height: 32px;
+        height: 24px;
+        text-decoration: none;
+        }
+
+#bouton2 li a:link, #bouton2 li a:visited {
+        color: black;
+        display: block;
+        background:  url(../images/bouton5_1.gif);
+        padding: 8px 0 0 10px;
+        }
+
+#bouton2 li a:hover, #bouton2 li #current { {
+        color: white;
+        background:  url(../images/bouton5_1.gif) 0 -32px;
+        padding: 8px 0 0 10px;
+        }
+
+#bouton3 {
+        text-align: center;
+        font-size : 100%;
+        letter-spacing : 3pt;
+        width: 200px;
+        margin: 10px;
+        }
+
+#bouton3 li a {
+        height: 32px;
+        height: 24px;
+        text-decoration: none;
+        }
+
+#bouton3 li a:link, #bouton3 li a:visited {
+        color: white;
+        display: block;
+        background:  url(../images/bouton5.gif);
+        padding: 8px 0 0 10px;
+        }
+
+#bouton3 li a:hover, #bouton3 li #current { {
+        color: white;
+        background:  url(../images/bouton5.gif) 0 -32px;
+        padding: 8px 0 0 10px;
+        }
+
+#bouton4 {
+        text-align: center;
+        letter-spacing : 3pt;
+        width: 200px;
+        margin: 10px;
+}
+
+#bouton4 li a {
+        height: 32px;
+        height: 24px;
+        text-decoration: none;
+        font-size : 70%;
+        font: bold;
+        }
+
+#bouton4 li a:link, #bouton4 li a:visited {
+        color: white;
+        display: block;
+        background:  url(../images/boutonNew.GIF);
+        padding: 8px 0 0 10px;
+        }
+
+#bouton4 li a:hover, #bouton4 li #current { {
+        color: white;
+        background:  url(../images/boutonNew.GIF) 0 -32px;
+        padding: 8px 0 0 10px;
+        }

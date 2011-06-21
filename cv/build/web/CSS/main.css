@@ -1,0 +1,179 @@
+body{
+
+    background: #AAAAAA url("../IMG/Font.bmp") fixed no-repeat;
+    padding: 0;
+    margin: 0;
+
+}
+
+#fenetre1{
+
+    position: absolute;
+    top : 0px;
+
+    background: url("../IMG/Fenetre1.JPG") fixed no-repeat;
+    width: 800px;
+    height: 571px;
+
+}
+
+#Menu_demarrer{
+
+    position: absolute;
+    top: 571px;
+
+    background: url("../IMG/menu_demarrer.JPG") fixed no-repeat;
+    width: 800px;
+    height: 29px;
+
+}
+
+#demarrer{
+
+    position: absolute;
+    top: 168px;
+    
+    visibility : hidden;
+
+    background: url("../IMG/demarrer.bmp") fixed no-repeat;
+    width: 379px;
+    height: 403px;
+
+}
+
+#Contenu{
+    
+    width: 800px;
+    height: 600px;
+
+}
+
+#Outils_Menu_Comptence{
+    
+    padding-left: 10px;
+    letter-spacing : 2pt;
+    font-size : 80%;
+    color: navy;
+
+    position: absolute;
+    top : 200px;
+    left: 379px;
+    
+    visibility : hidden;
+
+    background: url("../IMG/Outils_Menu.JPG") fixed no-repeat;
+    width: 379px;
+    height: 403px;
+
+}
+
+#Outils_Menu_Formations{
+    
+    padding-left: 10px;
+    letter-spacing : 2pt;
+    font-size : 80%;
+    color: navy;
+
+    position: absolute;
+    top : 220px;
+    left: 379px;
+    
+    visibility : hidden;
+
+    background: url("../IMG/Outils_Menu.JPG") fixed no-repeat;
+    width: 379px;
+    height: 403px;
+
+}
+
+#Outils_Menu_Experience{
+    
+    padding-left: 10px;
+    letter-spacing : 2pt;
+    font-size : 80%;
+    color: navy;
+
+    position: absolute;
+    top : 240px;
+    left: 379px;
+    
+    visibility : hidden;
+
+    background: url("../IMG/Outils_Menu.JPG") fixed no-repeat;
+    width: 379px;
+    height: 403px;
+
+}
+
+#Outils_Menu_EtatCivil{
+    
+    padding-left: 10px;
+    letter-spacing : 2pt;
+    font-size : 80%;
+
+    position: absolute;
+    top : 260px;
+    left: 379px;
+    
+    visibility : hidden;
+
+    background: url("../IMG/Outils_Menu.JPG") fixed no-repeat;
+    width: 379px;
+    height: 403px;
+
+}
+
+#choix1, #choix2, #choix3, #choix4{
+
+    width: 200px;
+    height: 31px;
+    
+}
+
+#choix1{
+
+    position: relative;
+    top: 72px;
+    left: 197px;
+    
+}
+#choix2{
+
+    position: relative;
+    top: 75px;
+    left: 197px;
+
+}
+#choix3{
+
+    position: relative;
+    top: 78px;
+    left: 197px;
+
+}
+#choix4{
+
+    position: relative;
+    top: 81px;
+    left: 197px;
+
+}
+
+#data{
+    background: url("../IMG/Data.JPG") fixed no-repeat;
+
+    padding-left: 30px;
+    padding-top: 10px;
+
+    width: 228px;
+    height: 35px;
+}
+
+#data a{
+    color: navy;
+    text-decoration: none;
+}
+
+#data a:hover{
+    font: bold;
+}

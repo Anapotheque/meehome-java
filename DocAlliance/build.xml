@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="DocAlliance" default="main" basedir=".">
+<property file="build.properties"/>	
+<description>par defaut Generation du fichier war 
+	construit pour la production car n'inluce pas les java et enlève le mode debug de la compilation
+</description>
+
+	  <tstamp>
+	    <format property="TODAY" pattern="MM/dd/yyyy hh:mm:ss" locale="fr,FR"/>
+	  </tstamp>
+	
+	<!-- ================================= 
+          target: Clean + Compil + Make War / Jar            
+         ================================= -->
+	<target name="cleanAndBuild" depends="clean,main" description="efface tout puis reconstruit tout">
+    	<echo>Done...</echo>
+	</target>
+	
+	<!-- ================================= 
+          target: clean              
+         ================================= -->
+    <target name="clean" description="efface tous les fichiers générés, doc, war, jar, class">
+    	<delete dir="${build.dir}" />
+    	<delete dir="dir/" />
+		<echo>Done...</echo>
+    </target>
+	
+	<target name="cleanClass" description="efface tous les fichiers class">
+        <delete failonerror="false">
+		<fileset dir="${build.dir}">
+	    	<include name="**/*.class"/>
+		</fileset>
+		</delete>
+		<echo>Done...</echo>
+	</target>
+	
+	<target name="cleanJar" description="efface tous les fichies jar">
+		<delete failonerror="false">
+		<fileset dir="${build.dir}">
+	    	<include name="**/*.jar"/>
+	    	<exclude name="**/*.java"/>
+		</fileset>
+		</delete>
+		<echo>Done...</echo>
+	</target>
+	
+	<target name="cleanWar" description="efface tous les fichiers war">
+		<delete failonerror="false">
+			<fileset dir="${file.war}">
+	    		<include name="${file.war}"/>
+			</fileset>
+		</delete>
+		<echo>Done...</echo>
+	</target>
+	
+	<!-- ================================= 
+          target: main              
+         ================================= -->	
+	
+ <target name="main" depends="compil" description="generation of war file">
+ 	<war 
+  	 basedir="${build.dir.web}"
+  	 warfile="${file.war}"
+  	 webxml="${app.dir}/web.xml"
+  	 defaultexcludes="yes"
+  	 >
+		<include name="**/*.class"/>
+		<include name="**/*.dtd"/>
+		<include name="**/*.xml"/>
+		<include name="**/*.jpg"/>
+		<include name="**/*.ico"/>
+		<include name="**/*.gif"/>
+		<include name="**/*.png"/>
+		<include name="${app.dir}/**/*.xml"/>
+		<include name="${app.dir}/**/*.properties"/>
+		<include name="${web.dir}"/>
+		<!-- 
+		include à enlever dans un cas de production
+		-->
+		<include name="**/*.jsp"/>
+		<include name="**/*.js"/>
+		<include name="**/*.css"/>
+		<include name="**/*.jar"/>
+ 	</war>
+ 	<echo>Done...</echo>
+  </target>
+
+
+	<target name="makeJar" description="creer le fichier jar" depends="compil">
+		<jar destfile="${build.dir}/${file.jar}" basedir="${build.dir}" excludes="**/Test.class">
+		</jar>
+	</target>
+	
+	<!-- ================================= 
+          target: compil              
+         ================================= -->
+    <target name="compil" description="compilation de tous les fichiers java">
+    	<mkdir dir="${build.dir.classes}"/>
+    	<copy todir="${build.dir.classes}">
+    		<fileset dir="${src.dir}" defaultexcludes="true">
+    				<include name="**/*.xml"/>
+    				<include name="**/*.dtd"/>
+    		</fileset>
+    	</copy>
+    	<copy file="${basedir}/SDocAllianceApplet.jar" todir="${basedir}"></copy>
+     	<copy  todir="${build.dir.web}">
+     		<fileset dir="${web.dir}"/>
+     	</copy>
+     	<replace file="${build.dir.web}/index.jsp" description="permet d'inclure la date de compilation dans le footer" token="@dateCompil@" value="${TODAY}">
+     	</replace>
+		<javac srcdir="${src.dir}" destdir="${build.dir.classes}" debug="false">
+    		<classpath>
+    			<fileset dir="${lib.dir}" defaultexcludes="true">
+    				<include name="**/*.jar"/>
+    			</fileset>
+    			
+    		</classpath>
+		</javac>
+    	<echo>Done...</echo>
+    </target>
+	
+	<!-- ================================= 
+          target: deploy Tomcat              
+         ================================= -->
+    <target name="deploy" description="Depose le fichier war sous tomcat">
+    	<copy file="${basedir}/dist/DocAlliance.war" todir="${tomcat.webapps.dir}" />
+    	<echo>Done...</echo>
+    </target>
+	
+</project>

@@ -1,0 +1,30 @@
+/*DEFINITION DU FOND DE PAGE POUR LE CHOIX D'UNE TABLE */
+#corps {
+    width: 98%;
+    background : #EEEEEE;                     
+    text-align : center; 
+    margin-top: 20px;
+	 margin-bottom: 50px;
+    padding: 10px;
+    border: 1px solid gray;                
+}
+
+/*DEFINITION DU FOND DE PAGE DES INFORMATIONS DIVERSES AFFICHES DANS LA PAGE*/
+#infos {    
+    background : #EEEEEE;     
+    color: black; 
+    width: 98%;
+	 height : 300px;
+    border: 1px solid gray;
+	text-transform: capitalize;
+}
+
+/*DEFINITION DU FOND DE PAGE DES ERREURS DIVERSES AFFICHEES DANS LA PAGE*/
+#warning{
+		
+    background : #EEEEEE;
+    color: black; 
+    width: 98%;
+    height : 300px;
+    border: 1px solid gray;
+}

@@ -1,0 +1,59 @@
+#icone_dvsg{
+
+    position : absolute;
+    top: 50px;
+    left: 20px;
+
+    background-image: url(../images/dvsg.png);
+    width: 256px;
+    height: 256px;
+
+}
+
+#icone_travaux{
+
+    position : absolute;
+    left: 276px;
+    top: 50px;
+
+    background-image: url(../images/travaux.png);
+    width: 200px;
+    height: 200px;
+
+}
+
+#icone_calques{
+
+    position : absolute;
+    left: 476px;
+    top: 50px;
+
+    background: url(../images/calques.GIF) fixed no-repeat center;
+    width: 50px;
+    height: 50px;
+
+}
+
+#icone_courrier{
+
+    position : absolute;
+    left: 20px;
+    top: 306px;
+
+    background: url(../images/courrier.GIF) fixed no-repeat center;
+    width: 50px;
+    height: 50px;
+
+}
+
+#icone_courrier_enregistrement{
+
+    position : absolute;
+    left: 276px;
+    top: 306px;
+
+    background-image: url(../images/EnregistreCourrier.png);
+    width: 256px;
+    height: 256px;
+
+}

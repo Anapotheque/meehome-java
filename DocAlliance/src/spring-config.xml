@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans SYSTEM "./spring-beans-2.0.dtd" >
+<beans>
+    
+    <!-- configuration de la datasource  -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName">
+            <value>com.mysql.jdbc.Driver</value>		
+        </property>
+        <property name="url">
+            <value>jdbc:mysql://localhost:3306/DocAlliance?autoReconnect=true</value>
+            <!--<value>jdbc:mysql://aci-prod:3306/DocAlliance?autoReconnect=true</value>-->		
+        </property>
+        <property name="username">
+            <value>root</value>		
+        </property>
+        <property name="password">
+            <value>13041983</value>	
+            <!--<value>alliance</value>-->
+        </property>
+    </bean>
+    
+    
+    <!-- SessionFactory -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" >
+        <property name="dataSource"><ref bean="dataSource"/></property>
+        <property name="mappingLocations">
+            <value>fr/alliance/docalliance/dao/persistence/**.hbm.xml</value>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+                <prop key="hibernate.connection.release_mode">auto</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.c3p0.minPoolSize">100</prop>
+                <prop key="hibernate.c3p0.maxPoolSize">200</prop>
+                <prop key="hibernate.c3p0.timeout">200</prop>
+                <prop key="hibernate.c3p0.max_statement">2000</prop>
+                <prop key="hibernate.generate_statistics">true</prop>
+                <prop key="hibernate.cache.use_query_cache">true</prop>
+            </props>
+        </property>
+    </bean>
+    
+    
+    <!-- gestionnaire de transactions -->
+    <bean id="transactionManager" 
+   class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory">
+            <ref local="sessionFactory"/>
+        </property>
+    </bean>
+    
+    <!-- la classes d'accè à la couche [dao] -->
+    <bean id="globalDao" class="fr.alliance.docalliance.dao.impl.GlobalDao">
+        <property name="sessionFactory">
+            <ref local="sessionFactory"/>
+        </property>
+    </bean>
+    
+    
+    <!-- la classes d'accès à la couche [service] -->
+    <bean id="service" 
+   class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean" >
+        <property name="transactionManager">
+            <ref local="transactionManager"/>
+        </property>
+        <property name="target">
+            <bean class="fr.alliance.docalliance.service.impl.GlobalService">
+                <property name="dao">
+                    <ref local="globalDao"></ref>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
+                <prop key="save*">PROPAGATION_REQUIRED</prop>
+                <prop key="delete*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+    
+</beans>

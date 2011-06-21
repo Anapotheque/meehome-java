@@ -1,0 +1,27 @@
+.checklist {
+   border: 1px solid #ccc;
+   list-style: none;
+   overflow: auto;
+   width: 100%;
+   height : 200px;  
+}
+
+.checklist, .checklist li {
+   margin: 0;
+   padding: 0;
+}
+
+.checklist label {
+   display: block;
+   padding-left: 25px;
+   text-indent: -25px;
+}
+
+.checklist label:hover {
+   background: #777;
+   color: #fff;
+}
+
+.checklist input{
+   border: none;
+}

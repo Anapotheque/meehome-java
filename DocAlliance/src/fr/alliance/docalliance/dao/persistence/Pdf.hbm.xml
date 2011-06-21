@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 12 mars 2007 23:20:24 by Hibernate Tools 3.2.0.b9 -->
+<hibernate-mapping>
+    <class name="fr.alliance.docalliance.model.Pdf" table="pdf" catalog="DocAlliance">
+
+        <id name="idPdf" type="int">
+            <column name="idPDF" />
+            <generator class="increment" />
+        </id>
+        
+        <property name="nom" type="string">
+            <column name="Nom" />
+        </property>
+        
+        <property name="serveur" type="string">
+            <column name="Serveur" />
+        </property>
+        
+        <property name="absolutPath" type="string">
+            <column name="AbsolutPath" />
+        </property>
+        
+        <property name="send" type="java.lang.Boolean">
+            <column name="Send" />
+        </property>
+        
+        <property name="section" type="java.lang.Integer">
+            <column name="Section" />
+        </property>
+        
+        <set name="mails" inverse="true">
+            <key>
+                <column name="idPDF" />
+            </key>
+            <one-to-many class="fr.alliance.docalliance.model.Mail" />
+        </set>
+        
+    </class>
+</hibernate-mapping>

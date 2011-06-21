@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="800" height="600">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			private function doCall():void{
+				utilisateurService.estPresent(nameUser.text,passwordUser.text);
+			}
+			
+			/**
+			 * Méthode invoquée en cas de succès de l'appel RPC 
+			 */
+			private function onResult(event : ResultEvent):void{
+				// Afficher la réponse
+				if ( event.result as Boolean ) {
+					infoConnexion.text = "Success";
+				}else{
+					infoConnexion.text = "Vous avez entré un mauvais nom ou mot de passe, merci de reessayer.";
+				}
+			}
+			
+			/**
+			 * Méthode invoquée en cas d'échec de l'appel RPC 
+			 */ 
+			private function onFault(event : FaultEvent):void{
+				// Afficher le message d'erreur
+				infoConnexion.text = event.fault.message;
+			}
+		
+		]]>
+	</mx:Script>
+
+	<mx:RemoteObject id="utilisateurService" 
+					 destination="utilisateurServiceDest"
+					 result="onResult(event)"
+					 fault="onFault(event)"/>
+
+	<mx:Panel width="256" height="197" layout="absolute" title="Connection" x="10" y="10">
+				<mx:Label x="10" y="10" text="Nom : "/>
+				<mx:Label x="10" y="40" text="Prénom : "/>
+				<mx:TextInput id="nameUser" text="" x="66" y="8" />
+				<mx:TextInput id="passwordUser" 
+						  x="66" y="38"  displayAsPassword="true"/>
+				<mx:Button id="btnAppel" label="Connection"
+					       x="137" y="126" 
+					       click="doCall()"/>
+				<mx:TextArea id="infoConnexion" 
+					         x="10" y="66" width="216" height="52" enabled="false">
+					<mx:text>Veuillez saisir votre nom ainsi que votre mot de passe pour vous connecter à votre espace personnel</mx:text>
+				</mx:TextArea>
+				
+			</mx:Panel>
+	<mx:TabNavigator x="274" y="10" width="519" height="581">
+		<mx:Canvas label="Lundi" width="100%" height="100%">
+			<mx:TitleWindow x="10" y="10" width="497" height="269" layout="absolute" title="Informations diverses">
+				<mx:Text x="10" y="10" text="Blablalsdkjfsdlkfjsdlfjsdkljsdflkjsdfklsdfjklsdfjsdfljsdfljsdfkljlksdfj" width="457" height="209"/>
+			</mx:TitleWindow>
+			<mx:TitleWindow x="10" y="287" width="497" height="251" layout="absolute" title="Hier">
+				<mx:Text x="10" y="10" text="Blablalsdkjfsdlkfjsdlfjsdkljsdflkjsdfklsdfjklsdfjsdfljsdfljsdfkljlksdfj" width="457" height="191"/>
+			</mx:TitleWindow>
+			
+		</mx:Canvas>
+		<mx:Canvas label="Mardi" width="100%" height="100%">
+			<mx:LineChart x="10" y="10" id="linechart1" width="397" height="271">
+				<mx:series>
+					<mx:LineSeries displayName="Series 1" yField=""/>
+				</mx:series>
+			</mx:LineChart>
+			<mx:Legend dataProvider="{linechart1}" x="415" y="10" width="92"/>
+		</mx:Canvas>
+	</mx:TabNavigator>
+	
+</mx:Application>
