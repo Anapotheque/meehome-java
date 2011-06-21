@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:v="views.*"
+	preloader="fr.generali.declaration.sinistre.auto.common.utils.CustomPreloader"
+	xmlns:cv="fr.generali.declaration.sinistre.auto.common.views.*"
+	layout="vertical" creationComplete="init()" horizontalScrollPolicy="off" verticalScrollPolicy="auto" width="768" height="668">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.generali.tracking.Tracker;
+			import utils.ImageResource;
+			//import fr.generali.declaration.sinistre.auto.common.utils.ImageResource;
+			import mx.controls.Alert;
+			import models.AppModel; 
+			import fr.generali.declaration.sinistre.auto.common.views.events.DeclarationSinistreAutoEvent;
+			import fr.generali.declaration.sinistre.auto.common.models.vo.ContratVO;
+			import fr.generali.declaration.sinistre.auto.common.models.vo.AdresseVO;
+			import fr.generali.declaration.sinistre.auto.common.utils.Message;
+			//import com.generali.utils.RecapGenerali;
+			
+			// Flex DeepLinking – permet de ecouter les changements au niveau de l'url
+			import fr.generali.declaration.sinistre.auto.common.utils.Util;
+			import mx.utils.URLUtil;
+			import mx.managers.BrowserManager;
+			import mx.events.BrowserChangeEvent;
+			import mx.managers.IBrowserManager;
+	  		public var browserManager:IBrowserManager;
+	  		
+			public const APPLICATION_TYPE:String = "AC";
+			
+			[Bindable]
+        	private var _appModel:AppModel = AppModel.getInstance();
+
+        	// Flex DeepLinking – permet de ecouter les changements au niveau de l'url    	
+			private function parseURL(event:Event):void {
+	            if (URLUtil.stringToObject(browserManager.fragment).mode == Util.MODE_TEST)
+					_appModel.assure.mail = Util.SUIVI_PROD_MAIL_ESPACE_CLIENT;
+	            else
+	            	_appModel.assure.mail = Application.application.parameters.mail;
+        	}
+        	        	
+	 		private function init():void {	 	
+	 				
+       			// Flex DeepLinking – permet de ecouter les changements au niveau de l'url
+				browserManager = BrowserManager.getInstance();
+           		BrowserManager.getInstance().addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, parseURL); 
+           		browserManager.init("", "");
+           		
+				//On vérifie la bonne initialisation des 3 appels "FlashsVar" : CancelUrl, ServerUrl et Garage agréé
+				/*
+				//CancelUrl
+				var urlCancel:String = Application.application.parameters.cancelUrl;
+				if (urlCancel == "") {
+					Alert.show( Message.MSG_SERVER_INITIALISATION + "cancelUrl", "Initialisation Url", 0x4 ,null,null,fr.generali.declaration.sinistre.auto.common.utils.ImageResource.iconWarning);
+				}
+				//ServerUrl
+				var urlServer:String = Application.application.parameters.serverUrl;
+				if (urlServer == "") {
+					Alert.show(Message.MSG_SERVER_INITIALISATION + "serverUrl", "Initialisation Url", 0x4 ,null,null,fr.generali.declaration.sinistre.auto.common.utils.ImageResource.iconWarning);
+				}
+				//CancelUrl
+				var urlGarage:String = Application.application.parameters.urlGarage;
+				if (urlGarage == "") {
+					Alert.show(Message.MSG_SERVER_INITIALISATION + "UrlGarage", "Initialisation Url", 0x4 ,null,null,fr.generali.declaration.sinistre.auto.common.utils.ImageResource.iconWarning);
+				}
+				*/
+				
+				_appModel.clear();
+
+				_appModel.idClientRCE = Application.application.parameters.idClientRCE;				
+				_appModel.codePortefeuille = Application.application.parameters.codePortefeuille;
+				_appModel.codeCompagnie = Application.application.parameters.codeCompagnie;
+				//Pré-Initialisation des champs Assuré
+				_appModel.assure.nom = Application.application.parameters.nom;
+				_appModel.assure.prenom = Application.application.parameters.prenom;
+				_appModel.assure.adresse.adresse = Application.application.parameters.adresse;
+				_appModel.assure.adresse.codePostal = Application.application.parameters.codePostal;
+				_appModel.assure.adresse.ville = Application.application.parameters.ville;
+				_appModel.assure.mail = Application.application.parameters.mail;
+				_appModel.assure.telMobile = Application.application.parameters.telMobile;
+				_appModel.assure.telDomicile = Application.application.parameters.telDomicile;
+				_appModel.assure.telBureau = Application.application.parameters.telBureau;
+				_appModel.assure.contrat.numeroContrat = Application.application.parameters.numeroContrat;
+				_appModel.assure.contrat.numeroClient = Application.application.parameters.numeroClient;
+				_appModel.assure.contrat.immatriculationVehicule = Application.application.parameters.immatriculation;
+				_appModel.assure.isCourtier = Application.application.parameters.isCourtier;
+				showAssureView(null);
+				initChampsAssure();
+			}
+			
+			private function initChampsAssure():void {
+				
+				// SBO: Demande de la MOA d'activer en modification les tel. + email
+				viewAssure.mail.enabled = true;
+				viewAssure.telMobile.enabled = true;
+				viewAssure.telDomicile.enabled = true;
+				viewAssure.telBureau.enabled = true;
+				
+				/*if (_appModel.assure.mail == "") {
+					viewAssure.mail.enabled = true;
+				}
+													
+				if (_appModel.assure.telMobile == "") {
+					viewAssure.telMobile.enabled = true;
+				}
+
+				if (_appModel.assure.telDomicile == "") {
+					viewAssure.telDomicile.enabled = true;
+				}
+
+				if (_appModel.assure.telBureau == "") {
+					viewAssure.telBureau.enabled = true;
+				}*/
+												
+				// On rend actif les champs n° de contrat et Immatriculation s'ils ne sont
+				// pas renseignés
+				if (_appModel.assure.contrat.numeroContrat == "") {
+					viewAssure.numeroContrat.enabled = true;
+				}
+
+				if (_appModel.assure.contrat.immatriculationVehicule == "") {
+					viewAssure.immatriculationVehicule.enabled = true;
+				}
+
+			}
+
+			private function initViewAssure():void {
+				viewAssure.addEventListener(DeclarationSinistreAutoEvent.TO_SINISTRE_EVENT, showSinistreView);
+			}
+			
+			private function initViewSinistre():void {
+				viewSinistre.addEventListener(DeclarationSinistreAutoEvent.TO_ASSURE_EVENT, showAssureView);
+				viewSinistre.addEventListener(DeclarationSinistreAutoEvent.TO_DOMMAGES_EVENT, showDommagesView);
+			}
+			
+			private function initViewDommages():void {
+				viewDommages.addEventListener(DeclarationSinistreAutoEvent.TO_SINISTRE_EVENT, showSinistreView);
+				viewDommages.addEventListener(DeclarationSinistreAutoEvent.TO_RECAPITULATIF_EVENT, showRecapitulatifView);
+			}
+			
+			private function initViewRecapitulatif():void {
+				viewRecapitulatif.addEventListener(DeclarationSinistreAutoEvent.TO_DOMMAGES_EVENT, showDommagesView);
+				viewRecapitulatif.addEventListener(DeclarationSinistreAutoEvent.TO_FINAL_EVENT, showFinalView);
+			}
+
+			private function showAssureView(e:DeclarationSinistreAutoEvent):void {
+				this.currentState = "assure";
+				imgSteps.source = ImageResource.iconStep1;
+				//Tracking déjà fait dans dans la partie common  
+			}
+
+			private function showSinistreView(e:DeclarationSinistreAutoEvent):void {
+				this.currentState = "sinistre";
+				imgSteps.source = ImageResource.iconStep2;
+				
+				Tracker.getInstance().trackView("autoetape2lesinistre");
+			}
+
+			private function showDommagesView(e:DeclarationSinistreAutoEvent):void {
+				this.currentState = "dommages";
+				imgSteps.source = ImageResource.iconStep3;
+				
+				Tracker.getInstance().trackView("autoetape3lesdommages");
+			}
+
+			private function showRecapitulatifView(e:DeclarationSinistreAutoEvent):void {
+				this.currentState = "recapitulatif";
+				imgSteps.source = ImageResource.iconStep4;
+				viewRecapitulatif.recapSinistre.currentState = (_appModel.sinistre.selectHoraire == true)?'horaireOui':'horaireNon';
+				viewRecapitulatif.recapDommages.currentState = (_appModel.dommages.depotGarage == "Oui")?'depotVehiculeOui':'depotVehiculeNon';
+				if (_appModel.dommages.autresDommagesMat == "Oui") {
+					viewRecapitulatif.recapDommages.currentState = "isAutresDommagesMat";
+				}
+				
+				Tracker.getInstance().trackView("autoetape4recapitulatif");
+			}
+
+			private function showFinalView(e:DeclarationSinistreAutoEvent):void {
+				this.currentState = "final";
+				
+				Tracker.getInstance().trackView("autoetape5confirmation");
+				
+			}
+		]]>
+	</mx:Script>
+	<mx:Style source="assets/css/default.css"/>
+
+	<mx:states>
+		<mx:State name="assure">
+			<mx:AddChild relativeTo="{titre}" position="after">
+				<v:InfosAccident id="viewinfosAccident" width="100%" height="100%" paddingTop="0"/>
+			</mx:AddChild>		
+			<mx:AddChild relativeTo="{hb}" position="after">
+				<cv:Assure id="viewAssure" assureModel="{_appModel.assure}" creationComplete="initViewAssure()" width="98%" height="100%"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="sinistre">
+			<mx:AddChild relativeTo="{hb}" position="after">
+				<v:Sinistre id="viewSinistre" creationComplete="initViewSinistre()" width="98%" height="100%"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="dommages">
+			<mx:AddChild relativeTo="{hb}" position="after">
+				<v:Dommages id="viewDommages" creationComplete="initViewDommages()" width="98%" height="100%"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="recapitulatif">
+			<mx:AddChild relativeTo="{hb}" position="after">
+				<v:Recapitulatif id="viewRecapitulatif" creationComplete="initViewRecapitulatif()" width="98%" height="100%"/>
+			</mx:AddChild>
+		</mx:State>
+		
+		<mx:State name="final">		
+			<mx:RemoveChild target="{imgSteps}"/>
+			<mx:AddChild relativeTo="{hb}" position="after">
+				<cv:Final assure="{_appModel.assure}" id="viewFinal"  width="98%" height="100%"/>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+
+	<mx:HBox width="753"  horizontalAlign="left">
+		<mx:Spacer width="20"/>
+		<mx:VBox >
+			<mx:Text id="titre" text="Déclaration de sinistre Auto Accident" fontSize="17" fontFamily="Verdana" fontWeight="bold" color="#1F777D" />
+		</mx:VBox>		
+	</mx:HBox>
+	<mx:Spacer height="2"/>
+	<mx:HBox width="753" horizontalAlign="left" >
+		<mx:Image id="imgSteps" />
+	</mx:HBox> 
+	<mx:HBox id="hb" width="100%" >
+		<mx:Spacer width="35" />
+	</mx:HBox>
+</mx:Application>

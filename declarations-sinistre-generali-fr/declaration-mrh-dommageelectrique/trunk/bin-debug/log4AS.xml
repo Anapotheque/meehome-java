@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  ALL > DEBUG > INFO > WARN > ERROR > FATAL  -->
+<log_config project="DommageElectrique" debug="false">
+	<categories defaultLevel="ERROR">	
+		<category name="com.generali.dommageElectrique.views" level="DEBUG" includeTime="true" includeCategory="true" includeLevel="true" includeDate="true"/>
+		<category name="com.generali.utils" level="DEBUG" includeTime="true" includeCategory="true" includeLevel="true" includeDate="true"/>
+	</categories>
+</log_config>

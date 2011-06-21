@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"  styleName="PanelRecap"  creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import com.generali.events.ui.NextSectionEvent;
+			import com.generali.degatDesEaux.model.PieceVO;
+			import com.generali.views.Insured;
+			import com.generali.model.AddressVO;
+			import com.generali.degatDesEaux.model.AppModel;
+			[Bindable]
+			private var appModel:AppModel = AppModel.getInstance();
+			private var loaded:Boolean = false;
+			private function init():void
+			{
+				parentApplication.addEventListener(NextSectionEvent.TO_RECAP,handle);
+				bindWithModel();
+			}
+			private function handle(e:NextSectionEvent):void
+			{
+				bindWithModel();
+			}			
+			private function bindWithModel():void
+			{			
+				PieceContainer.removeAllChildren();
+				for each( var piece:PieceVO in appModel.damage.pieceMap.getValues())
+				{
+					var p:RecapPiece = new RecapPiece();
+					p.piece = piece;
+					p.title = piece.name;
+					PieceContainer.addChild(p);		
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" id="PieceContainer">				
+	</mx:VBox>
+</mx:Panel>

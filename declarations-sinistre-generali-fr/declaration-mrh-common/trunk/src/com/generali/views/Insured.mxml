@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:valErro="com.generali.views.validation.*"
+  backgroundAlpha="0" horizontalAlign="center"  borderStyle="none" verticalGap="0" headerHeight="10" >
+	  
+	   <mx:Script>
+	  	<![CDATA[
+	  		import mx.controls.Alert;
+	  		import com.generali.model.InsuredVO;
+	  		import mx.core.UIComponent;
+	  		import mx.controls.TextArea; 
+	  		import mx.utils.StringUtil;
+	  		
+	  		import com.generali.events.ui.NextSectionEvent;
+	  		[Bindable]
+	  		private var errorHeight:int =0;
+	  		private static const COLOR_VALIDATION:String = "#f7b1c8";
+	  		
+	  		[Bindable]
+	  		private var _insuredModel:InsuredVO;
+	  		
+	  		public function get insuredModel():InsuredVO{
+	  			return this._insuredModel;
+	  		}
+	  		public function set insuredModel(insuredModel:InsuredVO):void{
+	  			this._insuredModel = insuredModel;
+	  		}
+	  		
+	  		private function fillModel():void
+	  		{
+	  			_insuredModel.last_name = Q1.text;
+	  			_insuredModel.first_name = Q2.text;
+	  			_insuredModel.address.addressVal =Q3.text;
+	  			_insuredModel.address.postal_code = Q4.text;
+	  			_insuredModel.address.city = Q5.text;
+	  			//_insuredModel.quality = Q6.selectedIndex;
+	  			_insuredModel.mail = Q7.text;	  			
+	  			_insuredModel.mobile_number = Q8.text;
+	  			_insuredModel.house_number = Q9.text;
+	  			_insuredModel.work_number = Q10.text;	  			
+	  			_insuredModel.contract_number = Q13.text;
+	  			_insuredModel.client_number = client_number.text;
+	  		}
+	 
+	        private function next():void
+	        {	
+	  			txtError.prepare_validation();
+	  			 
+	  			 txtError.validateEmptyText(Q1,"Votre nom est obligatoire, merci de le saisir.") ; 
+	  			 txtError.validateEmptyText(Q2,"Votre prénom est obligatoire, merci de le saisir.");
+	  			
+	  			txtError.validateEmptyText(Q3,"Votre adresse est obligatoire, merci de la saisir.");
+	  			
+	  			if (txtError.validateEmptyText(Q4,"Votre code postal est obligatoire, merci de le saisir."))
+	  				txtError.validateIntText5(Q4,"Votre code postal doit être composé de 5 chiffres, merci de le saisir à nouveau.");
+	  			
+	  			txtError.validateEmptyText(Q5,"Votre ville est obligatoire, merci de la saisir.");
+	  			
+	  			if (txtError.validateEmptyText(Q7,"Votre mail est obligatoire, merci de le saisir."))
+	  				txtError.validateEmailText(Q7,"Votre adresse email n’est pas valide, merci de la saisir à nouveau.");
+	  			
+	  			if(	Q8.text.length == 0 && Q9.text.length==0 && Q10.text.length == 0){
+	  				txtError.addError("Au moins un numéro de téléphone est obligatoire, merci de le saisir.");
+	  				Q8.setStyle("backgroundColor",txtError.COLOR_ERROR);
+	  				Q9.setStyle("backgroundColor",txtError.COLOR_ERROR);
+	  				Q10.setStyle("backgroundColor",txtError.COLOR_ERROR);
+	  			}else{
+	  				Q8.setStyle("backgroundColor",txtError.COLOR_VALIDATED);
+	  				Q9.setStyle("backgroundColor",txtError.COLOR_VALIDATED);
+	  				Q10.setStyle("backgroundColor",txtError.COLOR_VALIDATED);
+	  			}
+	  			if(	Q8.text.length != 0){
+	  				//txtError.validateIntTel(Q8,"Votre n° de téléphone mobile doit être composé de 10 chiffres, merci de le saisir à nouveau.");
+	  			}
+	  			if(	Q9.text.length != 0){
+	  				//txtError.validateIntTel(Q9,"Votre n° de téléphone domicile doit être composé de 10 chiffres, merci de le saisir à nouveau.");
+	       		}
+	  			if(	Q10.text.length != 0){
+	  				//txtError.validateIntTel(Q10,"Votre n° de téléphone bureau doit être composé de 10 chiffres, merci de le saisir à nouveau."); 			
+	  			}
+	  			txtError.validateEmptyText(Q13,"Votre numéro de contrat est obligatoire, merci de le saisir.");
+	  			
+	  			if (!txtError.play()){
+	  				fillModel();
+					this.dispatchEvent( new NextSectionEvent(NextSectionEvent.TO_SINISTRE));
+	  			}
+	  		}
+
+	  	]]>
+	  </mx:Script>
+	  <mx:VBox width="88%" verticalGap="0">  
+		  <mx:TextArea editable="false" backgroundAlpha="0" borderStyle="none" width="100%" text="Les champs suivis d'un * sont obligatoires. Sans ces informations votre demande ne peut pas être traitée." fontWeight="bold" />
+		  <valErro:GeneraliValidator id="txtError" styleName="ErrorVal"  width="100%" color="red"/>
+	  </mx:VBox>	
+	
+	  <mx:VBox height="88%" > 
+		<mx:Spacer width="10" />
+		
+			<mx:VBox id="S1" horizontalAlign="left"> 
+				<mx:HBox horizontalGap="0">
+						<mx:Image source="@Embed('assets/fred/icone_assure.swf')"  />
+						 <mx:Canvas >
+						   <mx:Image verticalCenter="1.5" source="@Embed('assets/fred/barre_bleue_titre2.swf')"/>
+				           <mx:Text  text="L'ASSURE :"  verticalCenter="2.5" horizontalCenter="-255" styleName="imageText"/>
+						  </mx:Canvas>
+					</mx:HBox>
+					<!--<mx:Label   width="20%" text ="L'assuré:" styleName="title" color="red"/>-->
+					<!--<mx:VBox  borderStyle="solid" borderColor="#547E7E" width="530" />-->
+					<mx:HBox borderStyle="none">
+						<mx:Spacer width="20"/>
+						<mx:Label width="155"  text="Nom :*" styleName="simple"  />
+						<mx:TextInput  id="Q1" maxChars="50"  width="120" text="{_insuredModel.last_name}" enabled="false"/>	
+						<mx:Spacer width="75" />
+						<mx:Label width="75"  text="Prénom :*"  styleName="simple" />
+						<mx:TextInput  id="Q2" width="120" maxChars="50"  text="{_insuredModel.first_name}" enabled="false"/>	
+					</mx:HBox>
+					<mx:HBox>
+						<mx:Spacer width="20"/>
+						<mx:Label width="155"  text="Adresse :*" styleName="simple" />
+						<mx:TextInput id="Q3" width="413" maxChars="50" text="{_insuredModel.address.addressVal}" enabled="false"/>
+					</mx:HBox>	
+					<mx:HBox>	
+						<mx:Spacer width="20"/>
+						<mx:Label  text="Code postal :*" width="155" />
+						<mx:TextInput id="Q4" width="45" styleName="simple" maxChars="5" text="{_insuredModel.address.postal_code}" restrict="0-9" enabled="false"/>
+						<mx:Spacer width="170" />
+						<mx:Label width="55"  text="Ville :*" />
+						<mx:TextInput id="Q5" width="120" maxChars="50" text="{_insuredModel.address.city}" styleName="simple" enabled="false"/>	
+					</mx:HBox>	
+					<!--
+					<mx:HBox> 
+						<mx:Spacer width="20"/>
+						<mx:Label width="155"  text="Qualité :" styleName="simple" />
+						<mx:ComboBox id="Q6" dataProvider="{InsuredVO.qualityArrColl.source}"  selectedIndex="{((_insuredModel.quality)?_insuredModel.quality:0)}" width="200"/>
+					</mx:HBox>
+					-->
+					<mx:Spacer height="10"/>
+					<mx:HBox>
+						<mx:Spacer width="20"/>
+						<mx:Label   width="100%"  fontWeight="bold" text ="Attention : la saisie d’au moins un numéro de téléphone est obligatoire."/>
+					</mx:HBox>
+					<mx:HBox>
+						<mx:Spacer width="20"/>
+						<mx:Label width="155"  text="Mail :*" styleName="simple" />
+						<mx:TextInput id="Q7" width="150" maxChars="50"  text="{_insuredModel.mail}" enabled="false"/>
+						<mx:Spacer width="30" />
+					 	<mx:Label width="130"  text="Tél.mobile :*" styleName="simple" />
+						<mx:TextInput id="Q8" width="80" maxChars="10" text="{_insuredModel.mobile_number}" restrict="0-9" enabled="false"/>
+					</mx:HBox>	
+				 	<mx:HBox>
+				 	<mx:Spacer width="20"/>
+				 	<mx:Label  width="155"  text="Tél.domicile :*" styleName="simple" />
+						<mx:TextInput id="Q9" width="80" maxChars="10"  text="{_insuredModel.house_number}"  restrict="0-9" enabled="false"/>
+						<mx:Spacer width="100" />
+						<mx:Label width="130"  text="Tél.bureau :*" styleName="simple" />
+						<mx:TextInput id="Q10" width="80" maxChars="10" text="{_insuredModel.work_number}"  restrict="0-9" enabled="false"/>
+					</mx:HBox>
+				
+			</mx:VBox>
+		
+	   		<mx:Spacer height="10"/>
+			<mx:VBox horizontalAlign="left" height="100%"> 
+				<!--<mx:Label   width="20%" text ="Le contrat:" styleName="title" color="red"/>-->
+				<!--<mx:VBox  borderStyle="solid" borderColor="#547E7E" width="530" />-->
+				<mx:HBox horizontalGap="0">
+					<mx:Image source="@Embed('assets/fred/icone_contrat.swf')"  />
+					 <mx:Canvas >
+						   <mx:Image verticalCenter="1.5" source="@Embed('assets/fred/barre_bleue_titre2.swf')"/>
+				           <mx:Text text="LE CONTRAT :" verticalCenter="2.5" horizontalCenter="-245" styleName="imageText"/> 
+					 </mx:Canvas>
+				</mx:HBox>
+
+				<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+						<mx:Spacer width="20"/>
+					<mx:Label styleName="simple" width="155" text ="Numéro de client :" />
+					<mx:TextInput id="client_number" width="120" maxChars="20" text="{_insuredModel.client_number}" enabled="false" />
+					<mx:Image  source="@Embed('assets/infos.gif')" toolTip="Vous trouverez votre numéro de client sur vos dispositions particulières ou sur votre relevé annuel." />
+				</mx:HBox>
+
+				<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+						<mx:Spacer width="20"/>
+					<mx:Label styleName="simple" width="155" text ="Numéro du contrat :*" />
+					<mx:TextInput id="Q13" width="120" maxChars="10"  text="{_insuredModel.contract_number}" enabled="false"/>
+					<mx:Image  source="@Embed('assets/infos.gif')" toolTip="Vous trouverez votre numéro de contrat sur vos dispositions particulières ou sur votre relevé annuel." />
+				</mx:HBox>
+				
+				<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+						<mx:Spacer width="20"/>
+					<mx:Label id="lbl_Adresse_bien" styleName="simple" width="155" text ="Adresse du bien assuré :" />
+					<mx:TextInput id="adresse_bien" width="300" maxChars="300" text="" enabled="false"/>					
+				</mx:HBox>
+				
+			</mx:VBox>
+		</mx:VBox>
+		<mx:HBox width="100%" horizontalAlign="right">		
+			<mx:Button label="Etape suivante" click="next()" width="120" styleName="NavButton"/>
+		</mx:HBox>
+		
+</mx:Panel>

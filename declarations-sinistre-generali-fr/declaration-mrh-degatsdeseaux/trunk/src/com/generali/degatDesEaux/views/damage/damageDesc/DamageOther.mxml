@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="320" creationComplete="init()"
+	  horizontalGap="0" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import com.generali.degatDesEaux.model.AppModel;
+			import com.generali.degatDesEaux.model.MobilierVO;
+			import mx.binding.utils.BindingUtils;
+			[Bindable]
+			[Embed(source="/assets/fred/mini_fleche_down.swf")]
+			private var IconClose:Class;
+			[Bindable]
+			[Embed(source="/assets/fred/mini_fleche_right.swf")]
+			private var IconOpen:Class;
+			[Bindable]
+			public var open:Boolean = false;
+			[Bindable]
+			public var coef:int =1;
+			 
+			public const INITIAL_HEIGHT:int = 123;			 
+			public const COLLAPSED_HEIGHT:int = 25;
+			[Bindable]
+			public var title:String ="" ;
+			public var wall:Boolean = true;
+			public var first:Boolean = true;
+			public var pieceID:String;
+			[Bindable]
+			public var filled:Boolean = false;
+			private var appModel:AppModel = AppModel.getInstance(); 
+			
+			
+			public function setFilled():void{
+				if(txtSaisieLibre.text != "" &&  first==false)
+					filled = true;
+				else
+					filled = false;
+				if (!first){
+					setModel();
+				}
+			}
+			private function collapse():void{
+				if (open){
+					open=false;
+					this.currentState ="";
+					this.height =COLLAPSED_HEIGHT;
+				}else{
+					open =true;
+					this.currentState = "showBloc";
+					this.height =INITIAL_HEIGHT;
+				}
+			}
+			private function init():void{
+				this.currentState = "showBloc";
+			}
+			
+			public function  getHeight():int{
+				if (open==true)
+				{
+					return INITIAL_HEIGHT;
+				}
+				else
+				{
+					return COLLAPSED_HEIGHT;
+				}
+			}
+			public function clearDefault():void{
+				if(first){
+				this.txtSaisieLibre.text = "";
+				txtSaisieLibre.setStyle("color","black");
+				first=false;
+				} 
+				
+			}
+			public function setModel():void{
+				
+				appModel.damage.getPieceById(pieceID).mobilier.mobilierDetails = txtSaisieLibre.text;
+			}
+			public function clear():void{
+				if(!first){
+				txtSaisieLibre.text="" ;
+				filled = false;
+				}
+				
+			}
+		]]>
+	</mx:Script>
+	<mx:states>
+		<mx:State name="showBloc">		   
+				 <mx:AddChild>
+				<mx:VBox id="vSecondHouse"  horizontalAlign="center" cornerRadius="10" horizontalGap="0">
+				<mx:TextArea width="300"  editable="false" backgroundAlpha="0" borderStyle="none"  styleName="simple" text="Decrivez votre mobilier endommagé (1000 caractères maximum):" />
+				<mx:HBox width="300" height="100%">
+					<mx:TextArea height="100%" width="300" maxChars="1000" click="clearDefault()"  change="setFilled()" id="txtSaisieLibre" text="Saisie libre" color="#c0c1c2" editable="true"  backgroundAlpha="1" borderStyle="solid" />
+				</mx:HBox>					
+			
+			</mx:VBox>
+		       	</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	<mx:ApplicationControlBar width="100%"  visible="{((coef!=0)?true:false)}" height="{((open)?23*coef:30*coef)}" verticalAlign="top" click="collapse()">
+		<mx:Image source="{((open)?IconClose:IconOpen)}"  />
+		<mx:Label text="{title}"  />
+	</mx:ApplicationControlBar>
+	
+</mx:VBox>

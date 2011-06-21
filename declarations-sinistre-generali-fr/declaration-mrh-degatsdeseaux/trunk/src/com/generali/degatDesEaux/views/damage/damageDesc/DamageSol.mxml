@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"   xmlns:damageDesc="com.generali.views.damage.damageDesc.*"
+	  horizontalGap="0" horizontalAlign="center" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import com.generali.degatDesEaux.model.AppModel;
+			import com.generali.degatDesEaux.model.three3D.Textures;
+			import com.generali.degatDesEaux.events.ui.DimensionUpdateEvent;
+			import com.generali.degatDesEaux.model.three3D.RoomPartType;
+			import mx.controls.Text;
+			import mx.binding.utils.BindingUtils;
+			[Embed(source="/assets/fred/mini_fleche_down.swf")]
+			private var IconClose:Class;
+			[Embed(source="/assets/fred/mini_fleche_right.swf")]
+			private var IconOpen:Class;
+			private var appModel:AppModel = AppModel.getInstance();
+			public var pieceID:String;
+			[Bindable]
+			public var open:Boolean = false;
+			public const ROOMPART_FLOOR_TYPE:String = RoomPartType.FLOOR;
+			public const INITIAL_HEIGHT:int = 240;
+			public const COLLAPSED_HEIGHT:int = 25;
+			public var coef:int =1;
+			public var title:String ="" ;
+			[Bindable]
+			public var wall:Boolean = true;
+			
+			private var currentSurfaceParquet:String = "";
+			private var currentSurfaceCarrelage:String = "";
+			private var currentSurfaceMoquette:String = "";
+			private var currentSurfaceRevetement:String = "";
+			private var currentSurfaceOther:String = "";
+			private var currentHighestDim:String="none";
+			
+			[Bindable]
+			public var filled:Boolean = false;
+			
+			private function collapse():void{
+				if (open)
+				{
+					open=false;
+					this.currentState ="";
+					this.height =COLLAPSED_HEIGHT;
+				}else
+				{
+					open =true;
+					this.currentState = "showBloc";
+					this.height =INITIAL_HEIGHT;
+				}
+			}
+			private function init():void{
+				this.currentState = "showBloc";
+			}
+			public function getHeight():int{
+				if (open==true)
+					return INITIAL_HEIGHT;
+				else
+					return COLLAPSED_HEIGHT;
+			}
+			
+			private function getFilledVal(input:String):Boolean
+			{
+				return (input!="" && int(input)>0); 
+			}
+			public function setFilled():void
+			{
+				setModel();
+				var arr:Array = new Array(surfaceCarrelage.text,surfaceMoquette.text,surfaceOther.text, 
+							surfaceParquet.text,surfaceRevetement.text,other.text);
+				for each( var elem:String in arr)
+				{
+					if( getFilledVal(elem))
+					{
+						filled = true;
+						return;
+					}
+				}
+				filled = false;
+			} 
+			
+			protected override function focusOutHandler(event:FocusEvent):void
+			{
+				super.focusOutHandler(event);
+				doHandleDimensionUpdate(event);
+			}
+			
+			protected function keyupHandler(event:KeyboardEvent):void
+			{
+				if(event.keyCode!=Keyboard.ENTER)
+					return;
+				doHandleDimensionUpdate(event);
+				focusManager.getNextFocusManagerComponent(event.shiftKey).setFocus();
+			}
+			
+			private function doHandleDimensionUpdate(event:Event):void
+			{
+				var highestDim:String = getHighestDimension();
+				if(highestDim != "none" && highestDim!=currentHighestDim)
+				{
+					dispatchEvent(new DimensionUpdateEvent(ROOMPART_FLOOR_TYPE,highestDim));
+					currentHighestDim = highestDim;
+				}
+			}
+			
+			private function anyDimensionUpdated():Boolean
+			{
+				return surfaceParquet.text!=currentSurfaceParquet || surfaceCarrelage.text!=currentSurfaceCarrelage ||
+				       surfaceMoquette.text!=currentSurfaceMoquette || surfaceRevetement.text!=currentSurfaceRevetement 
+						|| surfaceOther.text!=currentSurfaceOther;
+			}
+			
+			private function getHighestDimension():String
+			{
+				//TBD NOT TO START WITH 0
+				var highest:String = "none" ;
+				var highestValue:int = 0 ;
+				var theHighest : int =-1;
+				if(anyDimensionUpdated())
+				{
+					if(surfaceParquet.text!="")
+					{
+						highestValue = int(surfaceParquet.text);
+						highest = Textures.PARQUET;
+						theHighest =0;
+					}
+					if(surfaceCarrelage.text!="" && int(surfaceCarrelage.text)  > highestValue )
+					{
+						highestValue = int(surfaceCarrelage.text);
+						highest = Textures.CARRELAGE;
+						theHighest =1;
+					}
+					if(surfaceMoquette.text!="" && int(surfaceMoquette.text) > highestValue)
+					{
+						highestValue = int(surfaceMoquette.text);
+						highest = Textures.MOQUETTE;
+						theHighest =2;
+					}
+					if(surfaceRevetement.text!="" && int(surfaceRevetement.text) > highestValue)
+					{
+						highestValue = int(surfaceRevetement.text);
+						highest = Textures.REVETEMENT;
+						theHighest =3;
+					}
+					if(surfaceOther.text!="" && int(surfaceOther.text) > highestValue)
+					{
+						highestValue = int(surfaceOther.text);
+						highest = Textures.AUTRE;
+						theHighest = 4;
+					}
+				
+					if( (surfaceOther.text=="") && (surfaceCarrelage.text=="") && (surfaceRevetement.text=="") 
+					&& (surfaceMoquette.text=="") && (surfaceParquet.text=="") )
+					{
+						// back to default
+						highest = Textures.DEFAULT;
+					}
+					
+					if ( highestValue == 0 && 
+						( (theHighest==0 && int(currentSurfaceParquet) >= 0) || 
+						  (theHighest==1 && int(currentSurfaceCarrelage) >= 0) ||
+						  (theHighest==2 && int(currentSurfaceMoquette) >= 0)  ||
+						  (theHighest==3 && int(currentSurfaceRevetement) >= 0)  ||
+						  (theHighest==4 && int(currentSurfaceOther) >= 0) )
+						  )
+				    {// if we passing from a >0 value into a 0 value, we should fire the event.
+				  		highest = Textures.DEFAULT;
+				    }
+					
+					currentSurfaceParquet = surfaceParquet.text;
+					currentSurfaceCarrelage = surfaceCarrelage.text;
+					currentSurfaceMoquette = surfaceMoquette.text;
+					currentSurfaceRevetement = surfaceRevetement.text;
+					currentSurfaceOther = surfaceOther.text;
+				}
+				if (highestValue==0 && highest !=Textures.DEFAULT)
+					highest = "none";
+				
+				return highest;
+				
+			}
+			public function clear():void{
+				surfaceParquet.text="";
+				surfaceCarrelage.text="";
+				surfaceMoquette.text="";
+				surfaceRevetement.text="";	
+				other.text="";
+				surfaceOther.text="";	
+				filled = false;
+			}
+			public function setModel():void{
+				appModel.damage.getPieceById(pieceID).sol.parquet = surfaceParquet.text;
+				appModel.damage.getPieceById(pieceID).sol.carrelage = surfaceCarrelage.text;
+				appModel.damage.getPieceById(pieceID).sol.moquette = surfaceMoquette.text;
+				appModel.damage.getPieceById(pieceID).sol.revetement = surfaceRevetement.text;	
+				appModel.damage.getPieceById(pieceID).sol.autre = other.text;
+				appModel.damage.getPieceById(pieceID).sol.autreVAL = surfaceOther.text;	
+			}
+		]]>
+	</mx:Script>
+	<mx:states>
+		<mx:State name="showBloc">		   
+				 <mx:AddChild>
+					<mx:VBox id="vSecondHouse"  horizontalAlign="center" cornerRadius="10" horizontalGap="0">
+					   <mx:HBox width="300" visible="{wall}" height="{((wall)?20:0)}" horizontalGap="0">
+							<mx:Label width="130"   text="" />
+							<mx:Label width="140" styleName="simple"   text="Surface endommagée" />					
+						</mx:HBox>	
+						<mx:HBox width="300" horizontalGap="20">
+							<mx:Label width="140" styleName="simple" text="Parquet:" />
+							<mx:TextInput id="surfaceParquet" width="70"  restrict="0-9"  change="setFilled()"
+								focusOut="{focusOutHandler(event);}" keyUp="{keyupHandler(event)}"/>
+							<mx:Label width="30" styleName="simple" text="m²" />
+						</mx:HBox>					
+						<mx:HBox width="300" horizontalGap="20">	
+							<mx:Label width="140" styleName="simple"  text="Carrelage :" />
+							<mx:TextInput id="surfaceCarrelage" width="70" restrict="0-9"  change="setFilled()"
+								focusOut="{focusOutHandler(event);}" keyUp="{keyupHandler(event)}"/>
+							<mx:Label width="30" styleName="simple" text="m²" />
+						</mx:HBox>	
+						<mx:HBox width="300" horizontalGap="20">	
+							<mx:Label width="140" styleName="simple"  text="Moquette :" />
+							<mx:TextInput id="surfaceMoquette" width="70" restrict="0-9"  change="setFilled()" 
+								focusOut="{focusOutHandler(event);}" keyUp="{keyupHandler(event)}"/>
+							<mx:Label width="30"  styleName="simple" text="m²" />
+						</mx:HBox>
+						<mx:HBox width="300" horizontalGap="20">	
+							<mx:Label width="140"  styleName="simple" text="Revêtement plastique :" />
+							<mx:TextInput id="surfaceRevetement" width="70"  restrict="0-9"  change="setFilled()" 
+								focusOut="{focusOutHandler(event);}" keyUp="{keyupHandler(event)}"/>
+							<mx:Label width="30" styleName="simple" text="m²" />
+						</mx:HBox>
+						<mx:Label width="300" styleName="simple"  text="Autre, précisez :" />
+						<mx:HBox width="300" horizontalGap="20">	
+							<mx:TextInput id="other" width="140"  maxChars="50"  change="setFilled()" keyUp="{keyupHandler(event)}"/>
+							<mx:TextInput id="surfaceOther" width="70"  restrict="0-9"  change="setFilled()" 
+								focusOut="{focusOutHandler(event);}" keyUp="{keyupHandler(event)}"/>
+							<mx:Label width="30" styleName="simple" text="m²" />
+						</mx:HBox>
+					</mx:VBox>		 
+		       	</mx:AddChild>
+		</mx:State>
+	</mx:states>
+</mx:VBox>		

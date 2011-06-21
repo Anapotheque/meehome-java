@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:local="fr.generali.declaration.sinistre.auto.common.views.*"
+	xmlns:validator="fr.generali.declaration.sinistre.auto.common.views.validation.*"
+	styleName="generaliPanel" addedToStage="initTracker()" >
+
+	<mx:Script>
+		<![CDATA[
+			import com.generali.tracking.Tracker;
+		
+			
+			import fr.generali.declaration.sinistre.auto.common.utils.Message;
+			import fr.generali.declaration.sinistre.auto.common.views.events.DeclarationSinistreAutoEvent;
+			import fr.generali.declaration.sinistre.auto.common.models.vo.AssureVO;
+			import fr.generali.declaration.sinistre.auto.common.utils.ImageResource;
+			import mx.controls.Alert;
+
+        	private var _assureModel:AssureVO;
+        	
+        	[Bindable]
+        	public function set assureModel(model:AssureVO):void {
+        		this._assureModel = model;
+        	}
+        	public function get assureModel():AssureVO {
+        		return this._assureModel;
+        	}
+
+			/**
+	 		 *  Init the tracker 
+	 		 */ 
+	 		private function initTracker():void {
+	 			Tracker.getInstance().trackView('autoetape1lassure');
+	 		}  
+
+			private function next():void {
+
+				// Vérification des champs
+				validator.reset(); 
+
+				validator.validateEmptyText(nom, Message.MSG_1);
+				validator.validateEmptyText(prenom, Message.MSG_2);
+				validator.validateEmptyText(adresse, Message.MSG_3);
+				validator.validateEmptyText(codePostal, Message.MSG_4_1);
+				validator.validateIntText(codePostal, Message.MSG_4_2,5);
+				validator.validateEmptyText(ville, Message.MSG_5);
+// MME : ECREC-609 : correctuion du doublon dans l'affichage des messages d'erreur 			
+//				validator.validateEmptyText(mail, Message.MSG_6_1);
+//				validator.validateEmailText(mail, Message.MSG_6_2);
+				if(mail.text == ""){
+					validator.validateEmptyText(mail, Message.MSG_6_1);
+				} else {
+					validator.validateEmailText(mail, Message.MSG_6_2);		
+				}
+								
+				if(telMobile.text.length == 0 && telDomicile.text.length==0 && telBureau.text.length == 0) {
+					telMobile.setStyle("backgroundColor", Validator.COLOR_ERROR);
+					telDomicile.setStyle("backgroundColor", Validator.COLOR_ERROR);
+					telBureau.setStyle("backgroundColor", Validator.COLOR_ERROR);
+					validator.addError(Message.MSG_7_1);
+				} else {
+					telMobile.setStyle("backgroundColor", Validator.COLOR_VALIDATED);
+					telDomicile.setStyle("backgroundColor", Validator.COLOR_VALIDATED);
+					telBureau.setStyle("backgroundColor", Validator.COLOR_VALIDATED);
+
+					if(telMobile.text.length != 0) {
+						//validator.validateIntText(telMobile, Message.MSG_7_2,10);
+					}
+					if(telDomicile.text.length != 0) {
+						//validator.validateIntText(telDomicile, Message.MSG_8,10);
+					}
+					if(telBureau.text.length != 0) {
+						//validator.validateIntText(telBureau, Message.MSG_9,10);
+				 	}
+				}
+				validator.validateEmptyText(numeroContrat, Message.MSG_10_1);
+				validator.validateEmptyText(immatriculationVehicule, Message.MSG_10_2);
+
+				// Enregistrement des données dans le data model
+				//if(1==1){
+				if(!validator.play()) {
+					assureModel.nom = nom.text;
+					assureModel.prenom = prenom.text;
+					assureModel.adresse.adresse = adresse.text;
+					assureModel.adresse.codePostal = codePostal.text;
+					assureModel.adresse.ville = ville.text;
+					assureModel.mail = mail.text;
+					assureModel.telMobile = telMobile.text;
+					assureModel.telDomicile = telDomicile.text;
+					assureModel.telBureau = telBureau.text;
+					assureModel.contrat.numeroContrat = numeroContrat.text;
+					assureModel.contrat.numeroClient = numeroClient.text;
+					assureModel.contrat.immatriculationVehicule = immatriculationVehicule.text;
+
+					this.dispatchEvent(new DeclarationSinistreAutoEvent(DeclarationSinistreAutoEvent.TO_SINISTRE_EVENT));
+				}
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="88%" verticalGap="0">  
+		<mx:TextArea editable="false" backgroundAlpha="0" borderStyle="none" width="100%" text="Les champs suivis d'un * sont obligatoires. Sans ces informations votre demande ne peut pas être traitée." fontWeight="bold"  height="31"/>
+		<validator:Validator id="validator" width="100%" height="0" visible="false" />
+	</mx:VBox>
+	<mx:VBox height="88%">
+		<mx:Spacer width="10" />
+		<mx:VBox id="S1" horizontalAlign="left" height="213">
+			<mx:HBox horizontalGap="0">
+				<mx:Image source="{ImageResource.icoAssure}"  />
+				<mx:Canvas >
+					<mx:Image verticalCenter="1.5" source="{ImageResource.barreBleueTitre}"/>
+					<mx:Text  text="L'ASSURE :"  verticalCenter="2.5" horizontalCenter="-255" styleName="imageText"/>
+				</mx:Canvas>
+			</mx:HBox>
+			<mx:HBox borderStyle="none">
+				<mx:Spacer width="20"/>
+				<mx:Label width="135"  text="Nom :*" styleName="simple"  />
+				<mx:TextInput id="nom" maxChars="50" width="120" text="{assureModel.nom}" restrict="[A-Z\- a-z éê'èçà¨^ù-]" enabled="false"/>
+				<mx:Spacer width="75" />
+				<mx:Label width="75"  text="Prénom :*"  styleName="simple" />
+				<mx:TextInput  id="prenom" width="120" maxChars="50" text="{assureModel.prenom}" restrict="[A-Z\- a-z éê'èçà¨^ù-]" enabled="false"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Spacer width="20"/>
+				<mx:Label width="135"  text="Adresse :*" styleName="simple" />
+				<mx:TextInput id="adresse" width="414" maxChars="50" text="{assureModel.adresse.adresse}" restrict="[A-Z\- a-z0-9 éê'èçà¨^ù-]" enabled="false"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Spacer width="20"/>
+				<mx:Label text="Code postal :*" width="135" />
+				<mx:TextInput id="codePostal" width="48" styleName="simple" maxChars="5" text="{assureModel.adresse.codePostal}" restrict="[0-9]" enabled="false"/>
+				<mx:Spacer width="170" />
+				<mx:Label width="55" text="Ville :*" />
+				<mx:TextInput id="ville" width="119" maxChars="50" text="{assureModel.adresse.ville}" styleName="simple" restrict="[A-Z\- a-z éê'èçà¨^ù-]" enabled="false"/>
+			</mx:HBox>
+			<mx:Spacer height="10"/>
+			<mx:HBox>
+				<mx:Spacer width="20"/>
+				<mx:Label width="100%" fontWeight="bold" text ="Attention : la saisie d’au moins un numéro de téléphone est obligatoire."/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Spacer width="20"/>
+				<mx:Label width="135" text="Mail :*" styleName="simple" />
+				<mx:TextInput id="mail" width="150" maxChars="50"  text="{assureModel.mail}" enabled="false"/>
+				<mx:Spacer width="32" />
+				<mx:Label width="130"  text="Tél.mobile :*" styleName="simple" />
+				<mx:TextInput id="telMobile" width="82" maxChars="10" text="{assureModel.telMobile}" restrict="0-9" enabled="false" />
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Spacer width="20"/>
+				<mx:Label width="135" text="Tél.domicile :*" styleName="simple" />
+				<mx:TextInput id="telDomicile" width="82" maxChars="10"  text="{assureModel.telDomicile}" restrict="0-9" enabled="false"/>
+				<mx:Spacer width="100" />
+				<mx:Label width="130" text="Tél.bureau :*" styleName="simple" />
+				<mx:TextInput id="telBureau" width="82" maxChars="10" text="{assureModel.telBureau}" restrict="0-9" enabled="false"/>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:Spacer height="10"/>
+
+		<mx:VBox horizontalAlign="left" height="100%"> 
+			<mx:HBox horizontalGap="0">
+				<mx:Image source="{ImageResource.icoContrat}"  />
+				<mx:Canvas >
+					<mx:Image verticalCenter="1.5" source="{ImageResource.barreBleueTitre}"/>
+					<mx:Text text="LE CONTRAT :" verticalCenter="2.5" horizontalCenter="-245" styleName="imageText"/>
+				</mx:Canvas>
+			</mx:HBox>
+			<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+				<mx:Spacer width="20"/>
+				<mx:Label styleName="simple" width="135" text="Numéro de client :" />
+				<mx:TextInput id="numeroClient" width="120" maxChars="20" text="{assureModel.contrat.numeroClient}"  restrict="[0-9]" enabled="false"/>
+				<mx:Image  source="{ImageResource.infos}" toolTip="Vous trouverez votre numéro de client sur vos dispositions particulières ou sur votre relevé annuel." />
+		  	</mx:HBox>
+		  	<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+				<mx:Spacer width="20"/>
+				<mx:Label styleName="simple" width="135" text ="Numéro du contrat :*" />
+				<mx:TextInput id="numeroContrat" width="120" maxChars="10" text="{assureModel.contrat.numeroContrat}" restrict="[A-Z0-9]" enabled="false"/>
+				<mx:Image source="{ImageResource.infos}" toolTip="Vous trouverez votre numéro de contrat sur vos dispositions particulières ou sur votre relevé annuel." />
+			</mx:HBox>
+			<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+				<mx:Spacer width="20"/>
+				<mx:Label styleName="simple" width="180" text ="Immatriculation du véhicule :*" />
+				<mx:TextInput id="immatriculationVehicule" width="120" maxChars="10" text="{assureModel.contrat.immatriculationVehicule}"  restrict="[A-Z0-9]" enabled="false"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+	<mx:HBox width="100%" horizontalAlign="right">		
+		<mx:Button label="Etape suivante" width="120" styleName="NavButton" click="next()"/>
+	</mx:HBox>
+	<local:CNIL />
+</mx:Panel>

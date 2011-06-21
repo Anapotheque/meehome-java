@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="700" height="110" horizontalScrollPolicy="off" borderStyle="none" >
+	<mx:HBox top="-19" width="700" height="110"  horizontalAlign="left" paddingBottom="0" paddingTop="0" borderStyle="none">
+		<mx:Text width="100%" height="100%" fontFamily="verdana" fontSize="9" fontStyle="italic">
+            <mx:htmlText>
+<![CDATA[
+Dans quels cas utiliser cette déclaration en ligne ?
+	- Votre accident n'implique pas de tiers et donc vous n'avez pas réalisé de constat. Cette déclaration en ligne vous permet d'informer de manière détaillée votre interlocuteur Generali. Il prendra ensuite contact avec vous.
+	- Votre accident implique un tiers et donc vous avez réalisé un constat. Afin d'optimiser le traitement de votre demande, nous vous invitons à compléter la déclaration ci-dessous et à faire parvenir votre constat à votre interlocuteur Generali habituel.
+]]>
+            </mx:htmlText>
+        </mx:Text>	
+	</mx:HBox> 
+</mx:Canvas>

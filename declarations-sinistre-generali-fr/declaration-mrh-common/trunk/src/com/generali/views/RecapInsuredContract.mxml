@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+ width="100%" 
+xmlns:recap="com.generali.views.recap.*" creationComplete="init()" verticalAlign="middle">	
+	
+	<mx:Script>
+		<![CDATA[
+			import com.generali.model.InsuredVO;
+			import com.generali.utils.RecapGenerali;
+			import com.generali.utils.RecapGenerali;
+			import com.generali.utils.Util;
+			[Bindable]
+			[Embed(source="/assets/fred/mini_fleche_right.swf")]
+			private var IconClose:Class;
+			[Bindable]
+			[Embed(source="/assets/fred/mini_fleche_down.swf")]
+			private var IconOpen:Class;
+	  		[Bindable]
+	  		private var openedInsured:Boolean = false; 
+	  		[Bindable]
+	  		private var openedContract:Boolean = false; 
+	  		private var recapGenerali:RecapGenerali = new RecapGenerali();
+	  		[Bindable]
+			private var _insuredModel:InsuredVO;
+			
+			public function get insuredModel():InsuredVO{
+				return _insuredModel;
+			}
+			public function set insuredModel(insuredModel:InsuredVO):void{
+				_insuredModel = insuredModel;
+			}
+	  		private function init():void
+	  		{
+	  			openCloseInsured();
+	  		}
+	  		
+	  		private function openCloseInsured():void	
+ 			{ 
+ 				if (insured.height < 10){
+ 					effect.heightTo = 190;
+ 					effect.play([insured]);
+ 					openedInsured = true;
+ 				}
+ 				else{
+ 					effect.heightTo = -2;
+ 					effect.play([insured]);
+ 					openedInsured = false;
+ 				}
+ 			}
+ 			
+ 			private function openCloseContract():void	
+ 			{ 
+ 				if (contract.height < 10){
+ 					effect.heightTo = 40;
+ 					effect.play([contract]);
+ 					openedContract = true;
+ 				}
+ 				else{
+ 					effect.heightTo = -2;
+ 					effect.play([contract]);
+ 					openedContract = false;
+ 				}
+ 			}
+ 			private function styleText(text:Label):void
+ 			{
+	 	 		text.setStyle("textDecoration","underline");
+	 	 	}
+	 	 	
+	 	 	private function styleTextOut(text:Label):void
+	 	 	{
+	 	 		text.setStyle("textDecoration","");
+	 	 	}
+		]]>
+	</mx:Script>
+	<mx:Resize id="effect" duration="800"/>
+	
+		<mx:ApplicationControlBar horizontalAlign="left"  width="650" click="openCloseInsured()">
+	  		<mx:Image source="{(openedInsured)?IconOpen:IconClose}"  />
+	  		<mx:Label styleName="simpleBold" text="L'assuré" id="lblinsured" rollOver="recapGenerali.styleText(lblinsured)" rollOut="recapGenerali.styleTextOut(lblinsured)"/>
+	  	</mx:ApplicationControlBar>	  	
+		<recap:RecapInsured id="insured" width="650" height="-2" insuredModel="{_insuredModel}"/>
+		
+		<mx:ApplicationControlBar horizontalAlign="left"  width="650" click="openCloseContract()" >
+	  		<mx:Image source="{(openedContract)?IconOpen:IconClose}" />
+	  		<mx:Label styleName="simpleBold" text="Le contrat" id="lblcontract" rollOver="recapGenerali.styleText(lblcontract)" rollOut="recapGenerali.styleTextOut(lblcontract)"/>
+	  	</mx:ApplicationControlBar>
+		<recap:RecapContract id="contract" width="650" height="-2"  insuredModel="{_insuredModel}"/>
+</mx:VBox>

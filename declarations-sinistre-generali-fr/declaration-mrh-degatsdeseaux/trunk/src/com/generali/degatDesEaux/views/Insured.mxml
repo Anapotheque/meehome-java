@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:valErro="com.generali.views.validation.*"
+ styleName="generaliPanel" creationComplete="init()">
+	  
+	  <mx:Script>
+	  	<![CDATA[
+	  		import mx.controls.Alert;
+	  		import com.generali.model.InsuredVO;
+	  		import com.flexriver.common.validators.FlexriverValidators; 
+	  		import briffle.dq.model.elements.Chapter;
+	  		import briffle.dq.model.PathContext;
+	  		import briffle.dq.model.Form;
+	  		import briffle.dq.model.elements.Answer;
+	  		import briffle.dq.model.elements.SingleAnswerQuestion;
+	  		import briffle.dq.interpreter.InterpreterResultEvent;
+	  		import com.generali.degatDesEaux.utils.VisualInterpreter;
+	  		import com.generali.degatDesEaux.events.rules.RuleEngineExecutedEvent;
+	  		import com.generali.degatDesEaux.utils.RuleEngineStub;
+	  		import briffle.dq.interpreter.Interpreter;
+	  		import com.generali.degatDesEaux.model.AppModel;
+	  		import mx.utils.StringUtil;
+	  		import com.generali.events.ui.NextSectionEvent;
+	  		private static const COLOR_VALIDATION:String = "#f7b1c8";	  		
+	  		
+	  		[Bindable]
+	  		private var appModel:AppModel = AppModel.getInstance();
+	  		
+	  		private const NATURAL_PARENT:String="insured";
+	  		
+	  		public var interpreter:Interpreter  = new Interpreter(NATURAL_PARENT);
+	  		public var ruleEngine : RuleEngineStub = RuleEngineStub.getInstance();
+	  		
+	  		private function init():void
+	  		{
+	  			ruleEngine.addEventListener(RuleEngineExecutedEvent.ID,handleRuleEngine);
+	  			interpreter.getInterpreterDispatcher().addEventListener(InterpreterResultEvent.ID,handleInterpreterResults);
+	  		}
+	  		public function handleInterpreterResults( e:InterpreterResultEvent): void
+			{
+				if (e.getNatural_parent() == NATURAL_PARENT)
+				{
+					var vi:VisualInterpreter = new VisualInterpreter(this);
+					vi.apply(e);
+				}
+				
+			} 			
+	  		public function handleRuleEngine( e:RuleEngineExecutedEvent): void
+			{
+				interpreter.interpret();
+			} 
+	  		private function reset():void
+	  		{
+	  			Q1.setStyle("backgroundColor","#ffffff");
+	  			Q2.setStyle("backgroundColor","#ffffff");
+	  			Q3.setStyle("backgroundColor","#ffffff");
+	  			Q4.setStyle("backgroundColor","#ffffff");
+	  			Q5.setStyle("backgroundColor","#ffffff");
+	  			//Q6.setStyle("backgroundColor","#ffffff");
+	  			Q7.setStyle("backgroundColor","#ffffff");
+	  			Q8.setStyle("backgroundColor","#ffffff");
+	  			Q9.setStyle("backgroundColor","#ffffff");
+	  			Q10.setStyle("backgroundColor","#ffffff");
+	  			Q13.setStyle("backgroundColor","#ffffff");
+	  		}
+	  		private function fillModel():void
+	  		{
+	  			appModel.insured.last_name = Q1.text;
+	  			appModel.insured.first_name = Q2.text;
+	  			appModel.insured.address.addressVal =Q3.text;
+	  			appModel.insured.address.postal_code = Q4.text;
+	  			appModel.insured.address.city = Q5.text;
+	  			//appModel.insured.quality = Q6.selectedIndex;
+	  			appModel.insured.mail = Q7.text;	  			
+	  			appModel.insured.mobile_number = Q9.text;
+	  			appModel.insured.house_number = Q8.text;
+	  			appModel.insured.work_number = Q10.text;	  			
+	  			appModel.insured.contract_number = Q13.text;
+	  			appModel.insured.client_number = client_number.text;
+	  		}
+			private function setQuestions():void
+			{	  			
+	  			var form :Form = Form.getInstance();
+				var _q1: SingleAnswerQuestion = form.getElementById("Q1") as SingleAnswerQuestion;				
+				_q1.addAnswer(new Answer("a1"));
+				_q1.getAnswer().setValue(Q1.text);
+				
+				var _q2: SingleAnswerQuestion = form.getElementById("Q2") as SingleAnswerQuestion;				
+				_q2.addAnswer(new Answer("a2"));
+				_q2.getAnswer().setValue(Q2.text);
+				
+				var _q3: SingleAnswerQuestion = form.getElementById("Q3") as SingleAnswerQuestion;				
+				_q3.addAnswer(new Answer("a3"));
+				_q3.getAnswer().setValue(Q3.text);
+				
+				var _q4: SingleAnswerQuestion = form.getElementById("Q4") as SingleAnswerQuestion;				
+				_q4.addAnswer(new Answer("a4"));
+				_q4.getAnswer().setValue(Q4.text);
+				
+				var _q5: SingleAnswerQuestion = form.getElementById("Q5") as SingleAnswerQuestion;				
+				_q5.addAnswer(new Answer("a5"));
+				_q5.getAnswer().setValue(Q5.text);
+				
+				//var _q6: SingleAnswerQuestion = form.getElementById("Q6") as SingleAnswerQuestion;				
+				//_q6.addAnswer(new Answer("a6"));
+				//_q6.getAnswer().setValue(Q6.selectedIndex + 1);
+				
+				var _q7: SingleAnswerQuestion = form.getElementById("Q7") as SingleAnswerQuestion;				
+				_q7.addAnswer(new Answer("a7"));
+				_q7.getAnswer().setValue(Q7.text);
+				
+				var _q8: SingleAnswerQuestion = form.getElementById("Q8") as SingleAnswerQuestion;				
+				_q8.addAnswer(new Answer("a8"));
+				_q8.getAnswer().setValue(Q8.text);
+				
+				var _q9: SingleAnswerQuestion = form.getElementById("Q9") as SingleAnswerQuestion;				
+				_q9.addAnswer(new Answer("a9"));
+				_q9.getAnswer().setValue(Q9.text);
+				
+				var _q10: SingleAnswerQuestion = form.getElementById("Q10") as SingleAnswerQuestion;				
+				_q10.addAnswer(new Answer("a10"));
+				_q10.getAnswer().setValue(Q10.text);
+				
+				var _q13: SingleAnswerQuestion = form.getElementById("Q13") as SingleAnswerQuestion;				
+				_q13.addAnswer(new Answer("a13"));
+				_q13.getAnswer().setValue(Q13.text);
+				var context:PathContext = new PathContext(form,form.getElementById("C1") as Chapter,null,null);
+				ruleEngine.execute(context);
+			
+	  }
+	  private function next():void
+	  {	 
+	  			reset();
+	  			txtError.prepare_validation();
+	  			setQuestions();
+	  			if (!FlexriverValidators.is5Digits(Q4.text) && Q4.text.length > 0)
+	  			{
+		  				txtError.addError("Votre code postal doit être composé de 5 chiffres, merci de le saisir à nouveau.");
+		  				Q4.setStyle("backgroundColor",COLOR_VALIDATION);
+	  			}
+	  			
+	  			Q7.setStyle("backgroundColor",txtError.COLOR_VALIDATED);
+	  			
+	  			if (txtError.validateEmptyText(Q7,"Votre mail est obligatoire, merci de le saisir.")){
+  					txtError.validateEmailText(Q7,"Votre adresse email n’est pas valide, merci de la saisir à nouveau.");
+	  			}
+	  			
+				if(	Q8.text.length == 0 && Q9.text.length==0 && Q10.text.length == 0){
+	  				txtError.addError("Au moins un numéro de téléphone est obligatoire, merci de le saisir.");
+	  				Q8.setStyle("backgroundColor",txtError.COLOR_ERROR);
+	  				Q9.setStyle("backgroundColor",txtError.COLOR_ERROR);
+	  				Q10.setStyle("backgroundColor",txtError.COLOR_ERROR);
+	  			}else{
+	  				Q8.setStyle("backgroundColor",txtError.COLOR_VALIDATED);
+	  				Q9.setStyle("backgroundColor",txtError.COLOR_VALIDATED);
+	  				Q10.setStyle("backgroundColor",txtError.COLOR_VALIDATED);
+	  				
+	  				if(	Q8.text.length == 0 && Q9.text.length==0 && Q10.text.length == 0){
+		  				txtError.addError("Au moins un numéro de téléphone est obligatoire, merci de le saisir.");
+		  				Q8.setStyle("backgroundColor",txtError.COLOR_ERROR);
+		  				Q9.setStyle("backgroundColor",txtError.COLOR_ERROR);
+		  				Q10.setStyle("backgroundColor",txtError.COLOR_ERROR);
+		  			}else{
+		  				Q8.setStyle("backgroundColor",txtError.COLOR_VALIDATED);
+		  				Q9.setStyle("backgroundColor",txtError.COLOR_VALIDATED);
+		  				Q10.setStyle("backgroundColor",txtError.COLOR_VALIDATED);
+		  			}
+	  				
+		  			/*if (Q9.text != "" &&  Q9.text.length != 10)
+		  			{
+			  				txtError.addError("Votre n° de téléphone mobile doit être composé de 10 chiffres, merci de le saisir à nouveau.");
+			  				Q9.setStyle("backgroundColor",COLOR_VALIDATION);
+		  			}
+		  			if (Q8.text != "" && Q8.text.length != 10)
+		  			{
+			  				txtError.addError("Votre n° de téléphone domicile doit être composé de 10 chiffres, merci de le saisir à nouveau.");
+			  				Q8.setStyle("backgroundColor",COLOR_VALIDATION);
+		  			}
+		  			if (Q10.text != "" && Q10.text.length != 10)
+		  			{
+			  				txtError.addError("Votre n° de téléphone bureau doit être composé de 10 chiffres, merci de le saisir à nouveau.");
+			  				Q10.setStyle("backgroundColor",COLOR_VALIDATION);
+		  			}	 */  	
+		  				
+		  		}	  			
+		  			
+		  						
+		  		if (!txtError.play())
+		  		{
+			  		fillModel();
+					this.dispatchEvent( new NextSectionEvent(NextSectionEvent.TO_SINISTRE));
+		  		}
+	  	}
+
+	  		 
+	  	]]>
+	  </mx:Script>
+	 <mx:VBox width="88%" verticalGap="0">  
+		  <mx:TextArea editable="false" backgroundAlpha="0" borderStyle="none" width="100%" text="Les champs suivis d'un * sont obligatoires. Sans ces informations votre demande ne peut pas être traitée." fontWeight="bold" />
+		  <valErro:GeneraliValidator id="txtError" styleName="ErrorVal"  width="100%" color="red"/>
+	</mx:VBox>	
+	<mx:VBox height="100%" > 
+		<mx:Spacer width="10" />		
+			<mx:VBox id="S1" horizontalAlign="left"> 
+				<mx:HBox horizontalGap="0">
+						<mx:Image source="@Embed('assets/fred/icone_assure.swf')"  />
+						 <mx:Canvas >
+						   <mx:Image verticalCenter="1.5" source="@Embed('assets/fred/barre_bleue_titre2.swf')"/>
+				           <mx:Text  text="L'ASSURE :"  verticalCenter="2.5" horizontalCenter="-255" styleName="imageText"/>
+						  </mx:Canvas>
+					</mx:HBox>
+					<mx:HBox borderStyle="none">
+						<mx:Spacer width="20"/>
+						<mx:Label width="155"  text="Nom :*" styleName="simple" />
+						<mx:TextInput  id="Q1"  width="120" text="{appModel.insured.last_name}" maxChars="50" enabled="false"/>	
+						<mx:Spacer width="75" />
+						<mx:Label width="75"  text="Prénom :*"  styleName="simple" />
+						<mx:TextInput  id="Q2" width="120" text="{appModel.insured.first_name}" maxChars="50" enabled="false"/>	
+					</mx:HBox>
+					<mx:HBox>
+						<mx:Spacer width="20"/>
+						<mx:Label width="155"  text="Adresse :*" styleName="simple" />
+						<mx:TextInput id="Q3" width="413" maxChars="50" text="{appModel.insured.address.addressVal}" enabled="false"/>
+					</mx:HBox>	
+					<mx:HBox>	
+						<mx:Spacer width="20"/>
+						<mx:Label  text="Code postal :*" width="155" />
+						<mx:TextInput id="Q4" width="45" styleName="simple" maxChars="5"  text="{appModel.insured.address.postal_code}" restrict="0-9" enabled="false"/>
+						<mx:Spacer width="170" />
+						<mx:Label width="55"  text="Ville :*" styleName="simple" />
+						<mx:TextInput id="Q5" width="120" maxChars="50"  text="{appModel.insured.address.city}" enabled="false"/>		
+					</mx:HBox>
+					<!--	
+					<mx:HBox> 
+						<mx:Spacer width="20"/>
+						<mx:Label width="155"  text="Qualité :" styleName="simple" />
+						<mx:ComboBox id="Q6" dataProvider="{InsuredVO.qualityArrColl.source}" selectedIndex="{((appModel.insured.quality)?appModel.insured.quality:0)}" width="200"/>
+					</mx:HBox>
+					-->
+					<mx:Spacer height="10"/>
+					<mx:HBox>
+						<mx:Spacer width="20"/>
+						<mx:Label   width="100%"  fontWeight="bold" text ="Attention : la saisie d’au moins un numéro de téléphone est obligatoire."/>
+					</mx:HBox>
+					<mx:HBox>
+						<mx:Spacer width="20"/>
+						<mx:Label width="155"  text="Mail :*" styleName="simple" />
+						<mx:TextInput id="Q7" width="150" text="{appModel.insured.mail}" maxChars="50"/>
+						<mx:Spacer width="30" />
+					 	<mx:Label width="130"  text="Tél.mobile :*" styleName="simple" />
+						<mx:TextInput id="Q9" width="80" maxChars="10" restrict="0-9" text="{appModel.insured.mobile_number}" enabled="false"/>
+					</mx:HBox>	
+				 	<mx:HBox>
+				 	<mx:Spacer width="20"/>
+				 	<mx:Label  width="155"  text="Tél.domicile :*" styleName="simple" />
+						<mx:TextInput id="Q8" width="80" maxChars="10" restrict="0-9"  text="{appModel.insured.house_number}" enabled="false"/>
+						<mx:Spacer width="100" />
+						<mx:Label width="130"  text="Tél.bureau :*" styleName="simple" />
+						<mx:TextInput id="Q10" width="80" maxChars="10"  restrict="0-9" text="{appModel.insured.work_number}" enabled="false"/>
+					</mx:HBox>				
+		</mx:VBox>
+		<mx:Spacer height="10"/>
+		<mx:VBox horizontalAlign="left" height="100%"> 
+				<mx:HBox horizontalGap="0">
+					<mx:Image source="@Embed('assets/fred/icone_contrat.swf')"  />
+					 <mx:Canvas >
+						   <mx:Image verticalCenter="1.5" source="@Embed('assets/fred/barre_bleue_titre2.swf')"/>
+				           <mx:Text text="LE CONTRAT :" verticalCenter="2.5" horizontalCenter="-245" styleName="imageText"/> 
+					 </mx:Canvas>
+				</mx:HBox>
+				
+				<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+						<mx:Spacer width="20"/>
+					<mx:Label styleName="simple" width="155" text ="Numéro de client :" />
+					<mx:TextInput id="client_number" width="120" text="{appModel.insured.client_number}" maxChars="20" enabled="false"/>
+					<mx:Image  source="@Embed('assets/infos.gif')" toolTip="Vous trouverez votre numéro de client sur vos dispositions particulières ou sur votre relevé annuel." />
+				</mx:HBox>
+				
+				<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+						<mx:Spacer width="20"/>
+					<mx:Label styleName="simple" width="155" text ="Numéro du contrat :*" />
+					<mx:TextInput id="Q13" width="120" maxChars="10" text="{appModel.insured.contract_number}" enabled="false"/>
+					<mx:Image  source="@Embed('assets/infos.gif')" toolTip="Vous trouverez votre numéro de contrat sur vos dispositions particulières ou sur votre relevé annuel." />
+				</mx:HBox>
+
+				<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+						<mx:Spacer width="20"/>
+					<mx:Label id="lbl_Adresse_bien" styleName="simple" width="155" text ="Adresse du bien assuré :" />
+					<mx:TextInput id="adresse_bien" width="300" maxChars="300" text="" enabled="false"/>					
+				</mx:HBox>
+				
+		</mx:VBox>
+	</mx:VBox>
+		<mx:HBox width="100%" horizontalAlign="right">		
+			<mx:Button label="Etape suivante" click="next()" width="120" styleName="NavButton"/>
+		</mx:HBox>
+</mx:Panel>

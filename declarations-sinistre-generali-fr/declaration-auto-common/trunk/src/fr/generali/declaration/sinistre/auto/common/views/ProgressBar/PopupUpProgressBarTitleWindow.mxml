@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+		cornerRadius="6" borderAlpha="0.8" alpha="1" height="60" width="220"
+		horizontalAlign="center" verticalAlign="middle" title="Envoi de votre demande...">
+      <mx:ProgressBar indeterminate="true" height="10" trackHeight="10" width="160" barColor="#326CB4" label=" "/>
+</mx:TitleWindow>

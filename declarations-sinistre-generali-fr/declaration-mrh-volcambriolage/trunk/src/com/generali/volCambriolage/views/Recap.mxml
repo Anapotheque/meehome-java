@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:recap="com.generali.volCambriolage.views.recap.*" 
+	styleName="generaliPanel" 
+	borderThicknessLeft="5" borderThicknessRight="5"  
+	verticalGap="2"  borderThicknessBottom="10" 
+	creationComplete="init()" xmlns:views="com.generali.views.*">
+	
+
+	<mx:Script>
+	  	<![CDATA[
+	  		
+	  		import mx.collections.ArrayCollection;
+	  		import mx.collections.ArrayList;
+	  		import mx.utils.ArrayUtil;
+	  		import mx.events.CloseEvent;
+	  		import mx.core.Application;
+	  		import mx.core.IFlexDisplayObject;
+	  		import mx.managers.PopUpManager;
+	  		import mx.rpc.events.ResultEvent;
+	  		import mx.rpc.events.FaultEvent;
+	  		import mx.controls.Alert;
+	  		import mx.messaging.channels.AMFChannel;
+			import mx.messaging.ChannelSet;
+			import mx.rpc.remoting.RemoteObject;	
+			import mx.controls.DateField;
+	  		
+	  		import com.generali.tracking.Tracker;
+	  		import com.flexriver.common.logging.DefaultLogger;
+	  		import com.flexriver.common.logging.LogFactory;
+	  		import com.generali.views.DummyTitleWindow;
+	  		import com.flexriver.common.modules.ModulesCommon;
+	  		import com.generali.utils.RecapGenerali;
+	  		import com.generali.volCambriolage.model.AppModel;
+	  		import com.generali.events.ui.NextSectionEvent;
+	  		import com.generali.utils.Util;
+	  		import com.generali.events.DeclarationSinistreMrhEventResult;
+	  		import com.generali.command.DeclarationSinistreMrhCommand;
+	  		
+	  		import fr.generali.gfb.amf.declarations.sinistre.mrh.DeclarationMrhRemoteService;
+	  		import fr.generali.gfb.amf.declarations.sinistre.mrh.dto.DeclarationSinistreMrhVolCambriolage;
+	  		import fr.generali.gfb.amf.declarations.sinistre.mrh.dto.BienInputDto;
+	  		import fr.generali.gfb.amf.declarations.sinistre.commun.dto.*;
+	  		
+			// Flex DeepLinking – permet de ecouter les changements au niveau de l'url
+	  		import com.generali.utils.Util;
+			import mx.utils.URLUtil;
+			import mx.managers.BrowserManager;
+			import mx.events.BrowserChangeEvent;
+			import mx.managers.IBrowserManager;
+	  		
+	  		public var browserManager:IBrowserManager;
+	  		
+			public var volCambriolageDto:DeclarationSinistreMrhVolCambriolage = new DeclarationSinistreMrhVolCambriolage(); 
+			public var assureDto:AssureDto = new AssureDto();
+			public var bienInputDto:BienInputDto = new BienInputDto();
+			public var originedeDeclaration:OrigineDeclaration= new OrigineDeclaration();
+			
+	  		[Bindable]
+	  		private var _appModel:AppModel = AppModel.getInstance();
+	  		
+	  		private var _cmd:DeclarationSinistreMrhCommand;
+	  		
+	  		[Bindable]
+			[Embed(source="/assets/fred/mini_fleche_right.swf")]
+			private var _iconClose:Class;
+			[Bindable]
+			[Embed(source="/assets/fred/mini_fleche_down.swf")]
+			private var _iconOpen:Class;
+	  		private var popUpWindow:IFlexDisplayObject;
+	  		
+	  		[Embed(source="/assets/info_icon.png")]
+        	private var _iconWarning:Class;
+        	
+        	[Bindable]
+	  		private var _openedResidence:Boolean = false; 
+        	
+	  		[Bindable]
+ 	  		private var srvUrl:String = null;
+	  		[Bindable]
+	  		private var openedSinistre:Boolean = false;	  
+	  		private var recapGenerali:RecapGenerali = new RecapGenerali();		
+	  		private var _logger:DefaultLogger = LogFactory.getLogger("com.generali.volCambriolage.views");
+	  		
+			private function init():void {
+				srvUrl = Util.getServerUrl();
+				_cmd = DeclarationSinistreMrhCommand.getInstance(srvUrl);
+	    		_cmd.addEventListener(DeclarationSinistreMrhEventResult.RESULT, result);
+				_cmd.addEventListener(FaultEvent.FAULT, fault);
+			}
+			
+			private function prev():void {	  
+	  			this.dispatchEvent( new NextSectionEvent(NextSectionEvent.TO_SINISTRE));
+	  		}	
+	  		  		
+	  		private function validate():void {
+	  			validateButton.enabled = false;
+	  			showProgress();
+				populateVolCambriolageDto();
+				_cmd.execute(DeclarationMrhRemoteService.VOL , volCambriolageDto);
+	  		}
+	  		
+	  		private function populateVolCambriolageDto():void 
+	  		{
+	  			//**ASSURE**//	  			
+	  			assureDto.isCourtier = _appModel.insured.isCourtier;
+	  			assureDto.reseau = Application.application.parameters.reseau;	
+				assureDto.nom = _appModel.insured.last_name;
+				assureDto.prenom = _appModel.insured.first_name;
+				assureDto.adresse = _appModel.insured.address.addressVal;
+				assureDto.codePostal = _appModel.insured.address.postal_code;
+				assureDto.ville = _appModel.insured.address.city;
+				
+				assureDto.email = _appModel.insured.mail;
+				assureDto.telephoneMobile = _appModel.insured.mobile_number;
+				assureDto.telephoneDomicile = _appModel.insured.house_number;
+				assureDto.telephoneBureau = _appModel.insured.work_number;
+				
+				assureDto.numeroContrat = _appModel.insured.contract_number;
+				assureDto.numeroClient = _appModel.insured.client_number;
+				assureDto.idRceClient = Application.application.parameters.idClientRCE					  		
+				assureDto.codePortefeuille = Application.application.parameters.codePortefeuille;
+				assureDto.codeCompagnie = Application.application.parameters.codeCompagnie;
+				volCambriolageDto.assure = assureDto;
+				volCambriolageDto.origine = Application.application.parameters.origineDeclaration; 
+				 
+				// Si le parametre "mode" est à "test" alors changement de l'adresse du client
+				browserManager = BrowserManager.getInstance();
+	            if (URLUtil.stringToObject(browserManager.fragment).mode == Util.MODE_TEST){
+					volCambriolageDto.mailTrieste = Util.SUIVI_PROD_MAIL_ESPACE_CLIENT;
+	            }else{
+					volCambriolageDto.mailTrieste = Application.application.parameters.mailTo;
+	            }
+				
+				//Conversion d'un string en date
+				var dateAccident:Date = DateField.stringToDate(_appModel.accident.accidentDate, "DD/MM/YYYY");
+				volCambriolageDto.dateSinistre = dateAccident;
+				
+				//Résidence secondaire
+				bienInputDto.isResidencePrincipale = _appModel.residence.main_residence;
+				bienInputDto.adresse = _appModel.residence.address.addressVal;
+				bienInputDto.codePostal = _appModel.residence.address.postal_code;
+				bienInputDto.ville = _appModel.residence.address.city;
+				volCambriolageDto.bien = bienInputDto;
+				volCambriolageDto.isOccupantPresent = _appModel.accident.occupant;
+				volCambriolageDto.dureeAbsence = _appModel.accident.timeAway;
+				
+				//Modes opératoires
+				var lstModes:ArrayCollection = new ArrayCollection();
+				
+				if(_appModel.accident.mode1) {
+					var mode1:String = "Effraction";
+					lstModes.addItem(mode1);
+				}
+				
+				if(_appModel.accident.mode2) {
+					var mode2:String = "Escalade";
+					lstModes.addItem(mode2);
+				}
+				
+				if(_appModel.accident.mode3) {
+					var mode3:String = "Usage de fausse clé";
+					lstModes.addItem(mode3);
+				}
+				
+				if(_appModel.accident.mode5) {
+					var mode5:String = "Violence";
+					lstModes.addItem(mode5);	
+				}			
+				
+				if(_appModel.accident.mode6 == true && _appModel.accident.otherMode != "") {
+					var mode6:String = _appModel.accident.otherMode;
+					lstModes.addItem(mode6);
+				}
+				volCambriolageDto.modesOperatoire =	lstModes;
+				volCambriolageDto.biensVoles = _appModel.accident.stolenGoods;
+				volCambriolageDto.dommagesImmobiliers = _appModel.accident.description;
+				volCambriolageDto.isPlainteDepose = _appModel.accident.claim;
+	  		}
+	  		
+			private function fault(e:FaultEvent):void {
+				removeProgess();
+				recapGenerali.faultHandler(e);
+				if (_logger.isError())
+					_logger.logError("Error Occurred. Code: " + e.fault.faultCode.toString() + " FaultString: " + e.fault.faultString  + " FaulDetail: " + e.fault.faultDetail);
+				
+			    Tracker.getInstance().trackView('mrhetape3recapitulatifbiserreur');				
+			}
+			
+			private function removeProgess():void {
+				PopUpManager.removePopUp(popUpWindow);
+				validateButton.enabled=true;
+			}
+			
+			private function result(event:DeclarationSinistreMrhEventResult):void {
+				removeProgess();
+				parentApplication.dispatchEvent(new NextSectionEvent(NextSectionEvent.TO_FINAL));
+			}
+			
+			private function showProgress():void {
+				popUpWindow = PopUpManager.createPopUp(this,DummyTitleWindow,false);
+		        PopUpManager.centerPopUp(popUpWindow); 
+			}
+			
+ 			private function openCloseSinistre():void	 { 
+ 				if (sinistre.height < 10){
+ 					effect.heightTo = 390;
+ 					effect.play([sinistre]);
+ 					openedSinistre = true;
+ 				} else {
+ 					effect.heightTo = -2;
+ 					effect.play([sinistre]);
+ 					openedSinistre = false;
+ 				}
+ 			}
+ 			private function cancelApplication():void {
+ 				Alert.okLabel="oui";
+				Alert.cancelLabel = "non";
+				Alert.buttonWidth = 120;	 			
+	 			Alert.show(RecapGenerali.MSG_ANNULATION,"CONFIRMATION",
+	 			Alert.OK | Alert.CANCEL, this, confirmDelete,_iconWarning, Alert.OK);
+ 			}
+ 			
+ 			public function openCloseResidence():void { 
+ 				if (Residence.height < 10){
+ 					effect.heightTo = 125;
+ 					effect.play([Residence]);
+ 					_openedResidence = true;
+ 				} else{
+ 					effect.heightTo = -2;
+ 					effect.play([Residence]);
+ 					_openedResidence = false;
+ 				}
+ 			}
+ 			
+	  		private function confirmDelete(event:CloseEvent):void {
+	  			if (event.detail == Alert.OK) {	
+  					 var u:URLRequest = new URLRequest(Util.getCancelUrl());
+       				 navigateToURL(u,"_self");
+       				 validateButton.enabled = false;
+       				 _appModel.clear();
+	 			}
+	  		}
+	  	
+	  	]]>
+	</mx:Script>
+	<mx:Resize id="effect" duration="800"/>
+
+	<mx:VBox id="VRecap" height="100%" width="100%" horizontalAlign="center" verticalAlign="middle">
+		<mx:VBox height="100%" verticalAlign="middle">	
+			<views:RecapInsuredContract insuredModel="{_appModel.insured}" width="650" />
+
+			<!-- Bloque residence -->
+			<mx:ApplicationControlBar horizontalAlign="left"  width="650"  click="openCloseResidence()">
+	  		<mx:Image source="{(_openedResidence)?_iconOpen:_iconClose}"  />
+	  		<mx:Label styleName="simpleBold" text="Le bien concerné" id="lblResidence"  rollOver="recapGenerali.styleText(lblResidence)" rollOut="recapGenerali.styleTextOut(lblResidence)" />
+		  	</mx:ApplicationControlBar>
+			<recap:RecapResidence id="Residence" width="650"  height="-2"/>
+
+			<!-- Bloque sinistre -->
+			<mx:ApplicationControlBar horizontalAlign="left"  width="650"  click="openCloseSinistre()" >
+		  		<mx:Image source="{(openedSinistre)?_iconOpen:_iconClose}"/>
+		  		<mx:Label styleName="simpleBold" text="Le sinistre" id="lblsinistre"  rollOver="recapGenerali.styleText(lblsinistre)" rollOut="recapGenerali.styleTextOut(lblsinistre)"/>
+		  	</mx:ApplicationControlBar>
+			<recap:RecapAccident id="sinistre" width="650"  height="-2"/>
+
+			<mx:Spacer height="5"/>
+		</mx:VBox>
+		<mx:HBox width="650">
+				<mx:TextArea height="52" editable="false" backgroundAlpha="0" width="100%"  
+				borderStyle="none"  text="L’enregistrement de cette déclaration ne constitue pas un accord de prise en charge, ni une appréciation des responsabilités.&#xa;Il vous incombe de conserver tous les éléments permettant la constatation et l’estimation de vos dommages.  "/>
+		</mx:HBox>				
+	</mx:VBox>
+	
+	<mx:Spacer height="5"/>
+	
+	<mx:HBox width="100%">
+		<mx:Button width="120"  styleName="NavButton" label="Etape précédente" id="prevB" click="prev()" />
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Annuler" width="120"  styleName="NavButton" click="cancelApplication()"/>
+	  	  <mx:Spacer width="10"/>
+	  <mx:Button label="Valider" width="120"  styleName="NavButton"  click="validate()"  id="validateButton"/>
+	</mx:HBox>
+</mx:Panel>
