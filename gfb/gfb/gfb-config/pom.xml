@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>gfb</artifactId>
+    <groupId>fr.generali.gfb</groupId>
+    <version>1.1.19-SNAPSHOT</version>
+  </parent>
+  <groupId>fr.generali.gfb</groupId>
+  <artifactId>gfb-config</artifactId>
+  <packaging>jar</packaging>
+  <name>gfb-config</name>
+  <description><![CDATA[
+  Ce projet permet de gerer la configuration suivant le formalisme JND préconisé pour la cible de déploiement JBoss en production.
+  ]]></description>
+  
+  <profiles>
+    <profile>
+      <!-- sur les postes de dev on genere la conf JND pour l'environnement de DEV.
+          On ne le fait pas sur Bamboo. -->
+      <id>developper</id>
+      <activation><activeByDefault>false</activeByDefault></activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-clean-plugin</artifactId>
+              <configuration>
+                <filesets>
+                  <fileset>
+                    <directory>generated-resources</directory>
+                    <followSymlinks>false</followSymlinks>
+                  </fileset>
+                </filesets>
+              </configuration>
+          </plugin>
+              
+          <plugin>
+            <groupId>org.codehaus.groovy.maven</groupId>
+            <artifactId>gmaven-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    http://svn.groupe.generali.fr/projets/espaceclient/trunk/tools/scripts/genererDevConf_V3.groovy
+                  </source>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+
+        <!-- pour activer le filtrage afin de recuperer dans un .properties le numero de version -->
+        <resources>
+          <!-- on ne change pas l'inclusion des resources normales -->
+          <resource>
+            <directory>src/main/resources/</directory>
+          </resource>
+          <!-- on passe un coup de filtrage sur les ressources generees pour le dev. -->
+          <resource>
+            <directory>generated-resources/dev/</directory>
+            <filtering>true</filtering>
+            <targetPath>generated-resources/dev</targetPath>
+          </resource>
+        </resources>
+            
+      </build>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <includes>
+            <include>**/*.properties</include>
+            <include>**/*.xml</include>
+          </includes>
+          <excludes>
+            <exclude>generated-resources/</exclude>
+            <exclude>jboss/</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+
+
+</project>

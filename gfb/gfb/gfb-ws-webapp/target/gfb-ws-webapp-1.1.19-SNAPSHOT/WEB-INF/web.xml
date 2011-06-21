@@ -1,0 +1,69 @@
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Generali Front Broker</display-name>
+
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+            classpath*:/fr/generali/gfb/ws/webapp/applicationContext-ws.xml
+            classpath*:/fr/generali/gfb/ws/webapp/applicationContext-flex.xml
+			classpath*:/fr/generali/gfb/services/applicationContext-services.xml
+            classpath*:org/codehaus/xfire/spring/xfire.xml
+            classpath*:/fr/generali/gfb/ws/sinistre/applicationContext-ws.xml
+            classpath*:/fr/generali/espaceclient/proxy/generic/applicationContext-ws.xml
+			classpath*:/fr/generali/espaceclient/gec/ws/client/services/applicationContext-ws-client.xml
+            classpath*:/fr/generali/espaceclient/common/service/applicationContext-mail.xml
+            classpath*:/fr/generali/gfb/ws/sinistre/applicationContext-ws-placeholder.xml
+       </param-value>
+  </context-param>
+  <context-param>
+    <param-name>logbackConfigLocation</param-name>
+    <param-value>classpath:logback-gfb.xml</param-value>
+  </context-param>
+  <context-param>
+    <param-name>webAppRootKey</param-name>
+    <param-value>gfb.ws.webapp.root</param-value>
+  </context-param>
+
+  <!-- Placer le listener des logs avant celui de Spring -->
+  <listener><listener-class>fr.generali.socle.log.LogbackConfigListener</listener-class></listener>
+  <listener><listener-class>org.springframework.web.context.ContextLoaderListener</listener-class></listener>
+
+  <!-- Http Flex Session attribute and binding listener support -->
+  <listener><listener-class>flex.messaging.HttpFlexSession</listener-class></listener>
+
+  <!-- Declaration de la servlet xFire -->
+  <servlet>
+    <servlet-name>xfire</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>MessageBrokerServlet</servlet-name>
+    <display-name>MessageBrokerServlet</display-name>
+    <servlet-class>flex.messaging.MessageBrokerServlet</servlet-class>
+    <init-param>
+      <param-name>services.configuration.file</param-name>
+      <param-value>/WEB-INF/flex/services-config.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>xfire</servlet-name>
+    <url-pattern>/ws/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>MessageBrokerServlet</servlet-name>
+    <url-pattern>/messagebroker/*</url-pattern>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+
+</web-app>

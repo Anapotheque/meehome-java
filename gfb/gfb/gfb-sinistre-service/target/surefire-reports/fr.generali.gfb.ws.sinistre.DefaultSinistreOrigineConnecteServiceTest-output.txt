@@ -1,0 +1,24 @@
+14:34:13.421 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Persistence
+14:34:13.421 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Creation du pdf Bris Glace
+14:34:13.421 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Pdf
+14:34:13.421 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Mail
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Persistence
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Creation du pdf Dommage Electriques
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Pdf
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Mail
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Persistence
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Creation du pdf Dégats des Eaux
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Pdf
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Mail
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Persistence
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Creation du pdf Tempête/Grêle
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Pdf
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Mail
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Persistence
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Creation du pdf Accident AUTO
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Pdf
+14:34:13.437 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Mail
+14:34:13.453 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Persistence
+14:34:13.453 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Creation du pdf Incendie AUTO
+14:34:13.453 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Pdf
+14:34:13.453 [main] INFO  f.g.g.w.s.DefaultSinistreOrigineConnecteService - Persistence de la declaration : Etape Mail

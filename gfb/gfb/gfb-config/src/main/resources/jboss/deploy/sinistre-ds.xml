@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+   <local-tx-datasource>
+      <jndi-name>jdbc/sinistreDataSource</jndi-name>
+      <connection-url>jdbc:hsqldb:file:../temp/data/sinistreDB</connection-url>
+      <!-- <connection-url>jdbc:hsqldb:mem:gecDB</connection-url> -->
+
+      <!-- The driver class -->
+      <driver-class>org.hsqldb.jdbcDriver</driver-class>
+
+      <!-- The login and password -->
+      <user-name>sa</user-name>
+      <password></password>
+      <min-pool-size>5</min-pool-size>
+      <max-pool-size>20</max-pool-size>
+      <idle-timeout-minutes>0</idle-timeout-minutes>
+      <track-statements/>
+
+      <!-- HSQL DB benefits from prepared statement caching -->
+      <prepared-statement-cache-size>32</prepared-statement-cache-size>
+
+      <!-- corresponding type-mapping in the standardjbosscmp-jdbc.xml -->
+      <metadata>
+         <type-mapping>Hypersonic SQL</type-mapping>
+      </metadata>
+
+   </local-tx-datasource>
+   
+</datasources>

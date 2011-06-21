@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>gfb</artifactId>
+    <groupId>fr.generali.gfb</groupId>
+    <version>1.1.19-SNAPSHOT</version>
+  </parent>
+  <groupId>fr.generali.gfb</groupId>
+  <artifactId>gfb-ws-java-client</artifactId>
+  <packaging>jar</packaging>
+  <version>1.1.19-SNAPSHOT</version>
+  <name>gfb-ws-java-client</name>
+  <description><![CDATA[
+    Ce projet sert de JAR client pour exposer ou consommer les webservices GFB via SOAP.
+  ]]></description>
+  <dependencies>
+  
+    <!-- WS Elisa -->
+    <dependency>
+      <groupId>fr.generali.elisa</groupId>
+      <artifactId>ELISA_WS_3_CLIENT</artifactId>
+    </dependency>
+  
+    <dependency>
+      <groupId>fr.generali.socle.fondations</groupId>
+      <artifactId>socle-fondations-ws</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+</project>

@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>gfb</artifactId>
+    <groupId>fr.generali.gfb</groupId>
+    <version>1.1.19-SNAPSHOT</version>
+  </parent>
+  <artifactId>gfb-ear</artifactId>
+  <packaging>ear</packaging>
+  <name>gfb-ear</name>
+  <description><![CDATA[
+  Ce projet permet de packager les application webs GFB + Monitoring dans un seul EAR.
+  ]]></description>
+  
+  <dependencies>
+    <dependency>
+      <groupId>fr.generali.gfb</groupId>
+      <artifactId>gfb-ws-webapp</artifactId>
+      <version>${version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>fr.generali.gfb</groupId>
+      <artifactId>gfb-monitoring</artifactId>
+      <version>${version}</version>
+      <type>war</type>
+    </dependency>
+  </dependencies>
+  
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-ear-plugin</artifactId>
+        <configuration>
+          <displayName>gfb-ear</displayName>
+          <description>Generali Front Broker</description>
+          <!-- Test -->
+          <generatedDescriptorLocation>${basedir}/META-INF</generatedDescriptorLocation>
+          <!-- Indique a Maven de gerer le manifest et de creer l'entree 'classpath' -->
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+            </manifest>
+          </archive>
+          <!-- Declaration des modules de l'application (generation du fichier application.xml) -->
+          <modules>
+            <webModule>
+              <groupId>fr.generali.gfb</groupId>
+              <artifactId>gfb-ws-webapp</artifactId>
+              <contextRoot>/gfb-ws-webapp</contextRoot>
+            </webModule>
+            <webModule>
+              <groupId>fr.generali.gfb</groupId>
+              <artifactId>gfb-monitoring</artifactId>
+              <contextRoot>/</contextRoot>
+            </webModule>
+          </modules>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

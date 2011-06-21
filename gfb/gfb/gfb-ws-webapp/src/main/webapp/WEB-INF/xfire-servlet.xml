@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- déclaration du serviceFactory modifié pour soapAction -->
+  <bean id="wsServiceFactory" class="fr.generali.socle.xfire.spring.WsServiceFactory">
+    <constructor-arg index="0" ref="xfire.transportManager" />
+    <!-- <constructor-arg index="1" ref="xfire.aegisBindingProvider" /> -->
+    <!-- mise à jour de l'attribut soapAction dans le wsdl généré -->
+    <property name="theSoapAction" value="http://gfb.generali.fr" />
+    <property name="methodName" value="true" />
+  </bean>
+
+  <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="urlMap">
+      <map>
+        <!--<entry key="/secured/contractService" value-ref="contractWS" />-->
+        <entry key="/exempleCalculService" value-ref="exempleCalculWS" />
+        <entry key="/v1/elisaHarvestService" value-ref="elisaHarvestWS" />
+      </map>
+    </property>
+  </bean>
+  
+  <!-- Déclaration d'un bean pour le webservice XFire. Son nom doit se terminer par "WS" en majuscules. -->
+  <bean id="exempleCalculWS" class="org.codehaus.xfire.spring.remoting.XFireExporter">
+    <property name="serviceFactory" ref="wsServiceFactory" />
+    <property name="serviceBean" ref="exempleCalculWs" />
+    <property name="serviceClass" value="fr.generali.gfb.ws.exemple.ICalculWebService" />
+    <property name="namespace" value="http://fr.generali/gfb" />
+    <property name="name" value="ICalculWebService"/>
+
+    <!-- Activation du log automatique de numéro de transaction, et de l'url de 
+         redirection WS-Adressing -->
+    <property name="inHandlers">
+      <list>
+        <ref bean="inLogger" />
+        <ref bean="addressingInHandler" />
+      </list>
+    </property>
+    <property name="outHandlers">
+      <list>
+        <ref bean="outLogger" />
+        <ref bean="addressingOutHandler" />
+      </list>
+    </property>
+  </bean> 
+  
+  <!-- Déclaration d'un bean pour le webservice XFire. Son nom doit se terminer par "WS" en majuscules. -->
+  <bean id="elisaHarvestWS" class="org.codehaus.xfire.spring.remoting.XFireExporter">
+    <property name="serviceFactory" ref="wsServiceFactory" />
+    <property name="serviceBean" ref="elisaHarvestWs" />
+    <property name="serviceClass" value="fr.generali.gfb.ws.elisa.v1.IElisaHarvestWebService" />
+    <property name="namespace" value="http://fr.generali.gfb.ws.elisa.v1" />
+    <property name="name" value="v1.IElisaHarvestWebService"/>
+
+    <!-- Activation du log automatique de numéro de transaction, et de l'url de 
+         redirection WS-Adressing -->
+    <property name="inHandlers">
+      <list>
+        <ref bean="inLogger" />
+        <ref bean="addressingInHandler" />
+      </list>
+    </property>
+    <property name="outHandlers">
+      <list>
+        <ref bean="outLogger" />
+        <ref bean="addressingOutHandler" />
+      </list>
+    </property>
+  </bean> 
+  
+
+  <!-- gère l'url de redirection vers le service web -->
+  <bean id="addressingInHandler" class="org.codehaus.xfire.addressing.AddressingInHandler" />
+  <bean id="addressingOutHandler" class="org.codehaus.xfire.addressing.AddressingOutHandler" />
+
+  <!-- Handler permettant de récupérer les id de requetes passees de serveur a serveur -->
+  <bean id="inLogger" class="fr.generali.socle.xfire.handlers.InLogger" />
+  <bean id="outLogger" class="fr.generali.socle.xfire.handlers.OutLogger" />
+
+</beans>

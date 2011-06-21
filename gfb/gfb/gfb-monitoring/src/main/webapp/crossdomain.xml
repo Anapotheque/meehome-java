@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE cross-domain-policy 
+  SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd">
+<cross-domain-policy>
+<!-- NOTE : ce fichier est la pour l'exemple, mais c'est la prod qui le gere
+ pour le modifier, faire un WAP de Sollicitation CPP en joignant le fichier 
+ crossdomain.xml et metter a jour le DE Web -->
+        
+        <allow-access-from domain="*.generali.fr"/>
+        <allow-access-from domain="*.e-novline.fr" />
+        <allow-access-from domain="*.enovline.fr" />
+        <allow-access-from domain="*.e-novline.com" />
+        <allow-access-from domain="*.enovline.com" />
+        <allow-access-from domain="*.generali-proximite.fr" />
+</cross-domain-policy>
