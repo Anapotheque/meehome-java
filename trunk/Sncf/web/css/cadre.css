@@ -1,0 +1,22 @@
+#ConnectionWindows{
+width: 700px;
+height: 400px;
+background: white;
+border: 1px solid black;
+text-align: center;
+}
+
+/*HAUT DE MENU DE SELECTION*/
+#head{
+border-bottom: 1px solid black;
+font-size : 200%;  
+font: bold; 
+padding: 20px;
+height : 50px;
+width : 100% ;           /*Definie une taille fixe pour la largeur du cadre*/  
+background: #6483A4;        /*Defini une couleur de fond pour l'entete du tableau ici 'Bleu foncé'*/                  
+letter-spacing: 2pt;        /*Fixe la distance entre chaque lettre*/
+color: white;               /*Couleur de texte 'BLANC'*/
+text-transform : uppercase; /*Transforme le texte en majuscule*/
+text-indent: 1px;
+}

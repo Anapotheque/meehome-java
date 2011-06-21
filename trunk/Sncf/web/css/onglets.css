@@ -1,0 +1,52 @@
+/*- Menu Tabs J--------------------------- */
+
+    #tabsJ {
+      text-transform : uppercase; /*Transforme le texte en majuscule*/
+      float: left;
+      width: 100%;
+      background: #EEEEEE;
+      font-size: 100%;
+      line-height: normal;
+      border-bottom: 1px solid #24618E;
+      }
+    #tabsJ ul {
+        margin: 0;
+        padding: 0px 0px 0px 0px;
+        list-style: none;
+      }
+    #tabsJ li {
+      display: inline;
+      margin: 0;
+      padding: 0;
+      }
+    #tabsJ a {
+	 	text-decoration: none;
+      float: left;
+      background: url("../images/tableftJ.gif") no-repeat left top;
+      margin: 0;
+      padding: 0 0 0 5px;     
+      }
+    #tabsJ a span {
+	 	
+      float: left;
+      display: block;
+      background: url("../images/tabrightJ.gif") no-repeat right top;
+      padding: 5px 15px 4px 6px;
+      color: #24618E;
+		cursor: pointer;
+      }
+    #tabsJ a:hover {
+      background-position:0% -42px;
+      }
+    #tabsJ a:hover span {
+	 color:#FFFFFF;
+      background-position:100% -42px;
+      }
+
+        #tabsJ #current a {
+                background-position:0% -42px;
+        }
+        #tabsJ #current a span {
+                background-position:100% -42px;
+                color:#FFFFFF;
+        }

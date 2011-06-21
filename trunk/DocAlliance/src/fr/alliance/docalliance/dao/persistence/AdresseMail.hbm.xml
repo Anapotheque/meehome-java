@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 12 mars 2007 23:20:24 by Hibernate Tools 3.2.0.b9 -->
+<hibernate-mapping>
+    <class name="fr.alliance.docalliance.model.AdresseMail" table="adressemail" catalog="DocAlliance">
+    
+        <id name="idAdresseMail" type="int">
+            <column name="idAdresseMail" />
+            <generator class="increment" />
+        </id>
+        
+        <property name="firstName" type="string">
+            <column name="FirstName" not-null="true" />
+        </property>
+        
+        <property name="lastName" type="string">
+            <column name="LastName" not-null="true" />
+        </property>
+        
+        <property name="adresseMail" type="string">
+            <column name="AdresseMail" not-null="true" />
+        </property>
+        
+        <property name="active" type="boolean">
+            <column name="Active" not-null="true" />
+        </property>
+        
+        <set name="users" inverse="true">
+            <key>
+                <column name="idAdresseMail" />
+            </key>
+            <one-to-many class="fr.alliance.docalliance.model.User" />
+        </set>
+        
+        <set name="mails" inverse="true">
+            <key>
+                <column name="idAdresseMail" />
+            </key>
+            <one-to-many class="fr.alliance.docalliance.model.Mail" />
+        </set>
+        
+        <set name="destinataires" inverse="true">
+            <key>
+                <column name="idAdresseMail" />
+            </key>
+            <one-to-many class="fr.alliance.docalliance.model.Destinataire" />
+        </set>
+        
+    </class>
+</hibernate-mapping>

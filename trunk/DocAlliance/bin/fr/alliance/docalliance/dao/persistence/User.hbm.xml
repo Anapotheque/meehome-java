@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 12 mars 2007 23:20:24 by Hibernate Tools 3.2.0.b9 -->
+<hibernate-mapping>
+    <class name="fr.alliance.docalliance.model.User" table="users" catalog="DocAlliance">
+    
+        <id name="idUser" type="int">
+            <column name="idUsers" />
+            <generator class="increment" />
+        </id>
+        
+        <many-to-one column="idAdresseMail" name="adresseMail" class="fr.alliance.docalliance.model.AdresseMail" fetch="join" unique="true" />
+       
+        <property name="login" type="string">
+            <column name="Login" />
+        </property>
+        
+        <property name="pass" type="string">
+            <column name="Pass" />
+        </property>
+        
+    </class>
+</hibernate-mapping>

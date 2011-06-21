@@ -1,0 +1,381 @@
+body {    
+font-family : Arial, Courier, "MS Sans Serif"; 
+background: #AAAAAA;  
+}
+
+ul{
+	list-style: none;
+}
+
+#Case{
+position: absolute;
+left : 50px;
+top : 100px;
+width: 450px;
+height: 450px;
+
+
+border: 5px solid black;
+}
+
+#CaseUn{
+position: absolute;
+left : 0px;
+top : 0px;
+width: 225px;
+}
+#CaseDeux{
+position: absolute;
+left : 225px;
+top : 0px;
+width: 225px;
+}
+#CaseTrois{
+position: absolute;
+left : 0px;
+top : 225px;
+width: 225px;
+}
+#CaseQuatre{
+position: absolute;
+left : 225px;
+top : 225px;
+width: 225px;
+}
+
+#Case1{
+position: absolute;
+left : 0px;
+top : 0px;
+width: 75px;
+}
+#Case2{
+position: absolute;
+left : 75px;
+top : 0px;
+width: 75px;
+}
+#Case3{
+position: absolute;
+left : 150px;
+top : 0px;
+width: 75px;
+}
+
+#Case4{
+position: absolute;
+left : 0px;
+top : 75px;
+width: 75px;
+}
+#Case5{
+position: absolute;
+left : 75px;
+top : 75px;
+width: 75px;
+}
+#Case6{
+position: absolute;
+left : 150px;
+top : 75px;
+width: 75px;
+}
+
+#Case7{
+position: absolute;
+left : 0px;
+top : 150px;
+width: 75px;
+}
+#Case8{
+position: absolute;
+left : 75px;
+top : 150px;
+width: 75px;
+}
+#Case9{
+position: absolute;
+left : 150px;
+top : 150px;
+width: 75px;
+}
+
+#Case00{
+position: absolute;
+left : 0px;
+top : 0px;
+width: 25px;
+}
+#Case00 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/Eau.jpg") fixed no-repeat center;
+}
+#tanker a:hover, #Case00 a:hover, #Case01 a:hover, #Case02 a:hover, #Case10 a:hover, #Case11 a:hover,  #Case12 a:hover, #Case20 a:hover, #Case21 a:hover, #Case22 a:hover{
+  background-image : url("../images/Pelouse.jpg") fixed no-repeat center ;
+}
+
+
+
+#Case01{
+position: absolute;
+left : 25px;
+top : 0px;
+width: 25px;
+}
+#Case01 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/Eau.jpg") fixed no-repeat center;
+}
+
+
+
+
+
+#Case02{
+position: absolute;
+left : 50px;
+top : 0px;
+width: 25px;
+}
+#Case02 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/Eau.jpg") fixed no-repeat center;
+}
+
+
+
+
+#Case10{
+position: absolute;
+left : 0px;
+top : 25px;
+width: 25px;
+}
+#Case10 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/Eau.jpg") fixed no-repeat center;
+}
+
+
+
+
+#Case11{
+position: absolute;
+left : 25px;
+top : 25px;
+width: 25px;
+}
+#Case11 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/Eau.jpg") fixed no-repeat center;
+}
+
+
+
+
+#Case12{
+position: absolute;
+left : 50px;
+top : 25px;
+width: 25px;
+}
+#Case12 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/Eau.jpg") fixed no-repeat center;
+}
+
+
+
+#Case20{
+position: absolute;
+left : 0px;
+top : 50px;
+width: 25px;
+}
+#Case20 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/Eau.jpg") fixed no-repeat center;
+}
+
+
+
+
+#Case21{
+position: absolute;
+left : 25px;
+top : 50px;
+width: 25px;
+}
+#Case21 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/Eau.jpg") fixed no-repeat center;
+}
+
+
+
+
+#Case22{
+position: absolute;
+left : 50px;
+top : 50px;
+width: 25px;
+}
+#Case22 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/Eau.jpg") fixed no-repeat center;
+}
+
+
+
+#tankerA1{
+position: absolute;
+left : 25px;
+top : 25px;
+width: 25px;
+}
+#tankerA1 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/tanker.JPG") fixed no-repeat center;
+}
+#tankerA2{
+position: absolute;
+left : 50px;
+top : 25px;
+width: 25px;
+}
+#tankerA2 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/tanker.JPG") fixed no-repeat center;
+}
+#tankerA3{
+position: absolute;
+left : 0px;
+top : 25px;
+width: 25px;
+}
+#tankerA3 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/tanker.JPG") fixed no-repeat center;
+}
+
+
+#tankerE1{
+position: absolute;
+left : 25px;
+top : 25px;
+width: 25px;
+}
+#tankerE1 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/tanker.JPG") fixed no-repeat center;
+}
+#tankerE2{
+position: absolute;
+left : 50px;
+top : 25px;
+width: 25px;
+}
+#tankerE2 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/tanker.JPG") fixed no-repeat center;
+}
+#tankerE3{
+position: absolute;
+left : 0px;
+top : 25px;
+width: 25px;
+}
+#tankerE3 a{
+display: block;
+width: 25px;
+height: 25px;
+background: url("../images/tanker.JPG") fixed no-repeat center;
+}
+
+
+
+#positionCursor{
+position: absolute;
+left : 600px;
+top : 100px;
+width: 300px;
+height: 75px;
+
+padding : 10px;
+font: bold;
+
+background: white;
+border: 5px solid black;
+text-align: center;
+
+}
+
+#commande{
+position: absolute;
+left : 600px;
+top : 220px;
+width: 300px;
+height: 300px;
+
+padding : 10px;
+font: bold;
+
+background: white;
+border: 5px solid black;
+text-align: center;
+
+}
+
+#journal{
+position: absolute;
+left : 600px;
+top : 560px;
+width: 600px;
+height: 200px;
+
+padding : 10px;
+font: bold;
+
+background: white;
+border: 5px solid black;
+text-align: center;
+
+}
+
+
+
+
+
+
+
+
+
+

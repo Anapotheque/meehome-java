@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/my</property>
+        <property name="hibernate.connection.username">thetanos</property>
+        <property name="hibernate.connection.password"></property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.connection.release_mode">auto</property>
+        <property name="hibernate.show_sql">false</property>
+        <property name="hibernate.c3p0.minPoolSize">100</property>
+        <property name="hibernate.c3p0.maxPoolSize">200</property>
+        <property name="hibernate.c3p0.timeout">200</property>
+        <property name="hibernate.c3p0.max_statement">2000</property>
+        <property name="hibernate.generate_statistics">true</property>
+
+	    <mapping class="fr.home.my.dao.model.Role"/>
+	    <mapping class="fr.home.my.dao.model.Utilisateur"/>
+
+    </session-factory>
+</hibernate-configuration>

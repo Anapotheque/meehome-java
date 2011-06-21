@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 12 mars 2007 23:20:24 by Hibernate Tools 3.2.0.b9 -->
+<hibernate-mapping>
+    <class name="fr.alliance.docalliance.model.Mail" table="mail" catalog="DocAlliance">
+
+        <id name="idMail" type="int">
+            <column name="idMail" />
+            <generator class="increment" />
+        </id>
+        
+        <many-to-one name="adresseMail" class="fr.alliance.docalliance.model.AdresseMail"  update="true" insert="true" fetch="select" cascade="persist">
+            <column name="idAdresseMail" not-null="true" />
+        </many-to-one>
+        
+        <many-to-one name="pdf" class="fr.alliance.docalliance.model.Pdf"  update="true" insert="true" fetch="join" cascade="persist">
+            <column name="idPDF" not-null="true" />
+        </many-to-one>
+        
+        <property name="sujet" type="string">
+            <column name="Sujet" />
+        </property>
+        
+        <property name="contenu" type="string">
+            <column name="Contenu" />
+        </property>
+        
+        <property name="dateExpedition" type="date">
+            <column name="DateExpedition" length="10" />
+        </property>
+        
+        <set name="destinataires" inverse="true">
+            <key>
+                <column name="idMail" />
+            </key>
+            <one-to-many class="fr.alliance.docalliance.model.Destinataire" />
+        </set>
+        
+    </class>
+</hibernate-mapping>

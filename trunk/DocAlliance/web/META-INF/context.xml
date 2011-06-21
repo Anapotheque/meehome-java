@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/DocAlliance">
+  <ResourceLink global="jdbc/DocAlliance" name="jdbc/DocAlliance" type="javax.sql.DataSource"/>
+</Context>

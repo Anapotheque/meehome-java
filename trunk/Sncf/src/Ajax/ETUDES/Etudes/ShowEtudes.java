@@ -1,0 +1,85 @@
+package Ajax.ETUDES.Etudes;
+
+import Models.TOOLS.Ajaxmodels.DVSG.AjaxModels_Onglets;
+import Models.TOOLS.Ajaxmodels.TOOLS_HTML;
+import Models.TOOLS.Controleur.MegaControleur;
+import Models.ETUDES.Etudes.EtudesDAO;
+import Models.TOOLS.iText.DVSG.Impression;
+
+import java.io.*;
+import java.sql.SQLException;
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+//RABALLAND Romain v3.0
+
+public class ShowEtudes extends MegaControleur {
+    
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        
+        //RECUPERATION DES OBJETS
+        EtudesDAO etude = null;
+        etude = creerObjet(request, etude);
+        
+        //GET DATA
+        String choix = request.getParameter("choix_menu");
+        
+        //INITIALISATION DU FLUX DE COMMUNICATION AVEC LA PAGE JSP
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        
+        //REINITIALISATION DES DONNEES
+        try {
+            etude.Set();
+        } catch (SQLException ex) {
+            retourVue(request, response,"/Erreur?message="+ex.getMessage()+"code="+ex.getErrorCode());
+            System.out.println("\n\n*********************************************\n");
+            ex.printStackTrace();
+            System.out.println("\n*********************************************\n\n");
+        }
+        
+        //GENERATION DU PDF LIE
+        Impression.genererPDF(response, request,etude.widthsShow,etude.list_TitreShow,etude.list_Show,"ETUDES ACTIVES");
+        
+        //AFFICHAGE
+        AjaxModels_Onglets.getOnglet(request,response,"Affichage","Etudes");
+        
+        if(etude.list_Show.size()!=0){
+            if(choix.equals("Null"))
+                TOOLS_HTML.NewButtonMenu(out,"Etudes","Afficher","show");
+            else if(choix.equals("show"))
+                TOOLS_HTML.Show(request,out,"Etudes",etude.list_TitreShow,etude.list_Show,etude.list_codeEtude,etude.list_SizeTitre_Show,etude.list_TitreShow.size(),false);
+        }else
+            TOOLS_HTML.getMessage(out,"h1","La table ne contient aucun elements veuillez renseigner la table");
+        
+        out.close();
+    }
+    
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /** Handles the HTTP <code>GET</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        processRequest(request, response);
+    }
+    
+    /** Handles the HTTP <code>POST</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        processRequest(request, response);
+    }
+    
+    /** Returns a short description of the servlet.
+     */
+    public String getServletInfo() {
+        return "Short description";
+    }
+// </editor-fold>
+}

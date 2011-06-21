@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 12 mars 2007 23:20:24 by Hibernate Tools 3.2.0.b9 -->
+<hibernate-mapping>
+    <class name="fr.alliance.docalliance.model.Destinataire" table="destinataires" catalog="DocAlliance">
+
+        <composite-id name="id" class="fr.alliance.docalliance.model.DestinataireId">
+            <key-property name="idAdresseMail" type="int">
+                <column name="idAdresseMail" />
+            </key-property>
+            <key-property name="idMail" type="int">
+                <column name="idMail" />
+            </key-property>
+        </composite-id>
+        
+        <many-to-one name="adresseMail" class="fr.alliance.docalliance.model.AdresseMail" insert="false" update="false" fetch="select" cascade="persist">
+            <column name="idAdresseMail" not-null="true" />
+        </many-to-one>
+        
+       <many-to-one name="mail" class="fr.alliance.docalliance.model.Mail" insert="false" update="false" fetch="select">
+            <column name="idMail" not-null="true" />
+        </many-to-one>
+        
+    </class>
+</hibernate-mapping>

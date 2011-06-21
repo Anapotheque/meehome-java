@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<import resource="classpath:/fr/home/my/dao/applicationContext.xml"/>
+
+	<!-- la classes d'accès à la couche [service] -->
+	<bean id="utilisateurServiceTarget" class="fr.home.my.services.impl.UtilisateurService">
+		<property name="dao">
+			<ref bean="utilisateurDao"/>
+		</property>
+	</bean>
+	<bean id="utilisateurService" parent="transactionProxy">
+		<property name="target">
+			<ref bean="utilisateurServiceTarget"/>
+		</property>
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		</property>
+	</bean>
+	
+	<bean id="roleServiceTarget" class="fr.home.my.services.impl.RoleService">
+		<property name="dao">
+			<ref bean="roleDao"/>
+		</property>
+	</bean>
+	<bean id="roleService" parent="transactionProxy">
+		<property name="target">
+			<ref bean="roleServiceTarget"/>
+		</property>
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		</property>
+	</bean>
+
+</beans>
