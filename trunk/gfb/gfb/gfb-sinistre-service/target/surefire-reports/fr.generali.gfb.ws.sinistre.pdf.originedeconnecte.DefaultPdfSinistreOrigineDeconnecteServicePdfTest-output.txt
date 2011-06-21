@@ -1,0 +1,4 @@
+14:34:00.406 [main] INFO  org.unitils.core.ConfigurationLoader - Loaded main configuration file unitils-default.properties from classpath.
+14:34:00.453 [main] INFO  org.unitils.core.ConfigurationLoader - Loaded custom configuration file unitils.properties from classpath.
+14:34:00.453 [main] INFO  org.unitils.core.ConfigurationLoader - No local configuration file unitils-local.properties found.
+

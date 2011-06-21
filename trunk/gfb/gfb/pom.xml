@@ -1,0 +1,292 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>fr.generali</groupId>
+    <artifactId>parent</artifactId>
+    <version>2.0.5</version>
+  </parent>
+  <groupId>fr.generali.gfb</groupId>
+  <artifactId>gfb</artifactId>
+  <packaging>pom</packaging>
+  <version>1.1.19-SNAPSHOT</version>
+  <name>gfb</name>
+
+  <scm>
+    <connection>scm:svn:http://svn.groupe.generali.fr/projets/gfb/trunk</connection>
+    <url>http://fisheye.groupe.generali.fr/browse/gfb</url>
+  </scm>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Dependances BlazeDS -->
+      <dependency>
+        <groupId>com.adobe.blazeds</groupId>
+        <artifactId>blazeds-core</artifactId>
+        <version>${blazeds.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.adobe.blazeds</groupId>
+        <artifactId>blazeds-opt</artifactId>
+        <version>${blazeds.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.adobe.blazeds</groupId>
+        <artifactId>blazeds-common</artifactId>
+        <version>${blazeds.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.adobe.blazeds</groupId>
+        <artifactId>blazeds-proxy</artifactId>
+        <version>${blazeds.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.adobe.blazeds</groupId>
+        <artifactId>blazeds-remoting</artifactId>
+        <version>${blazeds.version}</version>
+        <scope>compile</scope>
+      </dependency>
+
+      <!-- Spring -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-remoting</artifactId>
+        <version>2.0.8</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+
+      <!-- Autres -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.4</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.codehaus.xfire</groupId>
+        <artifactId>xfire-jaxws</artifactId>
+        <version>${xfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.lowagie</groupId>
+        <artifactId>itext</artifactId>
+        <version>2.1.0</version>
+      </dependency>
+      
+      <dependency>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate</artifactId>
+          <version>3.2.4.sp1</version>
+          <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-annotations</artifactId>
+          <version>3.2.1.ga</version>
+          <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-commons-annotations</artifactId>
+          <version>3.0.0.ga</version>
+          <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-validator</artifactId>
+          <version>3.0.0.ga</version>
+          <scope>provided</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>pdfbox</groupId>
+        <artifactId>pdfbox</artifactId>
+        <version>0.7.3</version>
+        <scope>test</scope>
+      </dependency>
+	  
+	  <!-- eci : eai client--> 
+      <dependency>
+       <groupId>fr.generali.espaceclient.eai</groupId>
+        <artifactId>eai-client</artifactId>
+        <version>${eci.eai-client.version}</version>
+      </dependency>
+
+	  
+      <!-- eci : proxy -->
+      <dependency>
+        <groupId>fr.generali.espaceclient.proxy</groupId>
+        <artifactId>generic-proxy</artifactId>
+        <version>${eci.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>fr.generali.espaceclient.proxy</groupId>
+        <artifactId>rce-proxy</artifactId>
+        <version>${eci.version}</version>
+      </dependency>
+	  
+	  
+	  
+      <dependency>
+        <groupId>fr.generali.gfb</groupId>
+        <artifactId>gfb-services</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.generali.gfb</groupId>
+        <artifactId>gfb-ws-java-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.generali.gfb</groupId>
+        <artifactId>gfb-sinistre-service-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.generali.gfb</groupId>
+        <artifactId>gfb-sinistre-service</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.generali.gfb</groupId>
+        <artifactId>gfb-monitoring</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.persistence</groupId>
+        <artifactId>persistence-api</artifactId>
+        <version>1.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.14</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- WS Elisa -->
+      <dependency>
+        <groupId>fr.generali.elisa</groupId>
+        <artifactId>ELISA_WS_3_CLIENT</artifactId>
+        <version>${elisa.wsclient.version}</version>
+      </dependency>
+	
+	 <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>2.1</version>
+     </dependency>
+	  
+    </dependencies>
+  </dependencyManagement>
+
+  <profiles>
+    <profile>
+      <id>all</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>gfb-sinistre-service</module>
+        <module>gfb-sinistre-service-client</module>
+        <module>gfb-ws-webapp</module>
+        <module>gfb-ws-java-client</module>
+        <module>gfb-services</module>
+        <module>gfb-config</module>
+        <module>gfb-ear</module>
+        <module>gfb-monitoring</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>flex</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>gfb-ws-flex-client</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>sinistre</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>gfb-sinistre-service</module>
+        <module>gfb-sinistre-service-client</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>peclipse</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>gfb-sinistre-service</module>
+        <module>gfb-sinistre-service-client</module>
+        <module>gfb-ws-webapp</module>
+        <module>gfb-ws-java-client</module>
+        <module>gfb-services</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>java</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>gfb-sinistre-service</module>
+        <module>gfb-sinistre-service-client</module>
+        <module>gfb-ws-webapp</module>
+        <module>gfb-ws-java-client</module>
+        <module>gfb-services</module>
+        <module>gfb-config</module>
+        <module>gfb-ear</module>
+        <module>gfb-monitoring</module>
+      </modules>
+    </profile>
+  </profiles>
+
+  <properties>
+    <blazeds.version>3.2.0.3978</blazeds.version>
+    <eci.version>11.0</eci.version>
+	<eci.eai-client.version>17.2</eci.eai-client.version>
+    <elisa.wsclient.version>05.05.02-RC1</elisa.wsclient.version>
+    <xfire.version>1.2.7-generali-3</xfire.version>
+    <spring.version>2.5.6</spring.version>
+  </properties>
+</project>

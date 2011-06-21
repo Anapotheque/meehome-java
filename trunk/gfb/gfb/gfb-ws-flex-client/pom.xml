@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>gfb</artifactId>
+    <groupId>fr.generali.gfb</groupId>
+    <version>1.1.16-SNAPSHOT</version>
+  </parent>
+  <groupId>fr.generali.gfb</groupId>
+  <artifactId>gfb-ws-flex-client</artifactId>
+  <packaging>swc</packaging>
+  <description><![CDATA[
+    Ce projet sert de "JAR client" pour la partie FLEX afin de consommer/exposer les webservices GFB.
+  ]]></description>
+  
+  <name>gfb-ws-flex-client</name>
+
+  <build>
+    <sourceDirectory>src/main/flex</sourceDirectory>
+    <testSourceDirectory>src/test/flex</testSourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.sonatype.flexmojos</groupId>
+        <artifactId>flexmojos-maven-plugin</artifactId>
+        <version>${flexmojos.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.adobe.flex</groupId>
+            <artifactId>compiler</artifactId>
+            <version>${flex.version}</version>
+            <type>pom</type>
+          </dependency>
+        </dependencies>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>fr.generali.gfb</groupId>
+      <artifactId>gfb-config</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+
+
+    <dependency>
+      <groupId>com.adobe.flex.framework</groupId>
+      <artifactId>flex-framework</artifactId>
+      <version>${flex.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.flexmojos</groupId>
+      <artifactId>flexmojos-unittest-support</artifactId>
+      <version>${flexmojos.version}</version>
+      <type>swc</type>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <flexmojos.version>3.1.0</flexmojos.version>
+    <flex.version>3.3.0.4852</flex.version>
+  </properties>
+
+</project>

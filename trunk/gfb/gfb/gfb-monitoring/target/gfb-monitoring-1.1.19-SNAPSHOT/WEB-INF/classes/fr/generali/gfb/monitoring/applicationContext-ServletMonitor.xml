@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+    http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd"
+  xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util">
+
+  <!-- Permet d'utiliser des fichiers de conf -->
+
+  <bean id="monitoring-placeholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>classpath:/fr/generali/gfb/ws/sinistre/sinistre.properties</value>
+        <value>classpath:/fr/generali/espaceclient/common/service.properties</value>
+        <value>classpath:/fr/generali/espaceclient/proxy/generic-host.properties</value>
+        <value>classpath:/fr/generali/espaceclient/eai/eai.properties</value>
+        <value>classpath:/fr/generali/gfb/services/elisa/elisa.properties</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean class="fr.generali.monitoring.api.impl.DefaultMonitoringService">
+    <!-- On definit les proprietes communes : -->
+    <property name="webAppName" value="gfb-monitoring" />
+
+    <!-- Liste des tests techniques : -->
+    <property name="technicalTests">
+      <list>
+        <ref bean="jvmMonitor" />
+        <ref bean="datasourceMonitor" />
+        <ref bean="dbMonitor" />
+        <ref bean="smtpMonitor" />
+        <ref bean="jmsQueueMonitor" />
+      </list>
+    </property>
+    <property name="dependencyTests">
+      <list>
+        <ref bean="url_WSDL_GENERIC_Monitor" />
+        <ref bean="url_WSDL_ELISA_Monitor" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="jvmMonitor" class="fr.generali.monitoring.monitors.JVMMonitor">
+    <property name="supportedJvmVersion" value="1.5" />
+    <property name="description" value="permet de verifier que la version de JVM sur laquelle on s'execute est bien 1.5 " />
+  </bean>
+
+  <bean id="datasourceMonitor" class="fr.generali.monitoring.monitors.JNDIMonitor">
+    <property name="jndiName" value="${gfb.sinistre.datasourceJndiName}" />
+    <property name="description" value="Verifie que la datasource sinistreDataSource est presente" />
+  </bean>
+
+  <bean id="dbMonitor" class="fr.generali.monitoring.monitors.DatabaseMonitor">
+    <property name="jndiName" value="${gfb.sinistre.datasourceJndiName}" />
+    <property name="sql" value="select count(*) from DS_SINISTRE" />
+    <property name="description" value="Verifie que la datasource sinistreDataSource est accessible : select" />
+  </bean>
+
+  <bean id="smtpMonitor" class="fr.generali.monitoring.monitors.SMTPMonitor">
+    <property name="host" value="${mail.smtp.host}" />
+    <property name="port" value="${mail.smtp.port}" />
+    <property name="properties">
+      <value>
+        mail.smtp.timeout=200
+        mail.smtp.host=${mail.smtp.host}
+        mail.smtp.port=${mail.smtp.port}
+        mail.smtp.connectiontimeout=200
+      </value>
+    </property>
+    <property name="description" value="Verifie que le serveur SMTP ${mail.smtp.host} est present" />
+  </bean>
+
+  <bean id="jmsQueueMonitor" class="fr.generali.monitoring.monitors.JMSQueueMonitor">
+    <property name="name" value="Assert JMS queue ${jms.queueName.ec.jboss} present" />
+    <property name="queueName" value="${jms.queueName.ec.jboss}" />
+    <property name="environment" value="dummy=true" />
+    <property name="description" value="Verifie que la file JMS (${jms.queueName.ec.jboss}) est presente" />
+  </bean>
+
+  <!-- check sur la dispo des WSDL des WS de GENERIC -->
+  <bean id="url_WSDL_GENERIC_Monitor" class="fr.generali.monitoring.monitors.HTTPMonitor">
+    <property name="description" value="Monitoring de l'URL du WSDL du Webservice GENERIC" />
+    <property name="url"
+      value="http://${generic.services.host}:${generic.services.port}/ws/GniRefIntermediaire_WS_01.FCT_01.connecteur:wsGenericFct01?wsdl" />
+    <property name="okCodes">
+      <set>
+        <value>200</value>
+      </set>
+    </property>
+    <property name="connectionTimeout" value="2000"/>
+    <property name="socketTimeout" value="2000"/>
+  </bean>
+  
+  <bean id="url_WSDL_ELISA_Monitor" class="fr.generali.monitoring.monitors.HTTPMonitor">
+    <property name="description" value="Monitoring de l'URL du WSDL du Webservice ELISA" />
+    <property name="url"
+      value="http://${elisa.services.host}/services/IRetraiteObligatoireWebService?wsdl" />
+    <property name="okCodes">
+      <set>
+        <value>200</value>
+      </set>
+    </property>
+    <property name="connectionTimeout" value="2000"/>
+    <property name="socketTimeout" value="2000"/>
+  </bean>
+  
+
+</beans>

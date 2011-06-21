@@ -1,0 +1,21 @@
+<projectDescription>
+  <name>gfb-ear</name>
+  <comment>Ce projet permet de packager les application webs GFB + Monitoring dans un seul EAR.</comment>
+  <projects>
+    <project>gfb-monitoring</project>
+    <project>gfb-ws-webapp</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.wst.common.project.facet.core.builder</name>
+    </buildCommand>
+    <buildCommand>
+      <name>org.eclipse.wst.validation.validationbuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.wst.common.project.facet.core.nature</nature>
+    <nature>org.eclipse.wst.common.modulecore.ModuleCoreNature</nature>
+    <nature>com.genuitec.eclipse.cross.easystruts.eclipse.easystrutsnature</nature>
+  </natures>
+</projectDescription>

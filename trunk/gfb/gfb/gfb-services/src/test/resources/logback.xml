@@ -1,0 +1,36 @@
+<configuration>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>%d{HH:mm:ss.SSS} gfb-test [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <logger name="fr.generali.gfb">
+        <level value="TRACE"/>
+    </logger>
+    
+    <logger name="org.codehaus.xfire.handler">
+        <level value="ERROR"/>
+    </logger>
+    
+    <logger name="org.codehaus.xfire.util.LoggingHandler">
+        <level value="TRACE"/>
+    </logger>
+    
+    <logger name="org.apache.commons.httpclient">
+        <level value="ERROR"/>
+    </logger>
+
+    <logger name="httpclient.wire">
+      <level value="ERROR" />
+    </logger>
+
+    
+
+    <root>
+        <level value="INFO"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>

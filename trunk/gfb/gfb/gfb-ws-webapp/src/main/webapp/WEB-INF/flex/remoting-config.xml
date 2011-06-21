@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service id="remoting-service" class="flex.messaging.services.RemotingService">
+
+  <adapters>
+    <adapter-definition id="java-object" class="flex.messaging.services.remoting.adapters.JavaAdapter"
+      default="true" />
+  </adapters>
+
+  <default-channels>
+    <channel ref="my-amf" />
+  </default-channels>
+
+  <!-- Destination d'exemple -->
+  <destination id="exempleCalculAMFServiceDest">
+    <properties>
+      <factory>springFactory</factory>
+      <source>exempleCalculAMFService</source>
+    </properties>
+  </destination>
+
+  <!-- Destination du service des déclarations MRH -->
+  <destination id="mrhAMFServiceDest">
+    <properties>
+      <factory>springFactory</factory>
+      <source>declarationSinistreMrhAMFService</source>
+    </properties>
+  </destination>
+
+  <!-- Destination du service des déclarations MRH -->
+  <destination id="autoAMFServiceDest">
+    <properties>
+      <factory>springFactory</factory>
+      <source>declarationSinistreAutoAMFService</source>
+    </properties>
+  </destination>
+
+  <!-- Destination du service Elisa -->
+  <destination id="elisaHarvestAMFServiceDest">
+    <properties>
+      <factory>springFactory</factory>
+      <source>elisaHarvestAMFService</source>
+    </properties>
+  </destination>
+
+</service>

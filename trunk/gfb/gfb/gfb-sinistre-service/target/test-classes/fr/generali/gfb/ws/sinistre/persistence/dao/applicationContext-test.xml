@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+	 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+	 http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+	 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+	">
+       
+    <context:annotation-config/>
+    
+	<context:component-scan base-package="fr.generali.gfb.ws.sinistre" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+	<context:component-scan base-package="fr.generali.gfb.ws.sinistre" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:unitils.properties"/>
+    </bean>
+    
+    <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${database.driverClassName}"/>
+        <property name="url" value="${database.url}"/>
+        <property name="username" value="${database.userName}"/>
+        <property name="password" value="${database.password}"/>
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties">
+            <value>
+                hibernate.dialect=${database.hibernate.dialect}
+                hibernate.cache.provider_class=org.hibernate.cache.HashtableCacheProvider
+                hibernate.show_sql=false
+                hibernate.use_sql_comments=false
+                hibernate.jdbc.batch_size=0
+                hibernate.hbm2ddl.auto=create-drop
+            </value>
+        </property>
+        <property name="configLocation" value="classpath:/fr/generali/gfb/ws/sinistre/persistence/hibernate.cfg.xml" />
+    </bean>
+    
+
+</beans>
