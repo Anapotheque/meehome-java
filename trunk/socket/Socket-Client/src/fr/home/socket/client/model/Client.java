@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
+import fr.home.socket.client.ui.Fenetre;
 import fr.home.socket.client.util.PropertiesEnum;
 import fr.home.socket.client.util.Util;
 
@@ -53,9 +54,11 @@ public class Client {
             printWriter.println(login);
         } catch (UnknownHostException e) {
             logger.error("connection :: " + e);
+            ecrisVersFenetre(e.getMessage());
             return false;
         } catch (IOException e) {
             logger.error("connection :: " + e);
+            ecrisVersFenetre(e.getMessage());
             return false;
         }
         logger.debug("connection :: client connecté au serveur");
@@ -76,6 +79,7 @@ public class Client {
             }
         } catch (IOException e) {
             logger.error("run :: " + e);
+            ecrisVersFenetre(e.getMessage());
         }
     }
 
@@ -93,10 +97,15 @@ public class Client {
             logger.debug("close :: client deconnecté");
         } catch (IOException e) {
             logger.error("close :: " + e);
+            ecrisVersFenetre(e.getMessage());
         }
     }
 
     public boolean isStop() {
         return stopClient;
+    }
+
+    public void ecrisVersFenetre(String msg) {
+        Fenetre.appendToChatBox(msg + "\r\n");
     }
 }
