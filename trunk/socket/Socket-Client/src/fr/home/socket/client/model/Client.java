@@ -22,6 +22,8 @@ public class Client {
 
     private PrintWriter printWriter;
 
+    private static final boolean MODE_CONSOLE = Boolean.parseBoolean(Util.getData(PropertiesEnum.MODE_CONSOLE));
+
     /**
      * Buffered d'ecoute des saisies
      */
@@ -106,6 +108,8 @@ public class Client {
     }
 
     public void ecrisVersFenetre(String msg) {
-        Fenetre.appendToChatBox(msg + "\r\n");
+        if (!MODE_CONSOLE) {
+            Fenetre.appendToChatBox(msg + "\r\n");
+        }
     }
 }
