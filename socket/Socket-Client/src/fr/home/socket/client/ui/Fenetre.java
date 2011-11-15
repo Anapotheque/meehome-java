@@ -23,11 +23,11 @@ public class Fenetre extends JFrame implements Runnable {
 
     static Logger logger = Logger.getLogger(Fenetre.class);
 
-    public static final String ip = Util.getData(PropertiesEnum.IP);
+    public static final String IP = Util.getData(PropertiesEnum.IP);
 
-    public static final String login = Util.getData(PropertiesEnum.LOGIN);
+    public static final String LOGIN = Util.getData(PropertiesEnum.LOGIN);
 
-    public static final int port = Integer.parseInt(Util.getData(PropertiesEnum.PORT));
+    public static final int PORT = Integer.parseInt(Util.getData(PropertiesEnum.PORT));
 
     public static StringBuffer toAppend = new StringBuffer("");
 
@@ -112,7 +112,7 @@ public class Fenetre extends JFrame implements Runnable {
     public void run() {
         Client client = new Client();
         while (!client.isStop()) {
-            if (client.connection(ip, port, login))
+            if (client.connection(IP, PORT, LOGIN))
                 client.run();
             try {
                 Thread.sleep(10000);
