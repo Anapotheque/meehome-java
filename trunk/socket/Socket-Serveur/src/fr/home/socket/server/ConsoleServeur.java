@@ -4,7 +4,7 @@ import fr.home.socket.server.model.Server;
 import fr.home.socket.server.util.PropertiesEnum;
 import fr.home.socket.server.util.Util;
 
-public class LauncherServer {
+public class ConsoleServeur {
 
     public static final int port = Integer.parseInt(Util.getData(PropertiesEnum.PORT));
 
