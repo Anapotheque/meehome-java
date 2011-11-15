@@ -11,8 +11,6 @@ import java.net.UnknownHostException;
 import org.apache.log4j.Logger;
 
 import fr.home.socket.client.ui.Fenetre;
-import fr.home.socket.client.util.PropertiesEnum;
-import fr.home.socket.client.util.Util;
 
 public class Client {
 
@@ -22,7 +20,7 @@ public class Client {
 
     private PrintWriter printWriter;
 
-    private static final boolean MODE_CONSOLE = Boolean.parseBoolean(Util.getData(PropertiesEnum.MODE_CONSOLE));
+    private boolean modeConsole;
 
     /**
      * Buffered d'ecoute des saisies
@@ -34,8 +32,6 @@ public class Client {
      */
     private boolean stopClient = false;
 
-    private String stopClientString = Util.getData(PropertiesEnum.STOP_CLIENT);
-
     /**
      * Methode permetant la connexion à un serveur distant
      * 
@@ -46,7 +42,10 @@ public class Client {
      * @throws UnknownHostException
      * @throws IOException
      */
-    public boolean connection(String ip, int port, String login) {
+    public boolean connection(String ip, int port, String login, boolean modeConsole) {
+        this.stopClient = false;
+        this.modeConsole = modeConsole;
+
         try {
             // Connexion au serveur
             socket = new Socket(ip, port);
@@ -70,19 +69,28 @@ public class Client {
     /**
      * Permet d'envoyer au serveur toutes les infos saisies
      */
-    public void run() {
+    public void runConsole() {
         try {
             String ligne = dataUser.readLine();
             logger.debug("run :: envois du message au serveur : " + ligne);
-            while (!ligne.equals(stopClientString)) {
-                printWriter.println(ligne);
+            while (!stopClient) {
+                sendToServer(ligne);
                 ligne = dataUser.readLine();
-                logger.debug("run :: envois du message au serveur : " + ligne);
             }
+            close();
         } catch (IOException e) {
             logger.error("run :: " + e);
             ecrisVersFenetre(e.getMessage());
         }
+    }
+
+    public void sendToServer(String msg) {
+        printWriter.println(msg);
+        logger.debug("run :: envois du message au serveur : " + msg);
+    }
+
+    public void stopClient() {
+        stopClient = true;
     }
 
     /**
@@ -93,8 +101,12 @@ public class Client {
     public void close() {
         try {
             dataUser.close();
-            printWriter.close();
-            socket.close();
+            if (printWriter != null) {
+                printWriter.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }
             stopClient = true;
             logger.debug("close :: client deconnecté");
         } catch (IOException e) {
@@ -108,7 +120,7 @@ public class Client {
     }
 
     public void ecrisVersFenetre(String msg) {
-        if (!MODE_CONSOLE) {
+        if (!modeConsole) {
             Fenetre.appendToChatBox(msg + "\r\n");
         }
     }
