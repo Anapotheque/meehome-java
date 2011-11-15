@@ -1,72 +1,125 @@
 package fr.home.socket.client.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import org.apache.log4j.Logger;
 
 import fr.home.socket.client.model.Client;
+import fr.home.socket.client.util.PropertiesEnum;
+import fr.home.socket.client.util.Util;
 
 @SuppressWarnings("serial")
-public class Fenetre extends JFrame {
+public class Fenetre extends JFrame implements Runnable {
 
-    private JTextArea field;
+    static Logger logger = Logger.getLogger(Fenetre.class);
 
-    private JLabel label;
+    public static final String ip = Util.getData(PropertiesEnum.IP);
 
-    private static Client client = new Client();
+    public static final String login = Util.getData(PropertiesEnum.LOGIN);
+
+    public static final int port = Integer.parseInt(Util.getData(PropertiesEnum.PORT));
+
+    public static StringBuffer toAppend = new StringBuffer("");
+
+    public static StringBuffer toSend = new StringBuffer("");
+
+    public static JTextArea chatText = null;
+
+    public static JTextField chatLine = null;
+
+    public Thread thread;
 
     public Fenetre() throws InterruptedException {
         super();
         build();
-
-        try {
-            while (!client.isStop()) {
-                // if (client.connection())
-                // client.run();
-                // Thread.sleep(10000);
-            }
-            client.close();
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
+        thread = new Thread(this);
+        thread.start();
     }
 
     private void build() {
-        setTitle("Serveur"); // On donne un titre à l'application
-        setSize(350, 250); // On donne une taille à notre fenêtre
-        setLocationRelativeTo(null); // On centre la fenêtre sur l'écran
-        setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // On dit à
-        // l'application de se
-        // fermer lors du clic
-        // sur la croix
-        setContentPane(buildContentPane());
+        setTitle("Client");
+        setSize(350, 250);
+        setLocationRelativeTo(null);
+        setResizable(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setContentPane(buildNewContentPane());
     }
 
-    private JPanel buildContentPane() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-        panel.setBackground(Color.white);
+    private JPanel buildNewContentPane() {
+        // Set up the chat pane
+        JPanel chatPane = new JPanel(new BorderLayout());
+        chatText = new JTextArea(10, 20);
+        chatText.setLineWrap(true);
+        chatText.setEditable(false);
+        chatText.setForeground(Color.blue);
+        chatText.append(toAppend.toString());
 
-        label = new JLabel("test");
-        label.setSize(300, 150);
+        JScrollPane chatTextPane = new JScrollPane(chatText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        panel.add(label);
+        chatLine = new JTextField();
+        chatLine.setEnabled(true);
 
-        field = new JTextArea("", 4, 30);
-        field.setLineWrap(true);
+        chatLine.addActionListener(new ActionAdapter() {
+            public void actionPerformed(ActionEvent e) {
+                String s = chatLine.getText();
+                if (!s.equals("")) {
+                    appendToChatBox("OUTGOING: " + s + "\n");
+                    chatLine.selectAll();
+                    sendString(s);
+                }
+            }
+        });
 
-        panel.add(new JScrollPane(field));
+        chatPane.add(chatLine, BorderLayout.SOUTH);
+        chatPane.add(chatTextPane, BorderLayout.CENTER);
+        chatPane.setPreferredSize(new Dimension(200, 200));
 
-        return panel;
+        return chatPane;
     }
 
-    public JTextArea getField() {
-        return field;
+    // Action adapter for easy event-listener coding
+    class ActionAdapter implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+        }
+    }
+
+    // Thread-safe way to append to the chat box
+    public static void appendToChatBox(String s) {
+        synchronized (toAppend) {
+            toAppend.append(s);
+            chatText.setText(toAppend.toString());
+        }
+    }
+
+    // Add text to send-buffer
+    private static void sendString(String s) {
+        synchronized (toSend) {
+            toSend.append(s + "\n");
+        }
+    }
+
+    @Override
+    public void run() {
+        Client client = new Client();
+        while (!client.isStop()) {
+            if (client.connection(ip, port, login))
+                client.run();
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                logger.error("run :: " + e);
+            }
+        }
+        client.close();
     }
 }
