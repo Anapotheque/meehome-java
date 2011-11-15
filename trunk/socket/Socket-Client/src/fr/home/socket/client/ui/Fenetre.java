@@ -6,49 +6,54 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.MaskFormatter;
 
 import org.apache.log4j.Logger;
 
 import fr.home.socket.client.model.Client;
-import fr.home.socket.client.util.PropertiesEnum;
-import fr.home.socket.client.util.Util;
 
 @SuppressWarnings("serial")
 public class Fenetre extends JFrame implements Runnable {
 
     static Logger logger = Logger.getLogger(Fenetre.class);
 
-    public static final String IP = Util.getData(PropertiesEnum.IP);
+    public static String ip;
 
-    public static final String LOGIN = Util.getData(PropertiesEnum.LOGIN);
+    public static String login;
 
-    public static final int PORT = Integer.parseInt(Util.getData(PropertiesEnum.PORT));
+    public static int port;
+
+    public static boolean modeConsole;
 
     public static StringBuffer toAppend = new StringBuffer("");
 
     public static StringBuffer toSend = new StringBuffer("");
 
-    public static JTextArea chatText = null;
+    public static JTextArea chatText;
 
-    public static JTextField chatLine = null;
+    public static JTextField chatLine, ipField, portField, loginField;
 
     public Thread thread;
 
-    public Fenetre() throws InterruptedException {
+    public static Client client = new Client();
+
+    public Fenetre(String ip, int port, String login, boolean modeConsole) throws InterruptedException {
         super();
         build();
-        thread = new Thread(this);
-        thread.start();
     }
 
     private void build() {
         setTitle("Client");
-        setSize(350, 250);
+        setSize(650, 300);
         setLocationRelativeTo(null);
         setResizable(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -56,8 +61,44 @@ public class Fenetre extends JFrame implements Runnable {
     }
 
     private JPanel buildNewContentPane() {
-        // Set up the chat pane
+
+        JPanel globalPane = new JPanel(new BorderLayout());
+        JPanel configPane = new JPanel();
         JPanel chatPane = new JPanel(new BorderLayout());
+
+        // Create the text field and set it up.
+        ipField = new JTextField();
+        ipField.setText("127.0.0.1");
+        ipField.setColumns(15);
+
+        portField = new JTextField();
+        portField.setText("80");
+        portField.setColumns(4);
+
+        loginField = new JTextField();
+        loginField.setText("monLogin");
+        loginField.setColumns(20);
+
+        JButton connexionButton = new JButton("Connexion");
+        connexionButton.addActionListener(new ActionAdapter() {
+            public void actionPerformed(ActionEvent e) {
+                runClient();
+            }
+        });
+
+        JButton deconnexionButton = new JButton("Deconnexion");
+        deconnexionButton.addActionListener(new ActionAdapter() {
+            public void actionPerformed(ActionEvent e) {
+                stopClient();
+            }
+        });
+
+        configPane.add(ipField);
+        configPane.add(portField);
+        configPane.add(loginField);
+        configPane.add(connexionButton);
+        configPane.add(deconnexionButton);
+
         chatText = new JTextArea(10, 20);
         chatText.setLineWrap(true);
         chatText.setEditable(false);
@@ -67,7 +108,8 @@ public class Fenetre extends JFrame implements Runnable {
         JScrollPane chatTextPane = new JScrollPane(chatText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         chatLine = new JTextField();
-        chatLine.setEnabled(true);
+        chatLine.setEnabled(false);
+        chatLine.setBackground(Color.gray);
 
         chatLine.addActionListener(new ActionAdapter() {
             public void actionPerformed(ActionEvent e) {
@@ -84,7 +126,32 @@ public class Fenetre extends JFrame implements Runnable {
         chatPane.add(chatTextPane, BorderLayout.CENTER);
         chatPane.setPreferredSize(new Dimension(200, 200));
 
-        return chatPane;
+        globalPane.add(configPane, BorderLayout.NORTH);
+        globalPane.add(chatPane, BorderLayout.SOUTH);
+
+        return globalPane;
+    }
+
+    public JFormattedTextField getTextField(JSpinner spinner) {
+        JComponent editor = spinner.getEditor();
+        if (editor instanceof JSpinner.DefaultEditor) {
+            return ((JSpinner.DefaultEditor ) editor).getTextField();
+        } else {
+            System.err.println("Unexpected editor type: " + spinner.getEditor().getClass() + " isn't a descendant of DefaultEditor");
+            return null;
+        }
+    }
+
+    // A convenience method for creating a MaskFormatter.
+    protected MaskFormatter createFormatter(String s) {
+        MaskFormatter formatter = null;
+        try {
+            formatter = new MaskFormatter(s);
+        } catch (java.text.ParseException exc) {
+            System.err.println("formatter is bad: " + exc.getMessage());
+            System.exit(-1);
+        }
+        return formatter;
     }
 
     // Action adapter for easy event-listener coding
@@ -104,21 +171,36 @@ public class Fenetre extends JFrame implements Runnable {
     // Add text to send-buffer
     private static void sendString(String s) {
         synchronized (toSend) {
-            toSend.append(s + "\n");
+            // toSend.append(s + "\n");
+            client.sendToServer(s + "\n");
         }
+    }
+
+    public void runClient() {
+        thread = new Thread(this);
+        thread.start();
+    }
+
+    public void stopClient() {
+        client.stopClient();
+        chatLine.setEnabled(false);
+        chatLine.setBackground(Color.gray);
+        ipField.setEnabled(true);
+        portField.setEnabled(true);
+        loginField.setEnabled(true);
     }
 
     @Override
     public void run() {
-        Client client = new Client();
-        while (!client.isStop()) {
-            if (client.connection(IP, PORT, LOGIN))
-                client.run();
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                logger.error("run :: " + e);
-            }
+        String ip = ipField.getText();
+        int port = Integer.parseInt(portField.getText());
+        String login = loginField.getText();
+        if (client.connection(ip, port, login, modeConsole)) {
+            chatLine.setEnabled(true);
+            chatLine.setBackground(Color.white);
+            ipField.setEnabled(false);
+            portField.setEnabled(false);
+            loginField.setEnabled(false);
         }
         client.close();
     }
