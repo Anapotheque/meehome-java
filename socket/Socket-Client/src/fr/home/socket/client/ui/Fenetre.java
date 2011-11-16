@@ -4,18 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.text.MaskFormatter;
 
 import org.apache.log4j.Logger;
 
@@ -48,6 +43,11 @@ public class Fenetre extends JFrame implements Runnable {
 
     public Fenetre(String ip, int port, String login, boolean modeConsole) throws InterruptedException {
         super();
+
+        Fenetre.ip = ip;
+        Fenetre.port = port;
+        Fenetre.login = login;
+
         build();
     }
 
@@ -68,15 +68,15 @@ public class Fenetre extends JFrame implements Runnable {
 
         // Create the text field and set it up.
         ipField = new JTextField();
-        ipField.setText("127.0.0.1");
+        ipField.setText(Fenetre.ip);
         ipField.setColumns(15);
 
         portField = new JTextField();
-        portField.setText("80");
+        portField.setText(String.valueOf(Fenetre.port));
         portField.setColumns(4);
 
         loginField = new JTextField();
-        loginField.setText("monLogin");
+        loginField.setText(Fenetre.login);
         loginField.setColumns(20);
 
         JButton connexionButton = new JButton("Connexion");
@@ -115,8 +115,8 @@ public class Fenetre extends JFrame implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 String s = chatLine.getText();
                 if (!s.equals("")) {
-                    appendToChatBox("OUTGOING: " + s + "\n");
-                    chatLine.selectAll();
+                    appendToChatBox(login + " : " + s + "\n");
+                    chatLine.setText("");
                     sendString(s);
                 }
             }
@@ -132,35 +132,6 @@ public class Fenetre extends JFrame implements Runnable {
         return globalPane;
     }
 
-    public JFormattedTextField getTextField(JSpinner spinner) {
-        JComponent editor = spinner.getEditor();
-        if (editor instanceof JSpinner.DefaultEditor) {
-            return ((JSpinner.DefaultEditor ) editor).getTextField();
-        } else {
-            System.err.println("Unexpected editor type: " + spinner.getEditor().getClass() + " isn't a descendant of DefaultEditor");
-            return null;
-        }
-    }
-
-    // A convenience method for creating a MaskFormatter.
-    protected MaskFormatter createFormatter(String s) {
-        MaskFormatter formatter = null;
-        try {
-            formatter = new MaskFormatter(s);
-        } catch (java.text.ParseException exc) {
-            System.err.println("formatter is bad: " + exc.getMessage());
-            System.exit(-1);
-        }
-        return formatter;
-    }
-
-    // Action adapter for easy event-listener coding
-    class ActionAdapter implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-        }
-    }
-
-    // Thread-safe way to append to the chat box
     public static void appendToChatBox(String s) {
         synchronized (toAppend) {
             toAppend.append(s);
@@ -168,11 +139,9 @@ public class Fenetre extends JFrame implements Runnable {
         }
     }
 
-    // Add text to send-buffer
     private static void sendString(String s) {
         synchronized (toSend) {
-            // toSend.append(s + "\n");
-            client.sendToServer(s + "\n");
+            client.sendToServer(s);
         }
     }
 
@@ -202,6 +171,5 @@ public class Fenetre extends JFrame implements Runnable {
             portField.setEnabled(false);
             loginField.setEnabled(false);
         }
-        client.close();
     }
 }
