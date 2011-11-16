@@ -8,10 +8,9 @@ public class LauncherServer {
 
     public static final int port = Integer.parseInt(Util.getData(PropertiesEnum.PORT));
 
-    private static Server server = new Server(port);
+    private static Server server = new Server();
 
     public static void main(String[] args) {
-        server.runServeur();
-        server.close();
+        server.runServeur(port);
     }
 }

@@ -13,46 +13,25 @@ public class Server {
 
     private boolean stopServer = false;
 
-    // private Fenetre ui;
-
     private ServerSocket serverSocket;
 
     private List<Client> listClient;
 
-    public Server(int port) {
+    public Server() {
         listClient = new ArrayList<Client>();
+    }
+
+    public void runServeur(int port) {
         try {
             serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            logger.error("Server :: " + e);
-        }
-
-        // SwingUtilities.invokeLater(new Runnable() {
-        // public void run() {
-        // Fenetre fenetre = new Fenetre();
-        // fenetre.setVisible(true);
-        // ui.afficher("En attente de connexion client...");
-        // }
-        // });
-    }
-
-    public void runServeur() {
-        logger.debug("runServeur :: En attente de connexion client");
-        while (!stopServer) {
-            try {
-                listClient.add(new Client(serverSocket.accept()/* , ui */));
+            logger.debug("runServeur :: En attente de connexion client");
+            while (!stopServer) {
+                listClient.add(new Client(serverSocket.accept()));
                 logger.debug("runServeur :: Nouveau client ajouté");
-            } catch (IOException e) {
-                logger.error("runServeur :: " + e);
             }
-        }
-    }
-
-    public void close() {
-        try {
             serverSocket.close();
         } catch (IOException e) {
-            logger.error("close :: " + e);
+            logger.error("runServeur :: " + e);
         }
     }
 }

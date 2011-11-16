@@ -17,14 +17,12 @@ public class Client implements Runnable {
 
     private Thread thread;
 
-    // private static Fenetre ui;
-
     private String login;
 
     boolean stopClient = false;
 
-    public Client(Socket socket/* , Fenetre ui */) throws IOException {
-        // this.ui = ui;
+    public Client(Socket socket) throws IOException {
+
         this.socket = socket;
         this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         login = bufferedReader.readLine();
@@ -33,33 +31,27 @@ public class Client implements Runnable {
 
         thread = new Thread(this);
         thread.start();
+    }
 
-        // this.ui.afficher(login + " s'est connecté...");
+    public void close() throws IOException {
+        bufferedReader.close();
+        socket.close();
+        logger.debug("close :: [" + login + "] Deconnexion");
     }
 
     @Override
     public void run() {
         try {
             while (!stopClient) {
-                // this.ui.afficher(message);
+                if (bufferedReader.readLine() == null) {
+                    break;
+                }
                 String message = bufferedReader.readLine();
                 logger.debug("run :: [" + login + "] Reception message : " + message);
             }
             close();
         } catch (IOException e) {
             logger.error("run :: " + e);
-            // ui.afficher(e.getMessage());
-        }
-    }
-
-    public void close() {
-        try {
-            bufferedReader.close();
-            socket.close();
-            logger.debug("close :: [" + login + "] Deconnexion");
-            // ui.afficher(login + " s'est deconnecté...");
-        } catch (IOException e) {
-            logger.error("close :: " + e);
         }
     }
 }

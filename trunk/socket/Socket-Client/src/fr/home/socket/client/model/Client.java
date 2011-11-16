@@ -43,20 +43,22 @@ public class Client {
      * @throws IOException
      */
     public boolean connection(String ip, int port, String login, boolean modeConsole) {
+
+        logger.debug("connection :: tentative de connexion de '" + login + "' {" + ip + ":" + port + "}");
+
+        // Initialisation du client
         this.stopClient = false;
         this.modeConsole = modeConsole;
 
         try {
+
             // Connexion au serveur
             socket = new Socket(ip, port);
             printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 
-            // Envois au serveur du login connecté
-            printWriter.println(login);
-        } catch (UnknownHostException e) {
-            logger.error("connection :: " + e);
-            ecrisVersFenetre(e.getMessage());
-            return false;
+            // Envois au serveur le login
+            sendToServer(login);
+
         } catch (IOException e) {
             logger.error("connection :: " + e);
             ecrisVersFenetre(e.getMessage());
