@@ -34,7 +34,7 @@ public class Client implements Runnable {
 
         logger.debug("Client :: [" + login + "] Connexion");
 
-        sendToClientConnected("connecté", true);
+        sendToClientConnectedConnection(login);
 
         thread = new Thread(this);
         thread.start();
@@ -43,7 +43,7 @@ public class Client implements Runnable {
     @Override
     public void run() {
         try {
-            while (socket.getKeepAlive()) {
+            while (socket.isConnected()) {
                 String message = bufferedReader.readLine();
                 if (message == null)
                     break;
@@ -53,23 +53,37 @@ public class Client implements Runnable {
             close();
         } catch (IOException e) {
             logger.error("Run :: " + e);
+            close();
         }
     }
 
     public synchronized void sendToClientConnected(String msg, boolean connection) {
         for (Client client : server.listClient) {
-            if (connection) {
-                client.printWriter.println(login + " s'est connecté");
-            } else {
-                client.printWriter.println(login + " : " + msg);
-            }
+            client.printWriter.println(login + " : " + msg);
         }
     }
 
-    public void close() throws IOException {
-        bufferedReader.close();
-        printWriter.close();
-        socket.close();
-        logger.debug("Close :: [" + login + "] Deconnexion");
+    public synchronized void sendToClientConnectedDisconnection(String msg) {
+        for (Client client : server.listClient) {
+            client.printWriter.println(login + " s'est deconnecté");
+        }
+    }
+
+    public synchronized void sendToClientConnectedConnection(String msg) {
+        for (Client client : server.listClient) {
+            client.printWriter.println(login + " s'est connecté");
+        }
+    }
+
+    public void close() {
+        try {
+            bufferedReader.close();
+            printWriter.close();
+            socket.close();
+            logger.debug("Close :: [" + login + "] Deconnexion");
+            sendToClientConnectedDisconnection(login);
+        } catch (IOException e) {
+            logger.error("Run :: close ::" + e);
+        }
     }
 }
