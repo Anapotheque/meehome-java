@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 import fr.home.socket.client.ui.Fenetre;
 
-public class Client {
+public class Client implements Runnable {
 
     static Logger logger = Logger.getLogger(Client.class);
 
@@ -20,7 +20,11 @@ public class Client {
 
     private PrintWriter printWriter;
 
+    private BufferedReader bufferedReader;
+
     private boolean modeConsole;
+
+    private Thread thread;
 
     /**
      * Buffered d'ecoute des saisies
@@ -30,7 +34,7 @@ public class Client {
     /**
      * Variable permetant l'arret du client
      */
-    private boolean stopClient = false;
+    private boolean running = true;
 
     /**
      * Methode permetant la connexion à un serveur distant
@@ -47,14 +51,18 @@ public class Client {
         logger.debug("connection :: tentative de connexion de '" + login + "' {" + ip + ":" + port + "}");
 
         // Initialisation du client
-        this.stopClient = false;
+        this.running = true;
         this.modeConsole = modeConsole;
 
         try {
 
             // Connexion au serveur
-            socket = new Socket(ip, port);
-            printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+            this.socket = new Socket(ip, port);
+            this.printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            thread = new Thread(this);
+            thread.start();
 
             // Envois au serveur le login
             sendToServer(login);
@@ -74,8 +82,7 @@ public class Client {
     public void runConsole() {
         try {
             String ligne = dataUser.readLine();
-            logger.debug("run :: envois du message au serveur : " + ligne);
-            while (!stopClient) {
+            while (running) {
                 sendToServer(ligne);
                 ligne = dataUser.readLine();
             }
@@ -88,11 +95,10 @@ public class Client {
 
     public void sendToServer(String msg) {
         printWriter.println(msg);
-        logger.debug("run :: envois du message au serveur : " + msg);
     }
 
     public void stopClient() {
-        stopClient = true;
+        running = false;
     }
 
     /**
@@ -106,10 +112,13 @@ public class Client {
             if (printWriter != null) {
                 printWriter.close();
             }
+            if (bufferedReader != null) {
+                bufferedReader.close();
+            }
             if (socket != null) {
                 socket.close();
             }
-            stopClient = true;
+            running = false;
             logger.debug("close :: client deconnecté");
         } catch (IOException e) {
             logger.error("close :: " + e);
@@ -117,13 +126,20 @@ public class Client {
         }
     }
 
-    public boolean isStop() {
-        return stopClient;
-    }
-
     public void ecrisVersFenetre(String msg) {
         if (!modeConsole) {
             Fenetre.appendToChatBox(msg + "\r\n");
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+            while (running) {
+                ecrisVersFenetre(bufferedReader.readLine());
+            }
+        } catch (IOException e) {
+            logger.error("close :: " + e);
         }
     }
 }
