@@ -21,17 +21,13 @@ public class Fenetre extends JFrame implements Runnable {
 
     static Logger logger = Logger.getLogger(Fenetre.class);
 
-    public static String ip;
-
-    public static String login;
+    public static String ip, login;
 
     public static int port;
 
     public static boolean modeConsole;
 
     public static StringBuffer toAppend = new StringBuffer("");
-
-    public static StringBuffer toSend = new StringBuffer("");
 
     public static JTextArea chatText;
 
@@ -43,11 +39,9 @@ public class Fenetre extends JFrame implements Runnable {
 
     public Fenetre(String ip, int port, String login, boolean modeConsole) throws InterruptedException {
         super();
-
         Fenetre.ip = ip;
         Fenetre.port = port;
         Fenetre.login = login;
-
         build();
     }
 
@@ -65,6 +59,9 @@ public class Fenetre extends JFrame implements Runnable {
         JPanel globalPane = new JPanel(new BorderLayout());
         JPanel configPane = new JPanel();
         JPanel chatPane = new JPanel(new BorderLayout());
+        chatPane.setPreferredSize(new Dimension(200, 200));
+        globalPane.add(configPane, BorderLayout.NORTH);
+        globalPane.add(chatPane, BorderLayout.SOUTH);
 
         // Create the text field and set it up.
         ipField = new JTextField();
@@ -79,7 +76,12 @@ public class Fenetre extends JFrame implements Runnable {
         loginField.setText(Fenetre.login);
         loginField.setColumns(20);
 
+        configPane.add(ipField);
+        configPane.add(portField);
+        configPane.add(loginField);
+
         JButton connexionButton = new JButton("Connexion");
+        configPane.add(connexionButton);
         connexionButton.addActionListener(new ActionAdapter() {
             public void actionPerformed(ActionEvent e) {
                 runClient();
@@ -87,47 +89,31 @@ public class Fenetre extends JFrame implements Runnable {
         });
 
         JButton deconnexionButton = new JButton("Deconnexion");
+        configPane.add(deconnexionButton);
         deconnexionButton.addActionListener(new ActionAdapter() {
             public void actionPerformed(ActionEvent e) {
                 stopClient();
             }
         });
 
-        configPane.add(ipField);
-        configPane.add(portField);
-        configPane.add(loginField);
-        configPane.add(connexionButton);
-        configPane.add(deconnexionButton);
-
         chatText = new JTextArea(10, 20);
         chatText.setLineWrap(true);
         chatText.setEditable(false);
         chatText.setForeground(Color.blue);
         chatText.append(toAppend.toString());
-
         JScrollPane chatTextPane = new JScrollPane(chatText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        chatPane.add(chatTextPane, BorderLayout.CENTER);
 
         chatLine = new JTextField();
         chatLine.setEnabled(false);
         chatLine.setBackground(Color.gray);
-
+        chatPane.add(chatLine, BorderLayout.SOUTH);
         chatLine.addActionListener(new ActionAdapter() {
             public void actionPerformed(ActionEvent e) {
-                String s = chatLine.getText();
-                if (!s.equals("")) {
-                    appendToChatBox(login + " : " + s + "\n");
-                    chatLine.setText("");
-                    sendString(s);
-                }
+                client.sendToServer(chatLine.getText());
+                chatLine.setText("");
             }
         });
-
-        chatPane.add(chatLine, BorderLayout.SOUTH);
-        chatPane.add(chatTextPane, BorderLayout.CENTER);
-        chatPane.setPreferredSize(new Dimension(200, 200));
-
-        globalPane.add(configPane, BorderLayout.NORTH);
-        globalPane.add(chatPane, BorderLayout.SOUTH);
 
         return globalPane;
     }
@@ -136,12 +122,6 @@ public class Fenetre extends JFrame implements Runnable {
         synchronized (toAppend) {
             toAppend.append(s);
             chatText.setText(toAppend.toString());
-        }
-    }
-
-    private static void sendString(String s) {
-        synchronized (toSend) {
-            client.sendToServer(s);
         }
     }
 

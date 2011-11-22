@@ -7,30 +7,30 @@ import org.apache.log4j.Logger;
 import fr.home.socket.client.model.Client;
 import fr.home.socket.client.ui.Fenetre;
 import fr.home.socket.client.util.PropertiesEnum;
-import fr.home.socket.client.util.Util;
+import fr.home.socket.client.util.UtilProperties;
 
 public class LauncherClient {
 
     static Logger logger = Logger.getLogger(LauncherClient.class);
 
-    public static final String IP = Util.getData(PropertiesEnum.IP);
+    public static final String IP = UtilProperties.getData(PropertiesEnum.IP);
 
-    public static final String LOGIN = Util.getData(PropertiesEnum.LOGIN);
+    public static final String LOGIN = UtilProperties.getData(PropertiesEnum.LOGIN);
 
-    public static final int PORT = Integer.parseInt(Util.getData(PropertiesEnum.PORT));
+    public static final int PORT = Integer.parseInt(UtilProperties.getData(PropertiesEnum.PORT));
 
-    private static final boolean MODE_CONSOLE = Boolean.parseBoolean(Util.getData(PropertiesEnum.MODE_CONSOLE));
+    private static final boolean MODE_CONSOLE = Boolean.parseBoolean(UtilProperties.getData(PropertiesEnum.MODE_CONSOLE));
 
     public static void main(String[] args) throws InterruptedException {
 
         if (MODE_CONSOLE) {
             Client client = new Client();
-            while (!client.isStop()) {
-                if (client.connection(IP, PORT, LOGIN, MODE_CONSOLE))
+            while (true) {
+                if (client.connection(IP, PORT, LOGIN, MODE_CONSOLE)) {
                     client.runConsole();
+                }
                 Thread.sleep(10000);
             }
-            client.close();
         } else {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {

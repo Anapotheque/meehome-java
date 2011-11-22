@@ -15,7 +15,7 @@ public class Server {
 
     private ServerSocket serverSocket;
 
-    private List<Client> listClient;
+    public List<Client> listClient;
 
     public Server() {
         listClient = new ArrayList<Client>();
@@ -26,8 +26,7 @@ public class Server {
             serverSocket = new ServerSocket(port);
             logger.debug("runServeur :: En attente de connexion client");
             while (!stopServer) {
-                listClient.add(new Client(serverSocket.accept()));
-                logger.debug("runServeur :: Nouveau client ajouté");
+                listClient.add(new Client(this, serverSocket.accept()));
             }
             serverSocket.close();
         } catch (IOException e) {
