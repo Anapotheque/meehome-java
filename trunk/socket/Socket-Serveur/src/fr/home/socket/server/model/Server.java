@@ -24,7 +24,7 @@ public class Server {
     public void runServeur(int port) {
         try {
             serverSocket = new ServerSocket(port);
-            logger.debug("runServeur :: En attente de connexion client");
+            logger.info("runServeur :: En attente de connexion client");
             while (!stopServer) {
                 listClient.add(new Client(this, serverSocket.accept()));
             }
