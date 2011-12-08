@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,21 +22,26 @@ public class Fenetre extends JFrame implements Runnable {
 
     static Logger logger = Logger.getLogger(Fenetre.class);
 
-    public static String ip, login;
+    private static String ip, login;
 
-    public static int port;
+    private static int port;
 
-    public static boolean modeConsole;
+    private static boolean modeConsole;
 
-    public static StringBuffer toAppend = new StringBuffer("");
+    private Thread thread;
 
-    public static JTextArea chatText;
+    private static Client client = new Client();
 
-    public static JTextField chatLine, ipField, portField, loginField;
+    /**
+     * Lié à l'affichage
+     */
+    private static StringBuffer toAppend = new StringBuffer("");
 
-    public Thread thread;
+    private static JTextArea chatText;
 
-    public static Client client = new Client();
+    private static JTextField chatLine, ipField, portField, loginField;
+
+    private static JComboBox listfriends;
 
     public Fenetre(String ip, int port, String login, boolean modeConsole) throws InterruptedException {
         super();
@@ -51,10 +57,31 @@ public class Fenetre extends JFrame implements Runnable {
         setLocationRelativeTo(null);
         setResizable(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setContentPane(buildNewContentPane());
+        setContentPane(buildFenetreContact());
     }
 
-    private JPanel buildNewContentPane() {
+    private JPanel buildFenetreContact() {
+
+        JPanel friendPane = new JPanel(new BorderLayout());
+        friendPane.setPreferredSize(new Dimension(200, 200));
+
+        JButton connexionButton = new JButton("Connexion");
+        connexionButton.addActionListener(new ActionAdapter() {
+            public void actionPerformed(ActionEvent e) {
+                ouvertureFenetreDiscution();
+            }
+        });
+
+        Object[] friends = new Object[]{"test0", "test1", "test2", "test3" };
+        listfriends = new JComboBox(friends);
+        listfriends.setPreferredSize(new Dimension(100, 25));
+        friendPane.add(listfriends);
+        friendPane.add(connexionButton);
+
+        return friendPane;
+    }
+
+    private JPanel buildFenetreDiscution() {
 
         JPanel globalPane = new JPanel(new BorderLayout());
         JPanel configPane = new JPanel();
@@ -116,6 +143,11 @@ public class Fenetre extends JFrame implements Runnable {
         });
 
         return globalPane;
+    }
+
+    public void ouvertureFenetreDiscution() {
+        // TODO
+        // ouverture fentre discution
     }
 
     public static void appendToChatBox(String s) {
