@@ -1,0 +1,1 @@
+mvn install:install-file -DgroupId=net.israfil.mojo -DartifactId=maven-flex2-plugin -Dversion=1.3 -Dpackaging=jar -Dfile=maven-flex2-plugin-1.3.jar
