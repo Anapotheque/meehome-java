@@ -1,2 +1,0 @@
-14:34:04.546 [main] INFO  f.g.g.w.s.e.AbstractMailSinistreService - Envoi de mail au client, expediteur:no@generali.fr, destinataire:jean.pierre@houdin.fr
-14:34:04.546 [main] INFO  f.g.g.w.s.e.AbstractMailSinistreService - Envoi de mail au gestionnaire Generali, expediteur:no@generali.fr, destinataire:jean.pierre@houdin.fr
