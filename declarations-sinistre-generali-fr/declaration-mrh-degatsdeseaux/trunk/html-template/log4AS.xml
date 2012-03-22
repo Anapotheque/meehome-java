@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--  ALL > DEBUG > INFO > WARN > ERROR > FATAL  -->
-<log_config project="DegatDesEaux" debug="false">
-	<categories defaultLevel="ERROR">	
-		<category name="com.generali.degatDesEaux.views" level="DEBUG" includeTime="true" includeCategory="true" includeLevel="true" includeDate="true"/>
-		<category name="com.generali.utils" level="DEBUG" includeTime="true" includeCategory="true" includeLevel="true" includeDate="true"/>
-		<category name="com.flexriver.briffle" loggerClazz="com.flexriver.briffle.rulesengine.log.BRiffleLogger" targetClazz="com.flexriver.briffle.rulesengine.log.BRiffleLogTarget" level="DEBUG" includeTime="true" includeCategory="true" includeLevel="true" includeDate="true"/>
-	</categories>
-</log_config>
