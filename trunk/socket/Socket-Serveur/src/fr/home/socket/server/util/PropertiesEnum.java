@@ -2,7 +2,7 @@ package fr.home.socket.server.util;
 
 public enum PropertiesEnum {
 
-    PORT("server.port");
+    PORT("server.port"), MODE_CONSOLE("server.modeConsole");
 
     private final String value;
 

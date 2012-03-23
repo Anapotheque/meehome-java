@@ -8,7 +8,7 @@ public class ConsoleServeur {
 
     public static final int port = Integer.parseInt(UtilProperties.getData(PropertiesEnum.PORT));
 
-    private static Server server = new Server();
+    private static Server server = new Server(true);
 
     public static void main(String[] args) {
         server.runServeur(port);
