@@ -9,6 +9,8 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
+import fr.home.socket.server.ui.Fenetre;
+
 public class Client implements Runnable {
 
     static Logger logger = Logger.getLogger(Client.class);
@@ -25,14 +27,21 @@ public class Client implements Runnable {
 
     private String login;
 
-    public Client(Server server, Socket socket) throws IOException {
+    private boolean modeConsole;
+
+    public Client(Server server, Socket socket, boolean modeConsole) throws IOException {
+        this.modeConsole = modeConsole;
         this.server = server;
         this.socket = socket;
         this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
         login = bufferedReader.readLine();
 
-        logger.debug("Client :: [" + login + "] Connexion");
+        if (!modeConsole) {
+            Fenetre.appendToChatBox("Client :: [" + login + "] Connexion\r\n");
+        } else {
+            logger.debug("Client :: [" + login + "] Connexion");
+        }
 
         sendToClientConnectedConnection(login);
 
@@ -80,7 +89,12 @@ public class Client implements Runnable {
             bufferedReader.close();
             printWriter.close();
             socket.close();
-            logger.debug("Close :: [" + login + "] Deconnexion");
+
+            if (!modeConsole) {
+                Fenetre.appendToChatBox("Close :: [" + login + "] Deconnexion\r\n");
+            } else {
+                logger.debug("Close :: [" + login + "] Deconnexion");
+            }
             sendToClientConnectedDisconnection(login);
         } catch (IOException e) {
             logger.error("Run :: close ::" + e);

@@ -41,6 +41,8 @@ public class Fenetre extends JFrame implements Runnable {
 
     private static JTextField chatLine, ipField, portField, loginField;
 
+    private static JButton connexionButton, deconnexionButton;
+
     private static JComboBox listfriends;
 
     public Fenetre(String ip, int port, String login, boolean modeConsole) throws InterruptedException {
@@ -53,11 +55,11 @@ public class Fenetre extends JFrame implements Runnable {
 
     private void build() {
         setTitle("Client");
-        setSize(650, 300);
+        setSize(650, 100);
         setLocationRelativeTo(null);
         setResizable(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setContentPane(buildFenetreContact());
+        setContentPane(buildFenetreConnexion());
     }
 
     private JPanel buildFenetreContact() {
@@ -82,46 +84,10 @@ public class Fenetre extends JFrame implements Runnable {
     }
 
     private JPanel buildFenetreDiscution() {
-
         JPanel globalPane = new JPanel(new BorderLayout());
-        JPanel configPane = new JPanel();
         JPanel chatPane = new JPanel(new BorderLayout());
         chatPane.setPreferredSize(new Dimension(200, 200));
-        globalPane.add(configPane, BorderLayout.NORTH);
         globalPane.add(chatPane, BorderLayout.SOUTH);
-
-        // Create the text field and set it up.
-        ipField = new JTextField();
-        ipField.setText(Fenetre.ip);
-        ipField.setColumns(15);
-
-        portField = new JTextField();
-        portField.setText(String.valueOf(Fenetre.port));
-        portField.setColumns(4);
-
-        loginField = new JTextField();
-        loginField.setText(Fenetre.login);
-        loginField.setColumns(20);
-
-        configPane.add(ipField);
-        configPane.add(portField);
-        configPane.add(loginField);
-
-        JButton connexionButton = new JButton("Connexion");
-        configPane.add(connexionButton);
-        connexionButton.addActionListener(new ActionAdapter() {
-            public void actionPerformed(ActionEvent e) {
-                runClient();
-            }
-        });
-
-        JButton deconnexionButton = new JButton("Deconnexion");
-        configPane.add(deconnexionButton);
-        deconnexionButton.addActionListener(new ActionAdapter() {
-            public void actionPerformed(ActionEvent e) {
-                stopClient();
-            }
-        });
 
         chatText = new JTextArea(10, 20);
         chatText.setLineWrap(true);
@@ -139,6 +105,54 @@ public class Fenetre extends JFrame implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 client.sendToServer(chatLine.getText());
                 chatLine.setText("");
+            }
+        });
+
+        return globalPane;
+    }
+
+    private JPanel buildFenetreConnexion() {
+
+        JPanel globalPane = new JPanel(new BorderLayout());
+        JPanel configPane = new JPanel();
+        JPanel chatPane = new JPanel(new BorderLayout());
+        chatPane.setPreferredSize(new Dimension(50, 50));
+        globalPane.add(configPane, BorderLayout.NORTH);
+        // globalPane.add(chatPane, BorderLayout.SOUTH);
+
+        // Create the text field and set it up.
+        ipField = new JTextField();
+        ipField.setText(Fenetre.ip);
+        ipField.setColumns(15);
+
+        portField = new JTextField();
+        portField.setText(String.valueOf(Fenetre.port));
+        portField.setColumns(4);
+
+        loginField = new JTextField();
+        loginField.setText(Fenetre.login);
+        loginField.setColumns(20);
+
+        configPane.add(ipField);
+        // configPane.add(portField);
+        configPane.add(loginField);
+
+        connexionButton = new JButton("Connexion");
+        configPane.add(connexionButton);
+        connexionButton.addActionListener(new ActionAdapter() {
+            public void actionPerformed(ActionEvent e) {
+                runClient();
+                setContentPane(buildFenetreDiscution());
+            }
+        });
+
+        deconnexionButton = new JButton("Deconnexion");
+        deconnexionButton.setVisible(false);
+        configPane.add(deconnexionButton);
+        deconnexionButton.addActionListener(new ActionAdapter() {
+            public void actionPerformed(ActionEvent e) {
+                stopClient();
+                setContentPane(buildFenetreConnexion());
             }
         });
 
@@ -169,6 +183,8 @@ public class Fenetre extends JFrame implements Runnable {
         ipField.setEnabled(true);
         portField.setEnabled(true);
         loginField.setEnabled(true);
+        connexionButton.setVisible(true);
+        deconnexionButton.setVisible(false);
     }
 
     @Override
@@ -182,6 +198,8 @@ public class Fenetre extends JFrame implements Runnable {
             ipField.setEnabled(false);
             portField.setEnabled(false);
             loginField.setEnabled(false);
+            connexionButton.setVisible(false);
+            deconnexionButton.setVisible(true);
         }
     }
 }
