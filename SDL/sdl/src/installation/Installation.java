@@ -8,6 +8,7 @@ import sdljava.video.SDLVideo;
 public class Installation {
 	
 	/**
+	 * tuto : http://www.siteduzero.com/tutoriel-3-90661-les-surfaces.html
 	 *     	SDL_DISABLE 	: cache le curseur de la souris ;
     		SDL_ENABLE 		: affiche le curseur de la souris (actif d'origine) ;
     		SDL_DOUBLEBUF 	: active le Double Buffering ;
