@@ -20,14 +20,13 @@ public class Installation {
 	 * @throws SDLException
 	 * @throws InterruptedException
 	 */
-	
 	public Installation() throws SDLException, InterruptedException {
 		
 		// Initialisation SDL Video
 		SDLMain.init(SDLMain.SDL_INIT_VIDEO);
 		
 		// Creation de la fenetre principale
-		SDLSurface screen = SDLVideo.setVideoMode(400, 200, 32, SDLVideo.SDL_HWSURFACE | SDLVideo.SDL_DOUBLEBUF);
+		SDLSurface screen = SDLVideo.setVideoMode(400, 200, 32, SDLVideo.SDL_ENABLE | SDLVideo.SDL_HWSURFACE | SDLVideo.SDL_DOUBLEBUF);
 		
 		// Definition du titre de la video
 		SDLVideo.wmSetCaption("SDL Windows", null);
@@ -38,27 +37,18 @@ public class Installation {
 		long green = screen.mapRGB(0, 255, 0);
 		
 		screen.fillRect(blue);
+		
+		// On crée un nouveau rectangle
+		SDLSurface rectangle = SDLVideo.createRGBSurface(SDLVideo.SDL_HWSURFACE, 200, 150, 32, 0, 0, 0, 0);
+		// On attache le rectangle sur la fenêtre (qui est une SDLSurface du doux nom de screen)
+		rectangle.blitSurface(screen);
+		
+		// On affiche le tout ! C'est la fenêtre qui contient la surface rectangle, donc c'est elle qu'on flip
 		screen.flip();
 		
-		// Reste ouvert qlq sec
+		//////////////////////////////////////////////////
 		Thread.sleep(2000);
-		
-		screen.fillRect(red);
-		screen.flip();
-		
-		// Reste ouvert qlq sec
-		Thread.sleep(2000);
-		
-		screen.fillRect(green);
-		screen.flip();
-		
-		// Reste ouvert qlq sec
-		Thread.sleep(2000);
-		
-		// Liberation memoire de la fenetre
 		screen.freeSurface();
-		
-		// Fermeture du pgm
 		SDLMain.quit();
 	}
 	
