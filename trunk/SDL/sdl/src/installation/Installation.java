@@ -5,10 +5,9 @@ import sdljava.SDLMain;
 import sdljava.event.SDLEvent;
 import sdljava.event.SDLKey;
 import sdljava.event.SDLKeyboardEvent;
-import sdljava.image.SDLImage;
-import sdljava.video.SDLRect;
 import sdljava.video.SDLSurface;
 import sdljava.video.SDLVideo;
+import carte.Carte;
 
 public class Installation {
 	
@@ -52,15 +51,19 @@ public class Installation {
 		SDLEvent event = null;
 		boolean running = true;
 		
-		SDLSurface image = SDLImage.load("images/font.jpg");
-		SDLRect imagePos = new SDLRect(0, 0);
-		
-		SDLSurface tank = SDLImage.load("images/tank.png");
-		tank.setColorKey(SDLVideo.SDL_SRCCOLORKEY, tank.mapRGB(255, 0, 255));
-		SDLRect tankPos = new SDLRect(100, 100);
-		
+//		SDLSurface image = SDLImage.load("images/font.jpg");
+//		SDLRect imagePos = new SDLRect(0, 0);
+//		
+//		SDLSurface tank = SDLImage.load("images/tank.png");
+//		tank.setColorKey(SDLVideo.SDL_SRCCOLORKEY, tank.mapRGB(255, 0, 255));
+//		SDLRect tankPos = new SDLRect(100, 100);
+//		
 		// Gestion de la transparence
-		tank.setAlpha(SDLVideo.SDL_SRCALPHA, 200);
+//		tank.setAlpha(SDLVideo.SDL_SRCALPHA, 200);
+		
+		
+		// Gestion de la carte
+		Carte carte = new Carte(this.screen);
 		
 		/*
 		 *  Gestion des événement 2/2
@@ -82,22 +85,16 @@ public class Installation {
 				
 				// Les méthodes getType() et getSym() se ressemblent sur le principe d'utilisation
 				switch (eventK.getSym()) {
-				
-				// Si la touche espace est pressée 
-				case SDLKey.SDLK_ESCAPE: running = false;break;
+					// Si la touche espace est pressée 
+					case SDLKey.SDLK_ESCAPE: running = false;break;
 				}
 			}
-			
-			image.blitSurface(screen, imagePos);
-			tank.blitSurface(screen, tankPos);
+			carte.show();
 			screen.flip();
 		}
 		
-		
-
 		// On quitte :: Libération de la mémoire
-		tank.freeSurface();
-		image.freeSurface();
+		carte.delete();
 		screen.freeSurface();
 		SDLMain.quit();
 	}
