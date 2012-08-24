@@ -8,7 +8,7 @@ import util.Position;
 import carte.elements.Barriere;
 import carte.elements.Sol;
 
-public class Carte implements Affichage {
+public class Carte implements Affichable {
 
     private Sol[][] mapFont;
 
